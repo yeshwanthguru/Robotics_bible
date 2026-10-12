@@ -14,14 +14,10 @@ const config = {
   organizationName: 'yeshwanthguru',
   projectName: 'Robotics_bible',
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
-  markdown: {mermaid: true, format: 'detect'},
+  markdown: {mermaid: true, format: 'detect', hooks: {onBrokenMarkdownLinks: 'warn'}},
   themes: [
     '@docusaurus/theme-mermaid',
     [require.resolve('@easyops-cn/docusaurus-search-local'), {hashed: true, docsRouteBasePath: '/docs', indexBlog: false}],
-  ],
-  stylesheets: [
-    {href: 'https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css', type: 'text/css'},
   ],
   presets: [
     ['classic', {
@@ -32,10 +28,11 @@ const config = {
         rehypePlugins: [rehypeKatex],
       },
       blog: false,
-      theme: {customCss: './src/css/custom.css'},
+      theme: {customCss: [require.resolve('katex/dist/katex.min.css'), './src/css/custom.css']},
     }],
   ],
   themeConfig: {
+    mermaid: {options: {themeVariables: {fontSize: '22px'}, flowchart: {nodeSpacing: 40, rankSpacing: 50, padding: 12}}},
     colorMode: {defaultMode: 'dark', respectPrefersColorScheme: true},
     navbar: {
       title: 'Robotics & AI Bible',

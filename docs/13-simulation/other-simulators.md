@@ -4,6 +4,10 @@ title: MuJoCo, Gazebo, PyBullet, Genesis, ManiSkill, Drake
 
 # Other Simulators You Should Know
 
+:::tip[The 30-second version]
+No single simulator is best. **MuJoCo** is the research favourite for accurate, smooth contact and control; **Gazebo** is the ROS-native test bench; **PyBullet** is simple and free; **Genesis** and **ManiSkill3** are fast new GPU simulators; **Drake** is for model-based control. Pick by what you need: speed, sensor realism, ROS integration, or differentiability.
+:::
+
 ## MuJoCo ecosystem
 - **MuJoCo** (Multi-Joint dynamics with Contact; now open-source under DeepMind): generalized coordinates, soft convex contact model (solver-based, smoothing via `solref/solimp`), MJCF XML, tendons, actuators, sensors (touch, force, IMU, rangefinder), fast and numerically stable; `mujoco` Python bindings, `mujoco.viewer`.
 - **MJX**: JAX re-implementation → GPU/TPU, `jax.vmap` batch thousands of envs, differentiable. **MuJoCo Warp (MJWarp)**: NVIDIA Warp backend, GPU-accelerated, (co-developed with DeepMind; used by Newton). **MuJoCo Playground**: RL environments (locomotion, manipulation, dexterous) with MJX; sim-to-real recipes for Go1, Berkeley Humanoid, Booster T1, Panda, LEAP hand. **dm_control** / **Menagerie** (curated robot models: UR5e, Panda, Spot, Go2, H1, G1, Allegro, Shadow hand).

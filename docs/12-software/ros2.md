@@ -4,6 +4,26 @@ title: ROS 2 (Deep Dive)
 
 # ROS 2
 
+:::tip[The 30-second version]
+A robot is many small programs: one reads the camera, one detects objects, one plans, one drives the arm. **ROS 2 is the plumbing and the language they use to talk to each other**, plus a big toolbox (navigation, arm planning, simulation bridges, visualisation). Programs are called **nodes**; they exchange messages over named **topics**, ask each other questions with **services**, and run long jobs with **actions**.
+:::
+
+![ros2 graph](/img/fig/ros2-graph.svg)
+*A tiny ROS 2 system. Topics broadcast; services answer one question; actions run long tasks with progress updates.*
+
+**Plain-English map of the concepts**
+
+| Concept | Everyday analogy | Use it for |
+|---|---|---|
+| **Node** | one employee with one job | camera driver, planner |
+| **Topic** | a radio channel (anyone can talk or listen) | sensor streams, commands |
+| **Service** | a phone call: one question, one answer | "give me the current map" |
+| **Action** | ordering a pizza: confirmation, progress, delivery, cancellable | "go to the kitchen" |
+| **Parameter** | a node's settings dial | speed limits, topic names |
+| **Lifecycle node** | a machine with a proper start-up sequence | Nav2 bring-up |
+| **QoS** | delivery rules: "must arrive" vs "latest only" | camera = best-effort, map = reliable + latched |
+| **TF** | a live family tree of coordinate frames | where is the gripper relative to the table? |
+
 ## Why ROS 2 (vs ROS 1)
 | ROS 1 | ROS 2 |
 |---|---|

@@ -4,6 +4,10 @@ title: Robotics System Design Interviews
 
 # System Design for Robotics / Physical AI
 
+:::tip[The 30-second version]
+A system-design question asks you to **design a whole robot (or fleet) end to end**. Interviewers don't want a perfect answer; they want a clear structure, sensible trade-offs, and attention to failure and safety. Use the same six steps every time (below), and talk through *why* for every choice.
+:::
+
 ## Framework (use every time)
 1. **Requirements:** task, environment, throughput/cycle time, success rate, safety, budget, uptime.
 2. **Constraints:** compute (edge vs cloud), latency, power, comms, certification.

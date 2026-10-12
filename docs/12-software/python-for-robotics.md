@@ -4,6 +4,10 @@ title: Python for Robotics & ML
 
 # Python for Robotics & ML
 
+:::tip[The 30-second version]
+Python is the **glue and the lab bench** of robotics and AI: quick to write, with every ML and simulation library available. It is slower than C++, so heavy lifting happens in compiled libraries (NumPy, PyTorch, OpenCV) while Python orchestrates. The classic gotcha is the **GIL** (only one thread runs Python code at a time).
+:::
+
 ## Language internals
 - **GIL:** one thread executes bytecode at a time → threads help I/O-bound only; CPU-bound → `multiprocessing`, NumPy/C extensions (release GIL), `concurrent.futures`, Numba, Cython. Python 3.13 free-threaded build (experimental, PEP 703).
 - **Memory:** reference counting + cyclic GC; `__slots__`; generators for lazy evaluation; mutable default arg trap; shallow vs deep copy.

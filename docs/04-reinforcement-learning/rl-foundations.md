@@ -4,83 +4,119 @@ title: RL Foundations (MDP → Policy Gradients)
 
 # Reinforcement Learning Foundations
 
-## MDP
-Tuple $(S,A,P,R,\gamma)$; Markov: $P(s'|s,a)$. Return $G_t=\sum_k\gamma^kr_{t+k+1}$. POMDP adds observations $O$; belief state or recurrent/transformer policy.
+:::tip[The 30-second version]
+Reinforcement learning (RL) is **learning by trial and error with a score.** An agent tries actions, the world responds with a new situation and a reward, and over thousands of tries the agent discovers which actions lead to the most reward in the long run.
+It's how robots learn to walk in simulation, how AlphaGo learned Go, and how chat models are tuned with human feedback.
+:::
 
-- Value: $V^\pi(s)=E_\pi[G_t|s]$, $Q^\pi(s,a)$, advantage $A=Q-V$.
-- **Bellman expectation:** $V^\pi(s)=\sum_a\pi(a|s)\sum_{s'}P(s'|s,a)[r+\gamma V^\pi(s')]$
-- **Bellman optimality:** $Q^*(s,a)=E[r+\gamma\max_{a'}Q^*(s',a')]$ — a $\gamma$-contraction ⇒ unique fixed point.
+## The loop
 
-## Families
+![RL loop](/img/fig/rl-loop.svg)
+*The agent acts, the environment answers with a new state and a reward. Repeat.*
+
+The vocabulary you need:
+
+| Term | Plain meaning | Robot example |
+|---|---|---|
+| **State** $s$ | what the agent knows right now | joint angles, body tilt, camera image |
+| **Action** $a$ | what it can do | target joint positions |
+| **Reward** $r$ | immediate score | +1 for forward speed, −1 for falling |
+| **Policy** $\pi(a\mid s)$ | the strategy: state → action | the neural network you are training |
+| **Return** $G$ | total *future* reward (discounted) | how well the whole walk went |
+| **Value** $V(s)$ | "how good is it to be here?" | being upright and moving is valuable |
+| **Q-value** $Q(s,a)$ | "how good is this action here?" | |
+| **Advantage** $A$ | "how much better than usual was this action?" | $Q - V$ |
+| **Discount** $\gamma$ | how much you care about the future (0.9–0.99) | |
+
+$$ G_t = r_{t+1}+\gamma r_{t+2}+\gamma^2 r_{t+3}+\dots $$
+
+> **In words:** add up all future rewards, but count sooner rewards more than later ones.
+
+A problem that fits this loop with the **Markov property** (the current state contains everything needed to decide) is an **MDP**. If the agent only sees part of the world (a camera, not the full state), it is a **POMDP** and needs memory (recurrent nets, history stacking).
+
+## The Bellman idea: value is recursive
+
+$$ V^\pi(s)=\mathbb E\big[\,r+\gamma V^\pi(s')\,\big] $$
+
+> **In words:** "how good is this situation?" = "the reward I get now + how good the next situation is." That one sentence is the root of Q-learning, TD learning, actor-critic and more.
+
+![gridworld values](/img/fig/gridworld-values.svg)
+*A tiny world. After learning, every cell has a value (darker = better) and the arrows show the best move: toward the goal, around the pit.*
+
+## The RL family tree
 
 ```mermaid
-flowchart TD
-  RL --> MB[Model-based]
-  RL --> MF[Model-free]
+flowchart LR
+  RL --> MF[Model-free: learn from experience directly]
+  RL --> MB[Model-based: learn how the world works, then plan]
+  RL --> OFF[Offline RL: learn from a fixed dataset]
+  RL --> IL[Imitation: copy an expert]
   MF --> VB[Value-based: Q-learning, DQN]
-  MF --> PG[Policy-gradient: REINFORCE, PPO, TRPO]
-  MF --> AC[Actor-Critic: A3C, DDPG, TD3, SAC]
-  MB --> PL[Planning: MPC, MCTS, CEM, MPPI]
-  MB --> LM[Learned models: Dreamer, MBPO, TD-MPC2]
-  RL --> OFF[Offline RL: CQL, IQL, TD3+BC]
-  RL --> IL[Imitation: BC, DAgger, GAIL, Diffusion Policy]
+  MF --> PG[Policy-gradient: REINFORCE, PPO]
+  MF --> AC[Actor-critic: SAC, TD3, DDPG]
+  MB --> PL[Planning: MPC, MCTS, MPPI]
+  MB --> LM[Learned models: Dreamer, TD-MPC2]
 ```
 
-## Tabular / value methods
-- **DP:** policy evaluation, policy iteration, value iteration (needs model).
-- **Monte-Carlo:** unbiased, high variance, episodic.
-- **TD(0):** $V(s)\leftarrow V(s)+\alpha[r+\gamma V(s')-V(s)]$; biased, low variance. TD(λ)/GAE interpolates.
-- **SARSA** (on-policy) vs **Q-learning** (off-policy, max target).
-- **DQN:** replay buffer + target network; Double DQN (fix over-estimation), Dueling, PER, Rainbow. Discrete actions only.
+### Value-based (Q-learning, DQN)
+Learn $Q(s,a)$ and always pick the best action. **DQN** adds a replay buffer and a target network to stabilise it. Great for discrete actions (games), awkward for continuous joint control.
 
-## Policy gradient
-$\nabla_\theta J=E[\nabla\log\pi_\theta(a|s)\,\hat A]$ (policy-gradient theorem). Baseline reduces variance without bias.
-- **REINFORCE** – MC return. **GAE(λ):** $\hat A_t=\sum(\gamma\lambda)^l\delta_{t+l}$, $\delta=r+\gamma V(s')-V(s)$ (bias–variance knob).
-- **TRPO:** maximize surrogate s.t. $KL\le\delta$ (natural gradient, conjugate gradient).
-- **PPO:** clipped surrogate
- $L=E[\min(r_t\hat A_t,\ \mathrm{clip}(r_t,1\pm\epsilon)\hat A_t)]$, $r_t=\pi_\theta/\pi_{old}$. + value loss + entropy bonus. Multiple epochs/minibatches per rollout. **The default for massively parallel sim (Isaac Lab/Gym, legged locomotion).**
-- **A2C/A3C**, **IMPALA** (V-trace off-policy correction).
+### Policy gradient: directly improve the policy
+Try actions; make the ones that did better than expected *more likely*.
 
-## Off-policy continuous control
-| Algo | Key idea |
-|---|---|
-| DDPG | deterministic actor + Q critic, target nets, noise exploration |
-| TD3 | twin critics (min), delayed actor, target policy smoothing |
-| **SAC** | maximize reward + entropy $\alpha H(\pi)$; stochastic actor, twin Q, auto-tuned α; sample-efficient & robust |
-| REDQ / DroQ / CrossQ | high UTD ratio, ensembles/regularized critics |
+$$ \nabla_\theta J = \mathbb E\big[\nabla_\theta\log\pi_\theta(a\mid s)\;A\big] $$
 
-## Model-based RL
-- Learn $\hat P(s'|s,a)$; plan with **MPC** (CEM, MPPI, iLQR) or imagine rollouts (Dyna, MBPO, Dreamer V3 latent world model, **TD-MPC2**). More sample-efficient; model bias is the risk (mitigate with ensembles, short rollouts).
-- **MCTS / AlphaZero:** UCT $= Q+c\sqrt{\ln N/n}$; policy+value network guides search.
+> **In words:** "increase the probability of actions in proportion to how much better than average they turned out."
 
-## Exploration
-ε-greedy, Boltzmann, entropy bonus, UCB, Thompson sampling, count-based/RND/ICM curiosity, parameter-space noise, Go-Explore.
+**GAE** (generalised advantage estimation) mixes short and long lookahead to balance bias against variance.
 
-## Reward design & shaping
-Sparse vs dense. Potential-based shaping $F=\gamma\Phi(s')-\Phi(s)$ preserves optimal policy. Reward hacking, curriculum, privileged info, reward = sum of weighted terms (tracking, energy, smoothness, termination).
+### PPO: the workhorse of robot RL
 
-## Offline RL & Imitation
-- Distribution shift/extrapolation error: conservative (**CQL**), in-sample (**IQL**), BC-regularized (**TD3+BC**), sequence modelling (**Decision Transformer**).
-- **BC** suffers compounding error $O(T^2\epsilon)$; **DAgger** queries expert on learner states $O(T\epsilon)$. **GAIL/AIRL** adversarial imitation. **Action chunking (ACT)** and **diffusion policy** handle multimodality & temporal consistency. See [Imitation & Robot Learning](../07-physical-ai/imitation-robot-learning.md).
+![PPO clip](/img/fig/ppo-clip.svg)
+*PPO clips how much a single update may change the policy. Good actions can only be made so much more likely; bad actions so much less. The shaded band is the "safe zone".*
 
-## RLHF / alignment family (bridge to LLMs)
-Reward model from preference pairs (Bradley–Terry) → PPO with KL penalty; **DPO** (closed-form, no RM/rollouts), **GRPO** (group-relative advantages, no critic, used for reasoning models), RLVR (verifiable rewards).
+$$ L = \mathbb E\big[\min\big(r_t A_t,\ \mathrm{clip}(r_t,1-\epsilon,1+\epsilon)A_t\big)\big],\quad r_t=\frac{\pi_\theta(a|s)}{\pi_{\text{old}}(a|s)} $$
 
-## Multi-agent, hierarchical, safe, meta
-MARL: CTDE (MADDPG, QMIX, MAPPO). HRL: options, feudal, skill discovery (DIAYN). Safe RL: CMDP, Lagrangian, CPO, shielding, CBF filters. Meta-RL: MAML, RL², domain randomization as meta-learning.
+> **In words:** improve the policy, but never let one update change its behaviour too much, because a crashed policy can't recover.
+
+PPO + thousands of parallel simulated robots (Isaac Lab) = locomotion in minutes.
+
+### Off-policy actor-critic (SAC, TD3)
+Reuse old experience from a replay buffer, much more sample-efficient. **SAC** also rewards *randomness* (entropy), which improves exploration and robustness; it is the common choice when real-robot data is expensive.
+
+| Algo | Idea | Use when |
+|---|---|---|
+| **PPO** | clipped policy gradient, on-policy | massive parallel sim (Isaac Lab, legged robots) |
+| **SAC** | max reward + entropy, off-policy | data is expensive (real-world RL) |
+| **TD3 / DDPG** | deterministic actor + Q critic | continuous control, simpler |
+| **DQN family** | learn Q for discrete actions | games, discrete decisions |
+| **Dreamer / TD-MPC2** | learn a world model, plan inside it | sample efficiency |
+
+## Making RL actually work
+
+**Exploration:** ε-greedy, entropy bonuses, curiosity (reward novelty), parameter noise.
+**Reward design:** the hardest part. Sparse (only at the goal) is hard to learn from; dense (shaped) is easier but can be *hacked* (the robot finds a loophole). Use potential-based shaping, curriculum, and sanity-check videos.
+**Model-based RL:** learn $P(s'|s,a)$, then plan (MPC, MCTS) or "dream" rollouts. Efficient, but errors in the model get exploited.
+**Offline RL and imitation:** learn from logged data. Danger: distribution shift (the policy tries actions never seen in data). Remedies: **CQL**, **IQL**, BC regularisation. See [Imitation learning](../07-physical-ai/imitation-robot-learning.md).
+**RLHF family (bridge to LLMs):** train a reward model from human preferences, then optimise with PPO; **DPO** skips the reward model; **GRPO** compares a group of answers and needs no critic.
+**Special topics:** multi-agent (MAPPO, QMIX), hierarchical RL (options, skills), safe RL (constraints, CBFs), meta-RL.
 
 ## Interview Q&A
 
-**On vs off-policy?** On-policy learns from data of current policy (PPO; stable, sample-hungry). Off-policy reuses replay (SAC; sample-efficient, less stable).
+**On-policy vs off-policy?**
+*Simply:* on-policy learns only from fresh experience of the current policy (PPO: stable, data-hungry); off-policy can reuse old experience (SAC: efficient, fiddlier).
 
-**Why PPO clip?** Limits policy ratio so large updates don't destroy performance; cheap approximation of trust region.
+**Why does PPO clip?**
+*Simply:* to stop one over-eager update from wrecking the policy. *Deeper:* it is a cheap stand-in for a trust-region constraint.
 
-**Why advantage?** Subtract baseline → same expected gradient, lower variance.
+**Why use an advantage instead of the raw return?**
+*Simply:* subtract a baseline so the signal says "better or worse than usual" rather than "big or small". Same expected gradient, much less noise.
 
-**Bootstrapping & the deadly triad?** Function approximation + bootstrapping + off-policy ⇒ divergence risk.
+**What is the deadly triad?**
+*Simply:* function approximation + bootstrapping + off-policy data can diverge.
 
-**Why does DQN overestimate?** max over noisy estimates is positively biased → Double DQN decouples selection/evaluation.
+**SAC or PPO for a robot?**
+*Simply:* SAC when each real sample is costly; PPO when you can simulate thousands of robots in parallel.
 
-**SAC vs PPO for robots?** SAC when real-world sample cost is high; PPO when you can run 4096+ envs in GPU sim.
-
-**How do you debug RL?** Check reward scale, observation normalization, episode termination handling (time-out vs terminal → bootstrap correctly), seed variance, ablate to a trivial env, log entropy/KL/explained variance.
+**How do you debug RL?**
+*Simply:* check reward scale, observation normalisation, episode termination (time-out vs failure!), seeds; test on a trivial task; log entropy, KL, value-explained-variance; **watch videos**.

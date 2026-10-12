@@ -4,52 +4,69 @@ title: Perception for Robots (Vision, 3D, Semantics)
 
 # Robot Perception
 
-## Task menu
-| Task | Methods |
-|---|---|
-| Detection | YOLOv8–v12, RT-DETR, Faster R-CNN; open-vocab GroundingDINO, OWLv2, YOLO-World |
-| Segmentation | Mask R-CNN, **SAM / SAM 2**, Mask2Former, OneFormer; panoptic |
-| Depth | stereo (RAFT-Stereo, FoundationStereo), monocular (Depth Anything v2, Metric3D, UniDepth) |
-| Optical flow / tracking | RAFT, CoTracker, TAPIR, SAM2 video, ByteTrack/DeepSORT (MOT) |
-| 6D object pose | FoundationPose, MegaPose, DenseFusion, PVN3D, GDR-Net; category-level NOCS |
-| Keypoints / affordances | DINOv2 features, Where2Act, VRB |
-| 3D detection | PointPillars, CenterPoint, BEVFusion, BEVFormer, SECOND |
-| 3D understanding | PointNet/PointNet++, Point Transformer, Sparse conv (MinkowskiNet), OpenScene, LERF |
-| Scene reconstruction | NeRF, 3D Gaussian Splatting, TSDF fusion, COLMAP SfM/MVS |
-| Human pose / hands | OpenPose, MediaPipe, HaMeR, MANO; retargeting for teleop |
-| Grasp perception | GraspNet-1B, Contact-GraspNet, AnyGrasp, GraspGen |
+:::tip[The 30-second version]
+Perception turns raw sensor data (pixels, laser points) into something the robot can *use*: "there's a mug **here**, its handle faces **left**, and the table is **0.4 m** below it." Modern perception = a **foundation model** (SAM, DINOv2, CLIP, Depth Anything) plus a bit of **geometry** to get exact 3-D positions.
+:::
 
-## Camera model & geometry reminders
-Pinhole projection, distortion (radial/tangential, fisheye Kannala-Brandt), undistortion, depth→point cloud $X=(u-c_x)Z/f_x,\ Y=(v-c_y)Z/f_y$, extrinsic transforms, depth alignment to RGB, point-cloud filtering (voxel downsample, statistical outlier, RANSAC plane segmentation, Euclidean clustering).
+## The perception menu
 
-## Perception pipelines in robots
+| Task | What it answers | Go-to tools |
+|---|---|---|
+| **Detection** | what and where (boxes) | YOLO family, RT-DETR; open-vocabulary: GroundingDINO, OWLv2 |
+| **Segmentation** | which pixels belong to the object | **SAM / SAM 2**, Mask2Former |
+| **Depth** | how far is each pixel | stereo, RGB-D, Depth Anything v2, Metric3D |
+| **Tracking / flow** | how things move | RAFT, CoTracker, ByteTrack, SAM 2 video |
+| **6-D object pose** | exact position + orientation of a known object | FoundationPose, MegaPose, DenseFusion |
+| **Keypoints / affordances** | where to grasp / push / open | DINOv2 features, VRB |
+| **3-D detection** | boxes in 3-D | PointPillars, CenterPoint, BEVFusion |
+| **Scene reconstruction** | full 3-D model | TSDF, NeRF, 3D Gaussian Splatting, COLMAP |
+| **Humans** | pose, hands | MediaPipe, HaMeR |
+| **Grasp perception** | where can I grip it | Contact-GraspNet, AnyGrasp, GraspGen |
+
+## A typical pipeline
+
 ```mermaid
-flowchart LR
-  CAM[RGB-D / stereo] --> PRE[Rectify, sync, undistort]
-  PRE --> DET[Detect + segment]
-  DET --> POSE[6D pose / grasp points]
-  PRE --> DEPTH[Depth / point cloud]
-  DEPTH --> OCC[Occupancy / ESDF map]
+flowchart TD
+  CAM[RGB-D / stereo camera] --> PRE[Rectify, undistort, time-sync]
+  PRE --> DET[Detect and segment]
+  DET --> POSE[6-D pose or grasp points]
+  PRE --> DEPTH[Depth to point cloud]
+  DEPTH --> OCC[Occupancy / distance map]
   POSE --> PLAN[Planner]
   OCC --> PLAN
 ```
 
-Production perception: TensorRT/ONNX optimization, FP16/INT8, **Isaac ROS** GPU-accelerated nodes (NITROS zero-copy), DeepStream, batching, latency budget, time-stamped TF, failure monitoring (confidence, out-of-distribution detection).
+**From pixel to 3-D point:** with depth $Z$ and camera intrinsics, $X=(u-c_x)Z/f_x$, $Y=(v-c_y)Z/f_y$.
 
-## Robustness
-Domain shift (lighting, textures), transparent/reflective objects (use stereo/learned depth completion e.g. ClearGrasp, LIDF), motion blur, occlusion, long-tail objects, sensor degradation, adversarial robustness; test-time adaptation; uncertainty (ensembles, MC dropout, conformal prediction).
+> **In words:** "undo the camera's projection: a pixel plus its distance gives a point in space."
+
+**Point-cloud clean-up:** voxel down-sampling, remove outliers, RANSAC plane fitting (find the table), Euclidean clustering (separate objects).
+
+## Putting models on a robot
+- Optimise with **TensorRT / ONNX**, FP16 or INT8, batching.
+- **Isaac ROS** provides GPU-accelerated nodes (NITROS zero-copy) for stereo depth, detection, VSLAM, nvblox, pose estimation.
+- Budget latency end to end (camera → decision) and timestamp everything for TF.
+- Monitor confidence and detect **out-of-distribution** inputs; fall back to safe behaviour.
+
+## Making perception robust
+Lighting and texture changes, **transparent and reflective objects** (hard for depth: use stereo or learned depth completion), motion blur, occlusion, long-tail objects. Tools: augmentation, domain randomisation, ensembles / MC dropout / conformal prediction for **uncertainty**, test-time adaptation.
 
 ## Datasets
-COCO, LVIS, ImageNet, KITTI, nuScenes, Waymo Open, ScanNet, Replica, YCB-Video, BOP, Objaverse, EPIC-Kitchens, Ego4D, OpenImages.
+COCO, LVIS, ImageNet, KITTI, nuScenes, Waymo, ScanNet, YCB-Video, BOP (6-D pose), Objaverse, EPIC-Kitchens, Ego4D.
 
 ## Interview Q&A
 
-**IoU / mAP definitions?** IoU = |A∩B|/|A∪B|; AP = area under PR curve per class at IoU threshold; mAP average across classes (and thresholds).
+**What are IoU and mAP?**
+*Simply:* IoU = overlap of predicted and true box ÷ their union. mAP = average precision across classes (and IoU thresholds).
 
-**NMS?** Suppress overlapping boxes with lower scores; DETR removes it via bipartite matching.
+**What does non-maximum suppression do?**
+*Simply:* removes duplicate boxes on the same object, keeping the highest-scoring one. DETR avoids it with set prediction.
 
-**Why SAM matters for robotics?** Promptable zero-shot masks → grasp targets, object-centric representations, auto-labeling.
+**Why is SAM useful in robotics?**
+*Simply:* give it a click or a box and it cuts out any object zero-shot, great for grasp targets and auto-labelling.
 
-**Stereo vs ToF?** Stereo passive, long range, textureless fails; ToF active, dense indoors, sunlight/multipath issues.
+**Stereo vs time-of-flight depth?**
+*Simply:* stereo is passive and long-range but needs texture; ToF is active and dense but struggles with sunlight and shiny surfaces.
 
-**How do you get 6D pose from one RGB-D image?** Segment object → match to CAD (model-based: FoundationPose render-and-compare) or regress pose; refine with ICP.
+**How do you get an object's 6-D pose from one RGB-D image?**
+*Simply:* segment it, then match to its 3-D model (render-and-compare like FoundationPose), refine with ICP.

@@ -4,6 +4,10 @@ title: ROS 1 (Noetic) Essentials
 
 # ROS 1
 
+:::tip[The 30-second version]
+ROS 1 is the original version. It needs one central program (**roscore**) that introduces the nodes to each other; if it dies, everything stops. ROS 2 removed that single point of failure and added real-time and security features. ROS 1 Noetic ended support in May 2025, but many labs and companies still have ROS 1 code, so you may be asked how it differs and how to migrate.
+:::
+
 ROS 1 Noetic (Ubuntu 20.04) reached EOL in May 2025, but legacy codebases and interviews still reference it.
 
 ## Architecture

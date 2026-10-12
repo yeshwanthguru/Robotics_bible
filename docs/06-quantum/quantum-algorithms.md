@@ -4,72 +4,79 @@ title: Quantum Algorithms & Variational Methods
 
 # Quantum Algorithms
 
-## Landscape
+:::tip[The 30-second version]
+Only a few problems are known to run much faster on a quantum computer. The famous ones:
+**Shor** (factor huge numbers → breaks today's RSA encryption), **Grover** (search in √N steps instead of N), and **simulating quantum physics** (chemistry, materials, probably the first real "killer app").
+Today's noisy chips mostly run **hybrid** algorithms (VQE, QAOA) where a small quantum circuit is tuned by a normal computer.
+:::
 
-| Algorithm | Problem | Speed-up | Notes |
+## What is actually faster?
+
+| Algorithm | Problem | Speed-up | Reality check |
 |---|---|---|---|
-| Deutsch–Jozsa / Bernstein–Vazirani / Simon | oracle problems | exp. (query) | historical; Simon inspired Shor |
-| **QFT** | Fourier transform | $O(n^2)$ gates vs $O(n2^n)$ | subroutine |
-| **Phase estimation (QPE)** | eigenvalue of U | – | basis for Shor, HHL, chemistry |
-| **Shor** | factoring / discrete log | super-polynomial | breaks RSA/ECC → post-quantum crypto (Kyber, Dilithium) |
-| **Grover** | unstructured search | quadratic $O(\sqrt N)$ | amplitude amplification; optimal |
-| **HHL** | linear systems | exp. *under caveats* | needs sparse A, state prep, readout only of observables |
-| Quantum walks | graph search | poly/exp | |
-| **Hamiltonian simulation** | $e^{-iHt}$ | exp. | Trotter, qubitization, LCU → chemistry/materials (killer app) |
-| **VQE** | ground-state energy | heuristic | NISQ |
-| **QAOA** | combinatorial opt. | heuristic | NISQ |
-| Quantum annealing | QUBO/Ising | heuristic | D-Wave |
-| Boson sampling / RCS | sampling supremacy | exp. (no application) | Google Sycamore 2019 |
+| **Shor** | factoring, discrete log | super-polynomial | needs ~1M noisy qubits; motivates post-quantum cryptography |
+| **Grover** | unstructured search | quadratic ($\sqrt N$) | proven optimal; modest but broad |
+| **Hamiltonian simulation** | simulate molecules / materials | exponential | most promising real application |
+| **HHL** | linear equations | exponential *with big caveats* | data loading and readout kill much of it |
+| **QPE** | find eigenvalues | foundation | inside Shor and chemistry |
+| **VQE / QAOA** | chemistry / optimisation | heuristic | NISQ-friendly, no proven advantage yet |
+| **Boson sampling / RCS** | random sampling | exponential | proves hardware power, no practical use |
 
-## Complexity classes
-BQP (bounded-error quantum poly time) ⊇ P, ⊆ PSPACE. Believed BQP ⊉ NP-complete. Quantum advantage claims need care about best classical algorithm (dequantization of recommender/QML results by Tang).
+**Complexity:** BQP = problems quantum computers solve efficiently. It contains P and is believed *not* to contain NP-complete problems, so quantum is **not** a magic NP-solver.
 
-## Grover in detail
-Oracle flips phase of marked $|w\rangle$; diffusion reflects about mean $2|s\rangle\langle s|-I$. Each iteration rotates state by $2\theta$, $\sin\theta=\sqrt{M/N}$; optimal iterations ≈ $\frac\pi4\sqrt{N/M}$ (over-rotation reduces success).
+## Grover: amplify the right answer
 
-## Shor in detail
-Factor N → find period $r$ of $f(x)=a^x\bmod N$ via QPE/QFT on modular exponentiation → $\gcd(a^{r/2}\pm1,N)$. Needs ≈ thousands of logical qubits for RSA-2048 (Gidney 2025 estimate: under 1 million noisy qubits, roughly a week of runtime).
+![grover](/img/fig/grover-amplitude.svg)
+*Start with every answer equally likely. The oracle secretly flips the sign of the right one. Reflecting about the average then makes that one tall. Repeat about $\tfrac{\pi}{4}\sqrt N$ times.*
 
-## Variational quantum algorithms (VQA)
+**In words:** each round is a tiny rotation toward the right answer. Rotate too many times and you overshoot, so the number of rounds matters.
 
-```mermaid
-flowchart LR
-  P[Parameters θ] --> C[Parameterized circuit U θ on QPU]
-  C --> M[Measure ⟨H⟩]
-  M --> O[Classical optimizer: COBYLA, SPSA, Adam]
-  O --> P
-```
+## Shor: factoring by finding a rhythm
+Pick a number *a*; the sequence $a^x \bmod N$ repeats with some period *r*. A quantum Fourier transform finds that period fast; then a bit of arithmetic ($\gcd(a^{r/2}\pm1,N)$) gives the factors. *(Gidney, 2025: an estimate of under a million noisy qubits and about a week of run time for RSA-2048.)*
 
-- **VQE:** minimize $E(\theta)=\langle\psi(\theta)|H|\psi(\theta)\rangle\ge E_0$ (variational principle). Ansätze: UCCSD (chemistry), hardware-efficient, ADAPT-VQE. Hamiltonian decomposed into Pauli strings (Jordan–Wigner / Bravyi–Kitaev mapping). Gradients via **parameter-shift rule** $\partial_\theta f=\frac12[f(\theta+\frac\pi2)-f(\theta-\frac\pi2)]$.
-- **QAOA (depth p):** $|\gamma,\beta\rangle=\prod e^{-i\beta_kH_M}e^{-i\gamma_kH_C}|+\rangle^n$. Max-Cut → Ising $H_C=\sum\frac12(1-Z_iZ_j)$. Approximation ratio improves with p.
-- **Challenges:** **barren plateaus** (gradient variance vanishes exponentially with qubits/depth for random circuits → use local cost, good init, structured ansatz), noise-induced plateaus, shot noise, optimizer local minima, measurement cost.
-- **QUBO/Ising mapping:** binary $x_i=(1-z_i)/2$; $\min x^\top Qx$.
+## Variational algorithms: the hybrid loop
+
+![VQE loop](/img/fig/vqe-loop.svg)
+*The quantum chip evaluates a cost for a set of angles θ; a classical optimiser proposes better angles. Repeat.*
+
+- **VQE** finds the lowest energy of a molecule. By the *variational principle*, any trial state's energy is ≥ the true ground state, so lowering it can only help.
+ $E(\theta)=\langle\psi(\theta)|H|\psi(\theta)\rangle \ge E_0$
+- **QAOA** solves combinatorial problems (e.g. Max-Cut): alternate a "problem" step and a "mixing" step with tunable angles.
+- **Gradients on hardware:** the *parameter-shift rule* $\partial_\theta f=\tfrac12[f(\theta+\tfrac\pi2)-f(\theta-\tfrac\pi2)]$ is exact, unlike finite differences.
+- **Pain points:** **barren plateaus** (the landscape goes flat as qubits grow, so gradients vanish), noise, shot noise (finite measurements), many Pauli terms to measure, local minima.
+- **QUBO / Ising:** many optimisation problems can be rewritten as "minimise $x^\top Q x$ over bits", the format annealers and QAOA take.
 
 ## Quantum machine learning (QML)
+- **Quantum kernels:** map data into quantum states and use their overlap as a similarity for a normal SVM.
+- **Variational classifiers / QNNs, QCNNs, quantum GANs, reservoir computing.**
+- **Honest assessment (say this in interviews):** no proven practical advantage for *classical* data yet. Loading data is expensive, readout is limited, and several "quantum speed-ups" were later matched by classical algorithms ("dequantisation"). More promising for *quantum* data (chemistry, physics sensors).
 
-- **Encodings:** basis, amplitude ($2^n$ values in n qubits, expensive to load), angle, IQP/ZZ feature map.
-- **Quantum kernels:** $k(x,x')=|\langle\phi(x)|\phi(x')\rangle|^2$ + classical SVM. **Variational quantum classifiers** / quantum neural nets (QNN), **quantum GANs**, **QCNN**, quantum reservoir computing, **quantum Boltzmann machines**.
-- **Honest assessment:** no proven practical advantage on classical data yet; data loading and readout bottlenecks; dequantization; potential advantage on quantum data (physics, chemistry) and certain structured kernels. Trainability (barren plateaus) and classical-simulability (Cerezo et al.) are active research.
+## Quantum + robotics (connect this to your research)
 
-## Quantum for robotics (research directions — relate to your PhD)
-- **Planning/optimization:** path planning, task allocation, multi-robot scheduling as QUBO on annealers/QAOA; Grover-style search over configurations.
-- **Quantum RL:** variational circuits as policy/value functions; quantum-enhanced exploration.
-- **Perception/ML:** QSVM/QCNN for sensor classification; quantum kernels on small data.
-- **Sensing:** quantum magnetometers, atomic clocks, quantum gyroscopes/accelerometers (cold-atom interferometry) → GPS-denied navigation; quantum LiDAR/radar (entanglement-enhanced).
-- **Control/estimation:** quantum Kalman filtering is a classical analog for quantum systems; quantum control (GRAPE, Krotov) for pulse-level gates; RL for calibration.
-- **Communication/security:** QKD for robot-swarm links, post-quantum crypto for fleet security.
-- **Space robotics:** quantum comms/sensing for satellites.
+| Area | Idea | Maturity |
+|---|---|---|
+| **Optimisation** | route planning, task allocation, multi-robot scheduling as QUBO | experimental on annealers/QAOA |
+| **Quantum RL** | variational circuits as small policies/value functions | research |
+| **Sensing** | cold-atom gyroscopes/accelerometers, quantum magnetometers → GPS-denied navigation | real hardware, early |
+| **Communication / security** | QKD for fleet links, post-quantum crypto | deployed in places |
+| **Control** | RL and optimal control for calibrating quantum devices | active |
+| **Space** | quantum clocks and links on satellites | pilots |
+
+**Practical architecture:** put the quantum solver behind an *asynchronous service* (like a ROS 2 action server) with a classical fallback. Never put it inside a hard real-time loop.
 
 ## Interview Q&A
 
-**Why is Grover optimal?** BBBV theorem: any quantum algorithm needs $\Omega(\sqrt N)$ queries.
+**Why is Grover optimal?**
+*Simply:* nobody can search an unstructured list faster than ~√N queries, even with a quantum computer (BBBV theorem).
 
-**What breaks if the oracle is expensive?** Speed-up counted in oracle queries; implementing the oracle (e.g. QRAM) may cost $O(N)$.
+**What is a barren plateau?**
+*Simply:* the cost surface becomes so flat that the optimiser can't tell which way is downhill. Avoid with shallow, structured circuits and local costs.
 
-**Explain barren plateaus.** For random parametrized circuits (2-design), $\mathrm{Var}[\partial C]\sim 2^{-n}$ → exponentially flat landscape; need shallow/local/structured circuits.
+**Why parameter-shift instead of finite differences?**
+*Simply:* it is exact and works with noisy measurements at a safe step size.
 
-**Why parameter-shift instead of finite difference?** Exact on hardware, robust to shot noise scale.
+**Is VQE guaranteed to find the ground state?**
+*Simply:* no. It gives an upper bound, limited by the ansatz, optimiser and noise.
 
-**Is VQE guaranteed to find ground state?** No: ansatz expressibility, optimizer local minima, noise — only upper bound.
-
-**QUBO to Ising?** Substitute $x=(1+s)/2$ with $s\in\{\pm1\}$ → couplings $J_{ij}$ and fields $h_i$ → map $s\to Z$ operators.
+**Where could quantum realistically help robotics first?**
+*Simply:* quantum **sensing** and secure communication first; optimisation speed-ups are still unproven.

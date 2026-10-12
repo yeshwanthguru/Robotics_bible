@@ -4,60 +4,79 @@ title: Quantum Computing Basics
 
 # Quantum Computing Fundamentals
 
-## Qubit & state
-$|\psi\rangle=\alpha|0\rangle+\beta|1\rangle$, $|\alpha|^2+|\beta|^2=1$. Bloch sphere: $|\psi\rangle=\cos\tfrac\theta2|0\rangle+e^{i\phi}\sin\tfrac\theta2|1\rangle$. $n$ qubits → $2^n$ complex amplitudes (tensor product space). Global phase is unobservable; relative phase matters (interference).
+:::tip[The 30-second version]
+A normal bit is a light switch: **0 or 1**. A **qubit** is more like a dimmer plus a compass: it can sit in a *blend* of 0 and 1, and the blend has a direction (a "phase") that lets possibilities **interfere**, adding up or cancelling out, like waves.
+A quantum algorithm is a clever choreography that makes the *wrong* answers cancel and the *right* answer reinforce, so that when you finally measure, you probably see the right one.
+It does **not** try every answer at once and pick the best. That's the most common myth.
+:::
 
-**Measurement (Born rule):** $P(i)=|\langle i|\psi\rangle|^2$; state collapses. Expectation $\langle O\rangle=\langle\psi|O|\psi\rangle$.
+## The qubit
 
-**Density matrix** $\rho=\sum p_i|\psi_i\rangle\langle\psi_i|$ for mixed states; pure iff $\mathrm{Tr}\rho^2=1$. Partial trace gives reduced states; decoherence = loss of off-diagonals.
+![bloch sphere](/img/fig/bloch-sphere.svg)
+*A qubit's state is a point on a sphere. The poles are 0 and 1; every other point is a blend.*
 
-## Gates
+$$ |\psi\rangle=\alpha|0\rangle+\beta|1\rangle,\qquad |\alpha|^2+|\beta|^2=1 $$
 
-| Gate | Matrix / action |
-|---|---|
-| X (NOT) | $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ bit flip |
-| Z | $\mathrm{diag}(1,-1)$ phase flip |
-| Y | $iXZ$ |
-| H | $\frac1{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}$: $|0\rangle\to|+\rangle$ |
-| S, T | $\mathrm{diag}(1,i)$, $\mathrm{diag}(1,e^{i\pi/4})$ |
-| $R_x,R_y,R_z(\theta)$ | $e^{-i\theta\sigma/2}$ rotations |
-| CNOT | flips target if control=1; creates entanglement |
-| CZ, SWAP, Toffoli (CCNOT), Fredkin | multi-qubit |
+> **In words:** the qubit holds two numbers (amplitudes). Their squares are the chances of seeing 0 or 1 when measured.
 
-Universal set: {H, T, CNOT} (Clifford+T). **Clifford** circuits are classically simulable (Gottesman–Knill); T gates supply the “magic”. All gates are **unitary** ($U^\dagger U=I$) → reversible. **No-cloning theorem**: unknown states cannot be copied.
+![superposition](/img/fig/superposition-bars.svg)
+*Measurement gives a plain 0 or 1; the state decides the odds. Measuring also destroys the blend.*
 
-**Bell state:** $H\otimes I$ then CNOT on $|00\rangle$ → $\frac{|00\rangle+|11\rangle}{\sqrt2}$. Entanglement: not a product state; Schmidt rank>1; entropy of reduced state measures it. Bell/CHSH inequality violation (up to $2\sqrt2$) rules out local hidden variables.
+- **n qubits** hold $2^n$ amplitudes at once, which is why classical simulation explodes (50 qubits ≈ petabytes).
+- **Phase** matters: two paths to the same outcome can *cancel* (destructive interference). This is the engine of quantum speed-ups.
+- **Density matrix** $\rho$ describes noisy / mixed states; **decoherence** (the environment leaking in) turns a clean blend into plain randomness.
 
-## Core protocols
-- **Superdense coding**: 2 classical bits via 1 qubit + shared entanglement.
-- **Teleportation**: 1 qubit state ↔ 2 classical bits + Bell pair.
-- **QKD (BB84, E91)**: eavesdropping disturbs states.
+## Gates: the instructions
 
-## Hardware platforms
+A **gate** is a reversible rotation of the qubit's state (mathematically a *unitary* matrix, which keeps total probability at 1).
 
-| Platform | Examples | Strengths | Weakness |
+| Gate | What it does | Everyday picture |
+|---|---|---|
+| **X** | flips 0 ↔ 1 | NOT |
+| **H** (Hadamard) | 0 → 50/50 blend | "make it undecided" |
+| **Z / S / T** | change the phase only | rotate the compass |
+| **Rx, Ry, Rz(θ)** | rotate by any angle | the knobs in variational circuits |
+| **CNOT** | flip the target if the control is 1 | links two qubits (creates entanglement) |
+
+![bell circuit](/img/fig/bell-circuit.svg)
+*Hadamard then CNOT creates a Bell pair: two qubits whose results always agree, even though each alone is random.*
+
+**Entanglement:** the joint state can't be described qubit by qubit. Measure one, and you instantly know the other's result (without sending a signal faster than light). **No-cloning theorem:** an unknown quantum state cannot be copied. **Universal gate set:** {H, T, CNOT}. **Clifford** circuits (without T) can be simulated classically; T gates supply the real power.
+
+## Protocols worth knowing
+- **Teleportation:** send a qubit's state using one entangled pair plus 2 classical bits.
+- **Superdense coding:** 2 classical bits using 1 qubit and shared entanglement.
+- **QKD (BB84):** any eavesdropper disturbs the qubits and is detected.
+
+## Hardware
+
+| Platform | Examples | Plus | Minus |
 |---|---|---|---|
-| Superconducting transmon | IBM, Google, Rigetti | fast gates (~10-100 ns) | cryogenic (10 mK), connectivity, coherence ~100 µs |
-| Trapped ion | IonQ, Quantinuum | high fidelity, all-to-all | slow gates |
-| Neutral atom | QuEra, Pasqal, Atom Computing | scalable arrays, analog mode | gate speed |
-| Photonic | PsiQuantum, Xanadu | room temp networking | probabilistic gates |
-| Spin / silicon | Intel, Diraq | CMOS compat | early |
-| Topological | Microsoft | intrinsic protection | contested/experimental |
-| Annealer | D-Wave | optimization (QUBO) | not universal |
+| **Superconducting** | IBM, Google | very fast gates | needs ~10 mK fridge, short coherence |
+| **Trapped ions** | IonQ, Quantinuum | highest fidelity, all-to-all links | slow |
+| **Neutral atoms** | QuEra, Pasqal | many qubits, flexible layout | slower gates |
+| **Photonic** | PsiQuantum, Xanadu | room-temperature networking | probabilistic gates |
+| **Spin (silicon)** | Intel | works with chip factories | early |
+| **Annealers** | D-Wave | optimisation problems | not general-purpose |
 
-**Noise:** T1 (relaxation), T2 (dephasing), gate/readout error, crosstalk. **NISQ** = Noisy Intermediate-Scale Quantum (50–1000 qubits, no full error correction).
+**Noise:** T1 (energy loss), T2 (phase loss), gate errors, readout errors, crosstalk. **NISQ** = "noisy intermediate-scale quantum": ~50–1000 noisy qubits, no full error correction.
 
 ## Error correction
-Logical qubit from many physical qubits. Bit-flip repetition code; Shor 9-qubit; **stabilizer codes**, **surface code** (threshold ≈1 %, 2-D nearest-neighbour; Google "below threshold" demonstration), qLDPC codes (lower overhead). Fault-tolerant: threshold theorem, magic state distillation, lattice surgery. Mitigation (NISQ): zero-noise extrapolation, probabilistic error cancellation, readout correction, dynamical decoupling, Pauli twirling.
+Spread one *logical* qubit across many physical qubits and check parities without looking at the data (**stabiliser codes**, **surface code**, qLDPC). If physical error < threshold (~1 %), adding qubits makes the logical qubit *better*. Cost: hundreds to thousands of physical qubits per logical one. For NISQ machines we use **error mitigation** instead: zero-noise extrapolation, readout correction, dynamical decoupling.
 
 ## Interview Q&A
 
-**Why can’t a quantum computer try all answers in parallel?** Superposition holds all amplitudes but measurement yields one; algorithms must use interference to boost the right answer’s amplitude.
+**Why can't a quantum computer just try all answers in parallel?**
+*Simply:* it holds all the amplitudes but a measurement returns only one outcome. Algorithms must use interference to make the right answer likely.
 
-**Superposition vs classical probability?** Amplitudes are complex and can cancel (negative/phase), probabilities can’t.
+**Superposition vs ordinary uncertainty?**
+*Simply:* ordinary probabilities can only add; amplitudes have phase and can cancel.
 
-**What is decoherence?** Interaction with the environment turns pure states into mixed states, destroying interference.
+**Why are gates unitary?**
+*Simply:* total probability must stay 1, which forces reversibility.
 
-**Why are gates unitary?** Norm preservation → probabilities sum to 1; implies reversibility.
+**What's decoherence?**
+*Simply:* the environment "measures" the qubit by accident and the delicate blend turns into ordinary randomness.
 
-**Difference between NISQ and fault-tolerant?** NISQ: shallow noisy circuits, mitigation. FT: logical qubits with error correction → arbitrarily deep circuits at big overhead (~1000 physical per logical).
+**NISQ vs fault-tolerant?**
+*Simply:* NISQ = short noisy circuits with tricks; fault-tolerant = error-corrected logical qubits that allow long computations, at huge qubit overhead.

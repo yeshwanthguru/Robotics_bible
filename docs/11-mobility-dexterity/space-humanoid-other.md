@@ -4,35 +4,51 @@ title: Space, Soft, Surgical & Other Robots
 
 # Specialised Robot Domains
 
+:::tip[The 30-second version]
+Different environments change the rules. In **space** there's no gravity, no repair crew and a long communication delay; in **surgery** safety and precision beat everything; **soft robots** deform instead of staying rigid. For each domain, the interview question is usually "*what changes compared with a standard robot?*"
+:::
+
 ## Space robotics
-- **Environments:** microgravity, vacuum, thermal extremes, radiation, comms delay (Moon ≈ 1.3 s one-way; Mars 4–24 min) → high autonomy, supervised autonomy, shared control.
-- **Free-flying / orbital manipulators:** base is not fixed; momentum conservation → **Generalized Jacobian** $J^*=J_m-J_bH_b^{-1}H_{bm}$, base disturbance, reaction-null-space, capture of tumbling targets (detumbling, visual servoing, impedance for soft-docking). Examples: Canadarm2/Dextre, ETS-VII, Orbital Express, OSAM-1, ClearSpace, Astrobee (ISS free-flyer).
-- **Planetary rovers:** wheel–soil interaction (terramechanics, Bekker/Wong), slip estimation, visual odometry (MER, Perseverance's AutoNav), traversability from stereo, energy-aware planning, sample caching arms, helicopter (Ingenuity), legged/ tethered (DuAxel, LEMUR), lava tubes (Cave-R).
-- **Autonomy architecture:** sense-plan-act, onboard planners (CASPER), fault protection, radiation-hardened compute (RAD750), FPGA acceleration, formal verification (NASA cFS, F′ flight framework).
-- **Humanoids in space:** Robonaut 2, Valkyrie (NASA), Fedor.
-- **In-space servicing & assembly (ISAM):** truss assembly, refueling, cable routing.
-- **Perception:** star trackers, relative navigation (LiDAR, monocular pose estimation of known satellites – SPEED+ dataset), terrain relative navigation (Mars 2020 LVS).
-- **Quantum link:** quantum sensors (cold-atom gyroscopes, clocks) for GNSS-denied navigation; quantum comms (Micius satellite).
+
+| Constraint | Consequence |
+|---|---|
+| **Microgravity** | moving the arm moves the whole satellite (momentum is conserved) |
+| **Communication delay** (Moon ≈ 1.3 s one-way, Mars 4–24 min) | high onboard autonomy, goal-level commands, simulation before execution |
+| **Radiation, vacuum, temperature extremes** | rad-hard computers, conservative software, fault protection |
+| **No repair** | extreme reliability, formal verification, graceful degradation |
+
+- **Free-flying / orbital manipulators:** control uses the **generalised Jacobian** (accounts for base reaction). Capturing a tumbling satellite needs visual servoing and soft-docking impedance. Examples: Canadarm2/Dextre, ETS-VII, OSAM-1, Astrobee.
+- **Planetary rovers:** wheel–soil interaction (**terramechanics**, slip), visual odometry, autonomous navigation (Perseverance AutoNav), traversability from stereo, energy-aware planning, sampling arms; helicopters (Ingenuity); legged / tethered concepts.
+- **Autonomy architecture:** onboard planners, fault protection, rad-hard CPUs (RAD750), FPGA acceleration, NASA cFS / F′ flight software.
+- **Perception:** star trackers, relative navigation to satellites (SPEED+ dataset), terrain-relative navigation.
+- **Humanoids and servicing:** Robonaut 2, Valkyrie; in-space servicing, assembly and manufacturing (ISAM).
+- **Quantum angle:** cold-atom gyros and clocks for GNSS-denied navigation; quantum links between satellites.
 
 ## Soft robotics
-Compliant materials (silicone, hydrogel), pneumatic (PneuNets), tendon, SMA, dielectric elastomers. Modelling: Piecewise Constant Curvature, Cosserat rod, FEM (SOFA), differentiable sim. Control: model-based reduced-order + learning. Applications: grasping, medical, bio-inspired.
+Compliant bodies (silicone, hydrogel) driven by air pressure (PneuNets), tendons, shape-memory alloys or dielectric elastomers. Modelling: piecewise-constant curvature, Cosserat rods, FEM (SOFA), differentiable simulation. Good for safe grasping of delicate objects and medical use; hard to sense and control precisely.
 
 ## Surgical / medical
-Teleoperation (da Vinci), RCM (remote center of motion), haptic feedback, tremor filtering, registration (CT↔patient), flexible continuum/ catheters, autonomy levels (0–5), regulatory (IEC 60601, FDA). Learning: surgical video foundation models, imitation (SRT-H autonomous gallbladder surgery in ex-vivo).
+Teleoperation (da Vinci), remote centre of motion (RCM), tremor filtering, haptic feedback, image-to-patient registration, flexible continuum robots and catheters, autonomy levels 0–5, regulation (IEC 60601, FDA). Learning on surgical video and imitation is emerging (e.g. autonomous steps demonstrated on ex-vivo tissue).
 
-## Agricultural, underwater, inspection, construction
-Row following + visual servoing for harvesting; AUV SLAM with sonar/DVL; pipe/ tank crawlers; legged inspection (ANYmal, Spot); excavators (RL autonomy); drone-based inspection; legged + arm door opening.
+## Agriculture, underwater, inspection, construction
+Row-following + visual servoing for harvesting; AUV SLAM with sonar/DVL; legged inspection robots (ANYmal, Spot) for plants and tunnels; excavators with RL autonomy; drones for infrastructure inspection.
 
-## Human–robot interaction (HRI) & safety
-Intent prediction, shared autonomy, handover (grasp-release timing), speech/gesture interfaces, trust, explainability, ISO/TS 15066 power & force limiting, speed-and-separation monitoring, social navigation, privacy & ethics (data collection, bias), failure transparency.
+## Human–robot interaction and safety
+Intent prediction, shared autonomy, **hand-overs**, speech/gesture interfaces, trust and explainability. Safety: **ISO/TS 15066** power-and-force limiting, speed-and-separation monitoring, social navigation, privacy and ethics of data collection.
 
-## Multi-robot / swarm
-Consensus, coverage, formation control, task allocation (auction/ CBBA), communication-constrained planning, distributed SLAM (DOOR-SLAM, Swarm-SLAM), MARL.
+## Multi-robot and swarms
+Consensus, coverage, formation control, auction-based task allocation (CBBA), communication-limited planning, distributed SLAM (DOOR-SLAM, Swarm-SLAM), multi-agent RL.
 
 ## Interview Q&A
 
-**Why is manipulation in space different?** Floating base couples arm motion to base attitude/position; contact can push the robot away; no gravity for stabilizing objects.
+**Why is manipulation in space different?**
+*Simply:* the base floats, so every arm motion pushes the satellite; contact can send the robot drifting away; there's no gravity to hold objects.
 
-**How to handle 20-minute comms delay?** Command at goal level, onboard autonomy with verification, simulation-based pre-validation, "science autonomy" for opportunistic decisions.
+**How do you handle a 20-minute communication delay?**
+*Simply:* give goals, not joystick commands; let the robot verify and recover on its own; rehearse in simulation first.
 
-**Terramechanics why?** Wheel sinkage & slip depend on soil; ignoring leads to stuck rovers (Spirit).
+**Why does terramechanics matter for rovers?**
+*Simply:* wheels sink and slip in soft soil; ignoring it can leave the rover stuck (Spirit).
+
+**What changes for a surgical robot?**
+*Simply:* safety and precision dominate: constrained motion about a fixed pivot, tremor filtering, strong verification and regulation.

@@ -4,49 +4,77 @@ title: Legged & Humanoid Locomotion
 
 # Legged & Humanoid Locomotion
 
-## Concepts
-- **Support polygon**, static vs dynamic stability, gait (walk, trot, pace, bound, gallop), duty factor, swing/stance, contact schedule, Raibert hopper heuristic (foot placement $p=\frac{T_s}{2}v+k(v-v_d)$).
-- **Models:** LIPM (point mass at constant height), SLIP (spring-loaded inverted pendulum, running), single rigid body (SRBD), centroidal dynamics, full-body floating-base dynamics.
-- **Stability criteria:** ZMP (flat ground), capture point / DCM (divergent component of motion) $\xi=c+\dot c/\omega$, centroidal momentum, FWS, viability.
+:::tip[The 30-second version]
+Walking is **controlled falling**: you lean forward, then catch yourself with the next step, over and over. Legged robots must decide *where to step* and *how hard to push the ground*, while staying balanced on a body that nothing directly holds up.
+Two schools: **model-based** (planning + MPC with physics models) and **learned** (RL in simulation). Today's best robots mostly use **RL-trained policies** for agility, sometimes wrapped in model-based safety and estimation.
+:::
 
-## Control approaches
-| Approach | Details |
+## Walking = controlled falling
+
+![walking pendulum](/img/fig/walking-pendulum-gait.svg)
+*Left: the body is like an inverted pendulum that keeps toppling forward; each step catches it. Right: a gait chart; feet alternate between ground and air.*
+
+Vocabulary: **support polygon** (the area under your feet), **stance / swing** phases, **gait** (walk, trot, bound, gallop), **duty factor** (fraction of time a foot is on the ground), **footstep planning**.
+
+**Stability notions:** static (centre of mass over the support polygon), **ZMP** (zero-moment point must stay in the foot), **capture point / DCM** (where to step to stop), centroidal momentum.
+
+## Approach 1: model-based control
+
+| Method | Plain idea |
 |---|---|
-| ZMP preview control (Kajita) | LIPM + LQ preview of ZMP reference → CoM trajectory; classic Honda/HRP |
-| Capture-point / DCM walking | footstep adjustment via DCM error (Atlas-DARPA, TORO) |
-| **Centroidal / SRBD MPC** | QP over GRFs with friction pyramids (MIT Cheetah 3, ANYmal) |
-| **Whole-body control (WBC)** | QP tracks CoM, swing foot, torso; respects dynamics & contact |
-| Trajectory optimization (contact-implicit, multi-contact) | Crocoddyl, TOWR, Drake, OCS2 |
-| **Model-free RL** | PPO with massively-parallel sim; velocity-command tracking policy, terrain curriculum; transferred zero-shot (ANYmal, Cheetah, Unitree, Digit) |
-| **Teacher–student / privileged learning** (RMA, "Learning to walk in minutes") | teacher with ground-truth terrain/friction, student infers latent from history |
-| Imitation of animals/humans motion | AMP (adversarial motion priors), DeepMimic, ASE, PHC, **ExBody/H2O/OmniH2O/HumanPlus/GMT** for humanoids |
-| Hybrid | RL policy + MPC/foot-placement prior, residual RL on model-based |
-| Parkour / perceptive locomotion | height maps, depth cam, ViT; "Extreme Parkour", ANYmal parkour |
+| **ZMP preview control** (Honda-style) | plan the centre-of-mass motion so the ZMP stays under the foot |
+| **Capture-point walking** | adjust the next footstep from the current falling speed |
+| **Centroidal / SRBD MPC** | optimise ground forces over the next ~1 s (MIT Cheetah, ANYmal) |
+| **Whole-body control (WBC)** | a QP that tracks body, foot and posture goals within torque and friction limits |
+| **Trajectory optimisation** | multi-contact planning (Crocoddyl, TOWR, OCS2) |
 
-### Typical RL locomotion setup (Isaac Lab / legged_gym)
-- **Observation:** base ang vel, projected gravity, commands $(v_x,v_y,\omega_z)$, joint pos/vel, previous action, (height scan). **Action:** joint position targets → PD ($\tau=K_p(q^*-q)-K_d\dot q$) at 200–1000 Hz, policy at 50 Hz.
-- **Rewards:** velocity tracking (exp), −orientation, −torque², −joint acc, −action rate, foot air-time, feet slip, joint-limit & collision penalties, termination on fall.
-- **Domain randomization:** friction, mass, COM, motor strength, PD gains, latency, push perturbations, terrain roughness.
-- **Curriculum:** terrain difficulty by performance.
-- Actuator net/DR for sim2real; symmetry augmentation; Lipschitz constraints / smoothness regularization to avoid jitter.
+Strengths: interpretable, constraint-aware. Weaknesses: needs accurate models, hand-tuned gaits, struggles with rough terrain without careful perception.
+
+## Approach 2: learn it with RL in simulation
+
+![policy io](/img/fig/policy-io.svg)
+*The learned policy is a small network: sensor readings in, target joint angles out at ~50 Hz. A PD controller turns targets into torques at hundreds of Hz.*
+
+![reward terms](/img/fig/reward-terms.svg)
+*Reward = a weighted score of "good" (follow the speed command, rhythmic stepping) and "bad" (energy, jerk, falling).*
+
+**The standard recipe (Isaac Lab / legged_gym):**
+- **Observation:** body angular velocity, gravity direction in the body frame, the velocity command, joint positions/velocities, last action, optionally a terrain height scan.
+- **Action:** joint position offsets → PD controller → torque.
+- **Algorithm:** **PPO** with thousands of parallel simulated robots.
+- **Terrain curriculum:** start on flat ground, get harder (stairs, slopes, stepping stones) as the robot succeeds.
+- **Domain randomization:** friction, payload, centre of mass, motor strength, PD gains, delays, pushes, sensor noise.
+- **Asymmetric actor-critic:** the critic sees privileged simulator data; the actor sees only deployable sensors.
+
+![teacher student](/img/fig/teacher-student.svg)
+*Teacher–student: a teacher with perfect knowledge learns easily; a student that only uses real sensors copies it. (RMA, perceptive parkour.)*
+
+**Imitating animals and humans:** DeepMimic, **AMP** (adversarial motion priors), and for humanoids ExBody, H2O, OmniH2O, HumanPlus: retarget human motion-capture to the robot, then RL tracks it, giving one general motion-tracking policy.
+
+**Making it deployable:** actuator model or actuator network, latency randomisation, action-rate penalty (smoothness), symmetry, torque limits, careful PD gains, sim-to-sim check in MuJoCo.
 
 ## Humanoid specifics
-- High DOF (≈ 20–45), underactuated floating base, narrow support, hands/arms for manipulation → **loco-manipulation**.
-- Teleop/whole-body retargeting via human MoCap (SMPL → robot), then RL tracking in sim for a general motion tracker.
-- Foundation efforts: GR00T, Helix, Figure 02/03, Optimus, Atlas (Boston Dynamics electric + LBM), Digit (Agility), Unitree G1/H1, Apollo, NEO, Booster T1, Fourier GR-1/GR-3, UBTech Walker S, Xpeng Iron.
-- Hardware issues: thermal limits, battery (~2–4 h), falls (damage → fall detection, protective motions, get-up policies), hand reliability.
+- Many joints (20–45), narrow feet, floating base → hard to balance, plus arms and hands for **loco-manipulation** (carrying, opening doors).
+- Typical stack: **learned whole-body controller** + a high-level VLA/planner giving it targets (e.g. GR00T, Helix).
+- Practical issues: motor overheating, battery life, falls (fall detection, protective motion, get-up policies), fragile hands.
+- Players: Atlas, Optimus, Figure, Digit, Unitree G1/H1, Apollo, NEO, Booster, Fourier.
 
-## Estimation for legged
-Contact detection (force thresholds / learned), base velocity from leg kinematics (stance leg zero-velocity), IMU fusion (InEKF), terrain mapping (elevation_mapping, GridMap), footstep planning on height map.
+## State estimation for legged robots
+Detect foot contact (force thresholds or learned), estimate base velocity from stance-leg kinematics, fuse with the IMU (invariant EKF), build a height map for footstep planning (elevation_mapping), add LiDAR to cancel drift.
 
 ## Interview Q&A
 
-**LIPM assumptions?** Constant CoM height, massless legs, no angular momentum → linear dynamics; fast to plan, limited for rough terrain.
+**What are the assumptions of the LIPM?**
+*Simply:* constant body height, massless legs, no angular momentum. That makes the dynamics linear and easy, but it limits rough-terrain use.
 
-**Why PD at the joint with RL policy outputting position targets?** Smooths exploration, implicit torque limits, easier sim2real than raw torque.
+**Why does the RL policy output position targets for a PD controller instead of torques?**
+*Simply:* it makes exploration smoother, implicitly limits torque, and transfers to hardware more easily.
 
-**Why privileged teacher-student?** Teacher learns faster using unobservable terrain/friction; student distills using only proprioceptive history → deployable.
+**Why teacher–student?**
+*Simply:* the teacher learns quickly with secret information, the student learns to act with what real sensors provide.
 
-**MPC vs RL for locomotion?** MPC: interpretable, constraints, needs accurate model/terrain; RL: robust agile skills, needs sim and reward engineering; hybrids are common.
+**MPC vs RL for locomotion?**
+*Simply:* MPC is explainable and handles constraints but needs good models; RL is agile and robust but needs simulation and reward design. Hybrids are common.
 
-**How do humanoids recover from pushes?** Ankle/hip strategy, stepping (capture point), momentum control, learned recovery policies.
+**How do humanoids recover from a push?**
+*Simply:* ankle/hip strategies for small pushes, stepping (capture point) for larger ones, momentum control, or learned recovery policies.

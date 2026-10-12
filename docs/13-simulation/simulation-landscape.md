@@ -4,6 +4,16 @@ title: Simulation Landscape & Comparison
 
 # Simulation for Robotics
 
+:::tip[The 30-second version]
+A **simulator** is a virtual robot lab: physics engine (how things move and collide), a renderer (what cameras see) and sensor models. Training in simulation is **safe, parallel and cheap**: one GPU can run thousands of robots at once. The price is the **sim-to-real gap**: the virtual world is never exactly the real one.
+:::
+
+![parallel envs](/img/fig/parallel-envs.svg)
+*GPU simulators run thousands of copies of the robot at once, which is why walking can be learned in minutes.*
+
+![simulator map](/img/fig/simulator-map.svg)
+*A rough mental map. Photoreal sensors and ecosystem on the vertical axis, raw training speed on the horizontal.*
+
 ## Why simulate
 Safety, speed (1000× parallel), cost, privileged information (ground-truth state/terrain), reset/repeatability, synthetic data with perfect labels, CI testing, digital twins. Why not: reality gap (contact, friction, actuation, sensor noise, latency), modelling effort.
 

@@ -4,6 +4,10 @@ title: Dev Tools, Docker, CI, Deployment
 
 # Tooling for Robotics Engineering
 
+:::tip[The 30-second version]
+The unglamorous skills that make robot software *shippable*: Linux and networking, Git, **Docker** (same environment everywhere), **CI** (tests run automatically on every change), data logging, and deploying to edge devices like Jetson. Teams hire people who can reproduce, test and update robots reliably.
+:::
+
 ## Linux & shell
 Processes/signals, `systemd` services, `journalctl`, permissions/udev rules (serial, USB cameras), networking (`ip`, `ss`, `tcpdump`, `iperf3`, NTP/chrony/PTP time sync), `tmux`, `ssh`/`scp`/`rsync`, `ssh -L` port-forward, `htop`/`nvidia-smi`/`tegrastats`, `dmesg`, `strace`, `perf`, cgroups.
 

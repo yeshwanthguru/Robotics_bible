@@ -4,60 +4,79 @@ title: Motion & Path Planning
 
 # Motion Planning
 
-## Configuration space
-C-space $\mathcal C$ = all joint configs; obstacles map to $\mathcal C_{obs}$; plan in $\mathcal C_{free}$. Planning is PSPACE-hard in general; completeness types: complete, resolution-complete, probabilistically complete, asymptotically optimal.
+:::tip[The 30-second version]
+**Planning** = finding a safe route from *here* to *there*. For a car-like robot that's a path on a floor plan. For a 7-joint arm it's a path through a 7-dimensional "space of poses". The key trick for arms: instead of checking the whole arm against obstacles, treat the **arm's entire pose as a single point** in **configuration space** and search that.
+:::
 
-## Families
+## Configuration space (C-space)
 
-| Family | Algorithms | Notes |
-|---|---|---|
-| Graph search | Dijkstra, **A\***, D\* / D\* Lite (replanning), Theta\*, JPS, ARA\*, Hybrid A\* (car kinematics), lattice planners (state lattice) | low-D grids, mobile robots |
-| Potential fields | attractive + repulsive | local minima; navigation functions |
-| **Sampling-based** | **PRM** (multi-query), **RRT**, **RRT-Connect** (bidirectional), **RRT\*** (asymptotically optimal, rewiring), **PRM\***, BIT\*, FMT\*, Informed RRT\*, KPIECE, EST, SST (kinodynamic) | high-D manipulators; paths jagged → shortcut/smooth |
-| **Trajectory optimization** | CHOMP, STOMP, TrajOpt (sequential convex), GPMP2, **CuRobo** (GPU), iLQR/DDP, direct collocation, MPC | smooth, dynamics-aware; local minima, needs init |
-| Search + optimization hybrids | Graphs of Convex Sets (GCS), Drake | global with convex pieces |
-| Learning-based | Motion Policy Networks, diffusion planners, neural SDF, VAE-based sampling | |
-| Reactive | DWA (dynamic window), VO/ORCA/RVO (multi-agent), CBF-based, MPPI | local planners in Nav2 |
+Each joint angle is one axis. A pose of the whole arm = one point. Obstacles in the real world become "forbidden regions" in C-space. Planning = find a path for the point avoiding those regions. In 2-D this is easy to draw; in 7-D you can't draw it but the idea is the same, which is why **random sampling** works well there.
 
-### RRT
+## The families of planners
+
+| Family | Algorithms | Plain idea | Best for |
+|---|---|---|---|
+| **Grid / graph search** | Dijkstra, **A\***, D\* Lite, Hybrid A\*, lattice | search a map of cells or states | mobile robots, low dimensions |
+| **Sampling-based** | **RRT, RRT-Connect, RRT\***, PRM, BIT\* | randomly sample poses, connect the free ones | **arms** (high dimension) |
+| **Trajectory optimisation** | CHOMP, STOMP, TrajOpt, **cuRobo**, iLQR | start with a rough path, optimise smoothness and clearance | smooth, dynamic motion |
+| **Potential fields** | attractive + repulsive | goal pulls, obstacles push | simple local avoidance (local minima!) |
+| **Reactive / local** | DWA, MPPI, VO/ORCA | choose the best short motion now | dynamic obstacles, Nav2 local planner |
+| **Learning-based** | Motion Policy Nets, diffusion planners | neural network proposes paths | speed, narrow passages |
+
+### RRT: grow a tree toward random points
+
+![rrt tree](/img/fig/rrt-tree.svg)
+*RRT: pick a random point, extend the nearest tree node toward it, keep it if collision-free. Repeat until the tree reaches the goal.*
+
 ```python
-def rrt(start, goal, n_iter, step, free, sample):
+def rrt(start, goal, n_iter, step, is_free, sample):
     tree = {start: None}
     for _ in range(n_iter):
-        q_rand = goal if random() < 0.05 else sample()
+        q_rand = goal if random() < 0.05 else sample()      # a little goal bias
         q_near = nearest(tree, q_rand)
-        q_new = steer(q_near, q_rand, step)
-        if free(q_near, q_new):               # edge collision check
+        q_new  = steer(q_near, q_rand, step)                # small step toward the sample
+        if is_free(q_near, q_new):                          # edge collision check
             tree[q_new] = q_near
             if dist(q_new, goal) < eps: return extract_path(tree, q_new)
 ```
-RRT* adds: choose best parent within radius $r\sim(\log n/n)^{1/d}$, then rewire neighbours through q_new if cheaper.
+
+- **RRT** is fast and finds *a* path, not the best one. **RRT\*** also "rewires" the tree to get progressively shorter paths (asymptotically optimal). **PRM** builds a reusable roadmap for many queries.
+- Raw RRT paths are jagged → **shortcut + smooth + time-parameterise** (TOTG, Ruckig, TOPP-RA).
+- Completeness words: *complete*, *resolution-complete*, **probabilistically complete** (RRT), *asymptotically optimal* (RRT\*).
 
 ## Collision checking
-Primitive shapes (sphere/capsule/box), convex meshes (GJK/EPA, FCL, HPP-FCL), BVH (AABB, OBB), signed-distance fields, voxel/ESDF (nvblox), spheres decomposition for GPU (CuRobo). Continuous collision detection for swept volumes. Self-collision matrix (SRDF disable_collisions).
+Robots are approximated by spheres/capsules/convex meshes (GJK/EPA, FCL), obstacles by voxels or **signed-distance fields** (nvblox), and checked along edges (continuous collision detection). A **self-collision matrix** (SRDF) skips link pairs that can't collide. GPU planners (cuRobo / cuMotion) check thousands of paths in parallel.
 
-## Manipulation planning stack (MoveIt 2)
-`planning scene` → OMPL planners (RRTConnect default) / Pilz (LIN/PTP/CIRC industrial) / CHOMP / STOMP → time parameterization (TOTG, Ruckig, TOPP-RA) → `ros2_control` execution. Cartesian paths with `computeCartesianPath`. Servo (MoveIt Servo) for real-time teleop. Constraints: orientation constraint, joint limits, path constraints (keep cup upright → constrained sampling / projection).
+## Planning stacks you must know
 
-## Mobile robot navigation (Nav2)
-Global planner (NavFn Dijkstra/A\*, Smac Hybrid-A\*/Lattice/2D, Theta\*) → local controller (DWB, **MPPI**, Regulated Pure Pursuit, TEB, RPP) → costmap layers (static, obstacle, inflation, voxel, keepout filters) → behavior tree navigator (`NavigateToPose`, recoveries: spin, back-up, clear costmap, wait). Localization: AMCL or LiDAR-localization; SLAM: slam_toolbox.
+### MoveIt 2 (arms)
+`planning scene` → planner (OMPL RRTConnect default, Pilz for straight-line/blend moves, CHOMP/STOMP, cuMotion) → time parameterisation → `ros2_control` execution. **MoveIt Servo** gives real-time teleop; Cartesian paths via `computeCartesianPath`; path constraints (keep the cup upright) via constrained sampling.
 
-## Multi-robot & coverage
-MAPF (CBS, priority planning), coverage path planning (boustrophedon, spanning tree), traffic management, auctions (CBBA), formation control, swarm (consensus).
+### Nav2 (mobile robots)
+Global planner (NavFn, Smac Hybrid-A\*/Lattice, Theta\*) → local controller (DWB, **MPPI**, Regulated Pure Pursuit) → **costmaps** (static + obstacles + inflation) → a **behavior-tree navigator** with recovery behaviours (spin, back up, clear costmap).
+
+## Multi-robot and coverage
+MAPF (conflict-based search), coverage patterns (boustrophedon), auctions for task allocation (CBBA), formation control, Open-RMF for fleets.
 
 ## Task and motion planning (TAMP)
-Symbolic task planner (PDDL, HTN) chooses actions; geometric motion planner verifies feasibility; interface via sampled continuous parameters. Systems: PDDLStream, TAMP with LLM (LLM+P, SayCan), Logic-Geometric Programming (LGP), Task-and-motion via behavior trees. See [Task Planning & PDDL](./task-planning-pddl.md).
+A **symbolic planner** decides *which actions* (pick A, move, place), while a **motion planner** checks they're geometrically feasible and returns the continuous details. Tools: PDDLStream, logic-geometric programming, LLM-assisted planners. See [Task planning & PDDL](./task-planning-pddl.md).
 
 ## Interview Q&A
 
-**RRT vs PRM?** PRM builds reusable roadmap (multi-query); RRT grows tree for single-query, handles kinodynamic constraints.
+**RRT vs PRM?**
+*Simply:* PRM draws a reusable road map first (many queries); RRT grows a tree for one query and handles motion constraints.
 
-**Is RRT optimal?** No (path cost converges to a suboptimal constant); RRT\* is asymptotically optimal.
+**Is RRT optimal?**
+*Simply:* no. RRT\* is asymptotically optimal.
 
-**Why does A\* need admissible h?** To guarantee optimality; consistency prevents re-expansions.
+**Why does A\* need an admissible heuristic?**
+*Simply:* if the hint never over-estimates, the first path found is the best.
 
-**Planning vs control?** Planning produces a feasible reference path/trajectory; control tracks it in real time with feedback.
+**Planning vs control?**
+*Simply:* planning decides the route; control follows it in real time with feedback.
 
-**How handle dynamic obstacles?** Predict their motion (constant velocity / learned), plan in space-time, replan frequently (D\* Lite), use velocity obstacles/MPC with chance constraints.
+**How do you handle moving obstacles?**
+*Simply:* predict their motion, plan in space-time or replan fast (D\* Lite, MPC with safety margins).
 
-**Why smoothing after RRT?** Random tree paths are jagged and non-dynamically-feasible; shortcutting + spline/time-optimal parameterization.
+**Why smooth an RRT path?**
+*Simply:* random paths are jerky and not dynamically feasible, so shortcut and re-time them.

@@ -4,61 +4,97 @@ title: Spatial Math & Kinematics
 
 # Spatial Math & Kinematics
 
-## Rotations and poses
-| Representation | Size | Pros | Cons |
+:::tip[The 30-second version]
+**Kinematics** = the *geometry* of motion, ignoring forces. Two questions:
+**Forward kinematics (FK):** "I know the joint angles, where is the hand?" (easy, one answer).
+**Inverse kinematics (IK):** "I want the hand *there*, what joint angles do I need?" (harder: zero, one, or many answers).
+Everything rests on one tool: describing *where something is and how it's rotated* relative to something else.
+:::
+
+## Frames: every part has its own coordinate system
+
+![frames chain](/img/fig/frames-chain.svg)
+*To find the object in the world, multiply the transforms along the chain. ROS stores exactly this as the TF tree.*
+
+A **pose** is *position + orientation* of one frame relative to another. Position is easy (three numbers). Orientation is the tricky part.
+
+### Ways to represent orientation
+
+| Representation | Plain idea | Pros | Cons |
 |---|---|---|---|
-| Rotation matrix $R\in SO(3)$ | 9 | composition = multiply | redundant, drift off manifold |
-| Euler angles (RPY) | 3 | intuitive | **gimbal lock**, order ambiguity |
-| Axis-angle / rotation vector | 3 | minimal; Lie-algebra $\mathfrak{so}(3)$ | singular at π |
-| **Quaternion** $q=(w,x,y,z)$, $\|q\|=1$ | 4 | no gimbal lock, cheap slerp | double cover ($q\equiv-q$) |
-| 6D continuous (Zhou et al.) | 6 | best for NN regression | needs Gram–Schmidt |
+| **Rotation matrix** (3×3) | three perpendicular arrows | easy to compose | 9 numbers for 3 degrees of freedom |
+| **Euler angles** (roll-pitch-yaw) | three turns in order | intuitive | **gimbal lock**, order ambiguity |
+| **Axis-angle** | spin by θ about an axis | compact | singular near 180° |
+| **Quaternion** $(w,x,y,z)$ | 4 numbers with unit length | no gimbal lock, smooth interpolation | double cover ($q$ and $-q$ are the same rotation) |
+| **6-D representation** | two columns of the matrix | best for neural-network outputs | needs re-orthogonalising |
 
-- **Rodrigues:** $R=I+\sin\theta[\hat k]_\times+(1-\cos\theta)[\hat k]_\times^2$.
-- **Homogeneous transform** $T=\begin{pmatrix}R&p\\0&1\end{pmatrix}\in SE(3)$; inverse $\begin{pmatrix}R^\top&-R^\top p\\0&1\end{pmatrix}$.
-- **Lie groups:** exp/log maps between $\mathfrak{se}(3)$ and $SE(3)$; twist $\xi=(v,\omega)$; adjoint; used in GTSAM/Sophus/manif for optimization on manifolds.
-- Angular velocity: $\dot R=[\omega]_\times R$. Quaternion kinematics $\dot q=\tfrac12 q\otimes(0,\omega)$.
-- **Frames:** world, base, link, tool(TCP), camera, sensor. Chain: ${}^{0}T_n={}^0T_1{}^1T_2\cdots$. ROS TF stores these in a tree.
-- **Hand–eye calibration** $AX=XB$.
+> **Gimbal lock in a sentence:** when two rotation axes line up, you lose a degree of freedom, like pointing a camera straight up on a three-ring gimbal.
+>
+> ⚠️ **Classic bug:** ROS and SciPy store quaternions as `(x, y, z, w)`; Eigen's constructor takes `(w, x, y, z)`; MATLAB uses `[w x y z]`.
 
-## Forward kinematics (FK)
-Joint vector $q\mapsto$ end-effector pose.
-- **Denavit–Hartenberg (DH):** 4 params per joint $(a,\alpha,d,\theta)$; $T_i=Rot_z(\theta)Trans_z(d)Trans_x(a)Rot_x(\alpha)$ (standard) — modified DH puts $a,\alpha$ first.
-- **Product of Exponentials (PoE):** $T(q)=e^{[S_1]q_1}\cdots e^{[S_n]q_n}M$ — frame-free, preferred in modern robotics (Lynch & Park).
-- **URDF/SDF** describe the kinematic tree (links, joints, inertia, visual/collision).
+### Homogeneous transforms
+Pack rotation $R$ and position $p$ into one 4×4 matrix so chaining poses is just multiplication.
 
-## Jacobian
-$\dot x=J(q)\dot q$, $J\in\mathbb R^{6\times n}$. Geometric Jacobian columns: revolute $[z_{i-1}\times(p_e-p_{i-1});\ z_{i-1}]$, prismatic $[z_{i-1};\ 0]$.
-- **Statics:** $\tau=J^\top F$.
-- **Singularities:** $\det(JJ^\top)=0$ → lost DOF, infinite joint velocities. Manipulability $w=\sqrt{\det(JJ^\top)}$; ellipsoid axes = singular values.
-- Redundancy $n>6$: null-space motion $\dot q=J^+\dot x+(I-J^+J)\dot q_0$ (joint-limit avoidance, secondary tasks).
+$$ T=\begin{pmatrix}R&p\\0&1\end{pmatrix},\qquad T^{-1}=\begin{pmatrix}R^\top&-R^\top p\\0&1\end{pmatrix} $$
 
-## Inverse kinematics (IK)
-| Method | Notes |
-|---|---|
-| Analytic / closed form | 6R with spherical wrist (Pieper), IKFast; fast, all solutions |
-| Jacobian pseudo-inverse | $\Delta q=J^+\Delta x$ |
-| **Damped least squares (LM)** | $\Delta q=J^\top(JJ^\top+\lambda^2I)^{-1}\Delta x$ — singularity robust |
-| Jacobian transpose | cheap, slow |
-| CCD / FABRIK | geometric, for chains/animation |
-| Optimization-based | QP w/ limits (TRAC-IK, Pink, CuRobo, IPOPT) |
-| Learning-based | IKFlow, NN (multimodal solutions) |
+> **In words:** "to go from the hand frame to the world frame, rotate then shift. To go backwards, undo the shift then un-rotate."
 
-Multiple solutions (elbow up/down, wrist flip); check joint limits & self-collision.
+Advanced but asked: **Lie groups** SO(3)/SE(3) with *exp/log maps* let you treat small rotations as vectors, the basis of modern optimisation on poses (GTSAM, Sophus). **Hand–eye calibration** solves $AX=XB$ to find where the camera sits relative to the arm.
 
-## Velocity / differential drive / mobile kinematics
-- Differential drive: $\dot x=v\cos\theta,\ \dot y=v\sin\theta,\ \dot\theta=\omega$; $v=\frac{r(\omega_R+\omega_L)}{2}$, $\omega=\frac{r(\omega_R-\omega_L)}{L}$. Nonholonomic (no sideways).
-- Ackermann (car): bicycle model $\dot\theta=\frac vL\tan\delta$.
-- Omni / mecanum / swerve: holonomic.
-- Unicycle & bicycle used in MPC / Stanley / pure pursuit.
+## Forward kinematics
+
+![two link arm](/img/fig/two-link-arm.svg)
+*Left: joint angles in, hand position out; the blue disc is every place the hand can reach. Right: inverse kinematics often has two valid answers ("elbow up" and "elbow down").*
+
+For a 2-link planar arm:
+$$ x=l_1\cos q_1+l_2\cos(q_1+q_2),\qquad y=l_1\sin q_1+l_2\sin(q_1+q_2) $$
+
+> **In words:** "walk along link 1, then along link 2, each pointing at the sum of the angles so far."
+
+For real robots we describe the chain with **DH parameters** (4 numbers per joint) or the cleaner **product of exponentials**, and robot files (**URDF**) list links, joints, masses and meshes.
+
+## The Jacobian: how joint speeds become hand speeds
+
+$$ \dot x = J(q)\,\dot q,\qquad \tau = J^\top F $$
+
+> **In words:** the Jacobian is a *local gear ratio*. It converts joint speeds into hand speed, and (transposed) hand force into joint torques.
+
+- **Singularity:** the Jacobian loses rank, so the hand cannot move in some direction no matter what, and the inverse needs *infinite* joint speed. Typical: arm fully stretched out.
+- **Manipulability:** how "easily" the hand can move in each direction (the ellipsoid from the Jacobian's SVD).
+- **Redundant arms** (7 joints for a 6-D task) have spare freedom: the *null space* can avoid joint limits or obstacles without moving the hand.
+
+## Inverse kinematics
+
+| Method | Plain idea | Notes |
+|---|---|---|
+| **Analytic** | closed-form formula | fast, all solutions (IKFast) |
+| **Jacobian pseudo-inverse** | repeatedly step toward the target | simple |
+| **Damped least squares (LM)** | pseudo-inverse with a safety damper | **robust near singularities** |
+| **Optimisation-based (QP)** | IK as constrained optimisation | joint limits, collisions (TRAC-IK, Pink, cuRobo) |
+| **Learned IK** | network proposes solutions | can return several answers |
+
+$$ \Delta q = J^\top\big(JJ^\top+\lambda^2 I\big)^{-1}\Delta x $$
+
+> **In words:** "move the joints in the direction that helps most, but add a damping term so you don't go crazy near a singularity."
+
+## Mobile-robot kinematics
+- **Differential drive** (two wheels): forward speed = average of wheel speeds; turn rate = difference ÷ width. Cannot slide sideways ("non-holonomic").
+- **Car-like (Ackermann / bicycle model):** turn rate = $v\tan\delta / L$.
+- **Omni / mecanum / swerve:** can move in any direction (holonomic).
 
 ## Interview Q&A
 
-**Why quaternions over Euler?** No gimbal lock, smooth interpolation, compact, numerically stable (renormalize).
+**Why quaternions instead of Euler angles?**
+*Simply:* no gimbal lock, smooth interpolation, compact and numerically safe (just renormalise).
 
-**What is a singularity and how handle?** Jacobian rank loss; use DLS, avoid via planning, null-space, switch configurations.
+**What is a singularity and how do you handle it?**
+*Simply:* a pose where the arm loses a direction of motion. Use damped least squares, plan around it, or use null-space motion.
 
-**Forward vs inverse kinematics complexity?** FK is unique and cheap; IK is multi-solution/non-existent, solved numerically.
+**Is FK or IK harder?**
+*Simply:* IK. FK has exactly one answer; IK may have none, one or several, so it is solved with formulas or numerical iteration.
 
-**Why $\tau=J^\top F$?** Principle of virtual work: $\tau^\top\delta q=F^\top\delta x=F^\top J\delta q$.
+**Why does $\tau=J^\top F$ hold?**
+*Simply:* energy balance (virtual work): joint work equals hand work.
 
-**6D rotation representation why?** 3D/4D representations have discontinuities when regressed by NNs; 5D/6D are continuous.
+**Why a 6-D rotation representation for neural nets?**
+*Simply:* 3-D and 4-D representations have jumps that are hard to regress; the 6-D one is continuous.

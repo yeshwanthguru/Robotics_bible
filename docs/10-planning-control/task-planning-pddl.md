@@ -4,13 +4,24 @@ title: Task Planning, PDDL, Behavior Trees
 
 # Task Planning & PDDL
 
-## Classical AI planning
-State = set of propositions; actions with preconditions/effects; goal condition. Complexity: PSPACE-complete (propositional STRIPS). Search: forward state-space (progression), regression, plan-space (POP); heuristics from **delete relaxation** ($h_{add}$, $h_{max}$, FF), landmarks, pattern databases. Planners: **Fast Downward** (LAMA), FF, Metric-FF, OPTIC, POPF, ENHSP, SMTPlan, LPG, VAL (validator), **PlanSys2** (ROS2), ROSPlan.
+:::tip[The 30-second version]
+**Motion planning** answers "how do I move my arm without hitting things?". **Task planning** answers the level above: "what *sequence of actions* achieves the goal?" (go to the kitchen → pick the cup → go to the table → place it).
+You describe the world with **facts** and the actions with **preconditions** and **effects**; a planner searches for a sequence that turns the starting facts into the goal facts. The standard language is **PDDL**.
+:::
 
-## PDDL (Planning Domain Definition Language)
+## How a symbolic planner thinks
 
-### Domain
+- **State** = a set of true facts, e.g. `(at robot kitchen)`, `(hand-empty robot)`.
+- **Action** = needs some facts to be true (*precondition*) and changes some (*effect*).
+- **Goal** = facts you want true at the end.
+- **Search** = find an action sequence from start to goal. Fast planners use heuristics from *delete relaxation* (pretend actions never remove facts) to guess how far the goal is: Fast Downward (LAMA), FF, OPTIC, POPF.
+
+## PDDL: domain and problem
+
+PDDL splits the model in two files: the **domain** (the rules: types, predicates, actions) and the **problem** (this particular situation: objects, initial facts, goal).
+
 ```lisp
+;; domain.pddl : the rules of the world
 (define (domain pick-place)
   (:requirements :strips :typing :negative-preconditions)
   (:types robot location obj)
@@ -37,8 +48,8 @@ State = set of propositions; actions with preconditions/effects; goal condition.
     :effect (and (obj-at ?o ?l) (hand-empty ?r) (not (holding ?r ?o)))))
 ```
 
-### Problem
 ```lisp
+;; problem.pddl : one concrete situation
 (define (problem deliver-box)
   (:domain pick-place)
   (:objects r1 - robot a b c - location box - obj)
@@ -46,30 +57,45 @@ State = set of propositions; actions with preconditions/effects; goal condition.
          (connected a b) (connected b a) (connected b c) (connected c b))
   (:goal (obj-at box c)))
 ```
-Run: `fast-downward.py domain.pddl problem.pddl --search "astar(lmcut())"`.
-Plan: `move r1 a b → pick r1 box b → move r1 b c → place r1 box c`.
 
-### PDDL versions & features
-- **PDDL 2.1:** numeric fluents, durative actions (`:durative-action`, `at start/over all/at end`) for temporal planning; **2.2:** derived predicates, timed initial literals; **3.0:** preferences, trajectory constraints; **PDDL+** continuous processes/events. **PDDL 1.2/ADL:** `:adl` conditional effects, quantified `forall/exists`, disjunctive preconditions.
-- Related: **HTN** (SHOP2, HDDL), **PPDDL / RDDL** (probabilistic), **FOND** (non-determinism), **POMDP** planners, **LTL goals / reactive synthesis**, **PDDLStream** (continuous sampling streams for TAMP).
+Run: `fast-downward.py domain.pddl problem.pddl --search "astar(lmcut())"`
+Plan found: `move r1 a b → pick r1 box b → move r1 b c → place r1 box c`.
 
-### Typical modelling pitfalls
-Missing frame axioms (effects must remove old facts), symmetrical objects causing blow-up, using numeric fluents when planner doesn't support, unreachable goals due to forgotten preconditions, grounding explosion (reduce object counts, use types).
+### PDDL versions and features (be able to list these)
+- **STRIPS / ADL:** types, negative preconditions, conditional effects, `forall`/`exists`.
+- **PDDL 2.1:** numeric fluents and **durative actions** (`at start / over all / at end`) for time.
+- **2.2:** derived predicates and timed initial literals. **3.0:** preferences and trajectory constraints. **PDDL+:** continuous processes.
+- **Related:** HTN / HDDL (hierarchical tasks), PPDDL/RDDL (probabilistic), FOND (non-deterministic), **PDDLStream** (continuous sampling for TAMP).
 
-## From plan to robot: execution
+**Common modelling mistakes:** forgetting to delete old facts (frame problem), symmetrical objects causing blow-up, unreachable goals from a missing precondition, grounding explosion (too many objects).
+
+## From plan to robot
+
 ```mermaid
-flowchart LR
-  LLM[LLM / human goal] --> PDDL[Problem generation]
-  PDDL --> PLAN[Planner: Fast Downward / POPF]
-  PLAN --> EXEC[Plan executor: PlanSys2 / BT]
-  EXEC --> SKILLS[Skills: Nav2, MoveIt2, grasp]
-  SKILLS --> MON[Monitor / replan on failure]
-  MON --> PLAN
+flowchart TD
+  G[Goal from human or LLM] --> P[Write problem file]
+  P --> PL[Planner: Fast Downward / POPF]
+  PL --> EX[Executor: PlanSys2 or behavior tree]
+  EX --> SK[Skills: Nav2, MoveIt 2, grasp]
+  SK --> M[Monitor effects]
+  M -->|failed| PL
 ```
-**PlanSys2** provides domain/problem expert, planner (POPF), executor, and BT-based action performers (`ActionExecutorClient`) in ROS2.
 
-## Behavior Trees (BT)
-Tree of nodes ticked at fixed rate: **Sequence** (→, AND), **Fallback/Selector** (?, OR), **Parallel**, **Decorators** (Retry, Timeout, Inverter), **Action**/**Condition** leaves; blackboard shared memory. Return SUCCESS/FAILURE/RUNNING. Advantages over FSM: modular, reusable, reactive, no transition explosion. Libraries: **BehaviorTree.CPP** (v4, Groot2 visualizer; used in Nav2), py_trees (ROS), Unreal/Unity BT. Compare: FSM (SMACH, FlexBE, YASMIN), HTN, hierarchical FSM, utility AI, GOAP.
+**PlanSys2** (ROS 2) provides a problem expert, a planner (POPF), an executor, and action performers in behavior trees.
+
+## Behavior trees (BTs)
+
+![behavior tree](/img/fig/behavior-tree.svg)
+*A tree ticked ten times a second. Sequence = do everything in order; Fallback = try until one works; leaves are actions and checks.*
+
+Nodes return **SUCCESS / FAILURE / RUNNING**. Control nodes: **Sequence** (AND), **Fallback/Selector** (OR), **Parallel**, and decorators (Retry, Timeout, Inverter). A shared **blackboard** passes data.
+
+| | **Behavior tree** | **Finite-state machine** |
+|---|---|---|
+| Structure | hierarchy of reusable pieces | states + transitions |
+| Growth | scales well | transitions explode (N² arrows) |
+| Reactivity | re-checks conditions each tick | needs explicit transitions |
+| Libraries | **BehaviorTree.CPP** (Nav2, Groot2), py_trees | SMACH, FlexBE, YASMIN |
 
 ```xml
 <root BTCPP_format="4"><BehaviorTree ID="Main">
@@ -85,17 +111,24 @@ Tree of nodes ticked at fixed rate: **Sequence** (→, AND), **Fallback/Selector
 </BehaviorTree></root>
 ```
 
-## LLMs + planning
-LLM as translator (NL→PDDL: **LLM+P**, **LLM-DP**), as planner (SayCan, Inner Monologue, ProgPrompt, Code-as-Policies), with verifier loop (VAL / simulator feedback), neuro-symbolic hybrids; LLM failure modes: invalid preconditions, hallucinated objects, poor long-horizon consistency → use symbolic validation.
+## LLMs and planning
+- **LLM as translator:** natural language → PDDL (**LLM+P**), checked by a planner and validator (VAL).
+- **LLM as planner:** SayCan, Inner Monologue, Code-as-Policies, ProgPrompt.
+- **Failure modes:** invented objects, missing preconditions, poor long-horizon consistency. **Safe pattern:** LLM proposes → symbolic/simulation check verifies → robot executes.
 
 ## Interview Q&A
 
-**STRIPS vs PDDL?** PDDL is a standardized language extending STRIPS (types, conditions, numerics, time).
+**STRIPS vs PDDL?**
+*Simply:* PDDL is a standard language that grew out of STRIPS, adding types, richer conditions, numbers and time.
 
-**Why delete relaxation?** Ignoring delete effects gives a tractable (still NP-hard optimal, poly satisficing) relaxation; admissible with $h^+$, informative for FF.
+**Why do planners use delete relaxation?**
+*Simply:* ignoring "undo" effects makes a much easier problem whose answer is a good guess of the true distance to the goal.
 
-**BT vs FSM?** BT composes via hierarchy, avoids N² transitions, easier reuse & reactivity.
+**Behavior tree vs FSM?**
+*Simply:* BTs are modular and reusable, with no explosion of transitions, and they re-evaluate conditions every tick.
 
-**How handle action failure?** Monitor effects, update world state, replan (online), BT fallback, contingency planning (FOND).
+**How do you recover from a failed action?**
+*Simply:* monitor effects, update the world model, replan; use BT fallbacks for expected failures; escalate to a human otherwise.
 
-**Why combine TAMP?** Symbolic feasibility ignores geometry (reachability, collision); motion planner validates and returns continuous parameters.
+**Why combine task and motion planning?**
+*Simply:* a plan can be logically fine but geometrically impossible (can't reach the shelf). Motion planning checks feasibility and fills in the continuous details.

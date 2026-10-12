@@ -2,65 +2,121 @@
 title: Linear Algebra, Probability, Optimization
 ---
 
-# Math Foundations
+# Math Foundations (without the fear)
 
-## Linear algebra
+:::tip[The 30-second version]
+Robotics math boils down to three ideas.
+**Linear algebra** = how to move and stretch things in space (a robot arm, a camera view).
+**Probability** = how to reason when sensors are noisy and you are never 100 % sure.
+**Optimization** = how to find the best answer by repeatedly nudging a guess downhill.
+Almost every algorithm in this book is one of these three wearing a costume.
+:::
 
-| Concept | Key facts |
-|---|---|
-| Vector space, basis, rank | rank = dim(column space); `rank(A)+nullity(A)=n` |
-| Eigen-decomposition | $A v=\lambda v$; symmetric $A=Q\Lambda Q^\top$ with real λ, orthogonal Q |
-| SVD | $A=U\Sigma V^\top$ for any matrix; singular values = √eig($A^\top A$); gives pseudo-inverse $A^+=V\Sigma^{+}U^\top$, low-rank approx (Eckart–Young), PCA |
-| Positive definite | $x^\top A x>0$; all λ>0; Cholesky exists; covariance matrices are PSD |
-| Orthogonal / rotation | $R^\top R=I$, $\det R=1$ (SO(3)) |
-| Norms | $\ell_1$ sparsity, $\ell_2$ energy, Frobenius for matrices |
-| Matrix calculus | $\nabla_x (a^\top x)=a$, $\nabla_x x^\top A x=(A+A^\top)x$, $\nabla_W \|Wx-y\|^2=2(Wx-y)x^\top$ |
-| Condition number | $\kappa=\sigma_{max}/\sigma_{min}$; large → ill-posed (near-singular Jacobian!) |
-| Least squares | $\min\|Ax-b\|^2 \Rightarrow x=(A^\top A)^{-1}A^\top b = A^+b$ |
+## 1. Linear algebra: moving things around
 
-**Robotics links:** Jacobian singularities = rank loss; SVD of Jacobian gives manipulability ellipsoid; EKF/Kalman use covariance algebra; ICP uses SVD (Kabsch).
+### Vectors and matrices
+A **vector** is a list of numbers, such as a position `(x, y, z)` or all 7 joint angles of an arm. A **matrix** is a grid of numbers that acts like a *machine*: feed in a vector, get a transformed vector out.
 
-## Probability & statistics
+![matrix transform](/img/fig/matrix-transform.svg)
+*A matrix rotates, stretches or squashes the whole space. Red and green arrows show where the x and y directions end up.*
 
-- **Bayes:** $p(\theta|D)=\dfrac{p(D|\theta)p(\theta)}{p(D)}$
-- **Gaussian:** $\mathcal N(x;\mu,\Sigma)=\frac{1}{\sqrt{(2\pi)^n|\Sigma|}}\exp(-\tfrac12 (x-\mu)^\top\Sigma^{-1}(x-\mu))$. Closed under linear maps, marginalization, conditioning, product — *why Kalman filters work*.
-- **Linear-Gaussian map:** $y=Ax+b \Rightarrow y\sim\mathcal N(A\mu+b,\ A\Sigma A^\top)$.
-- **Expectation tricks:** $\mathrm{Var}(X)=E[X^2]-E[X]^2$; law of total variance; linearity of expectation.
-- **MLE vs MAP:** MLE maximizes $p(D|\theta)$; MAP adds a prior (= regularization: Gaussian prior ↔ L2, Laplace ↔ L1).
-- **KL divergence:** $D_{KL}(p\|q)=\sum p\log\frac pq\ge0$, asymmetric. Cross-entropy $H(p,q)=H(p)+D_{KL}(p\|q)$.
-- **Entropy:** $H(p)=-\sum p\log p$; mutual information $I(X;Y)=H(X)-H(X|Y)$.
-- **CLT / LLN**, confidence intervals, hypothesis tests (p-value = P(data at least this extreme | H0)), A/B tests.
-- **Important distributions:** Bernoulli, Binomial, Poisson, Categorical, Gaussian, Beta (conjugate to Bernoulli), Dirichlet, von Mises (angles), Wishart.
-- **Monte-Carlo:** $E[f(x)]\approx\frac1N\sum f(x_i)$, error $\propto 1/\sqrt N$. Importance sampling weights $w=p/q$. Particle filters = sequential importance resampling.
-- **Markov chain / MDP basics:** stationary distribution, ergodicity, detailed balance (MCMC, Metropolis–Hastings).
+This is exactly what a rotation matrix does to a robot's frame, and what a camera does to the world.
 
-## Optimization
+### The ideas you must know
 
-| Topic | Notes |
-|---|---|
-| Convexity | f convex ⇒ every local min is global. Check Hessian ⪰ 0. |
-| Gradient descent | $x\leftarrow x-\eta\nabla f$; converges at rate O(1/k) convex, linear if strongly convex. |
-| Momentum / Nesterov | accelerate along consistent directions. |
-| Newton | $x\leftarrow x-H^{-1}\nabla f$ — quadratic convergence, expensive. Quasi-Newton: BFGS / L-BFGS. |
-| Gauss–Newton / LM | for $\min\|r(x)\|^2$: $(J^\top J+\lambda I)\delta=-J^\top r$ — **core of bundle adjustment, SLAM back-ends, IK** |
-| Lagrangian / KKT | stationarity, primal/dual feasibility, complementary slackness. |
-| LP / QP / SOCP / SDP | QP drives MPC & whole-body control; SDP drives SOS & quantum relaxations. |
-| Non-convex deep nets | saddle points dominate; SGD noise helps; Adam adapts per-parameter lr. |
-| Constrained NLP | SQP, interior point (IPOPT), ADMM; trajectory optimization uses these. |
-| Black-box | CMA-ES, Bayesian optimization, random search (domain randomization tuning). |
+| Idea | Plain English | Where it appears in robotics |
+|---|---|---|
+| **Rank** | how many independent directions the matrix can really act in | Jacobian loses rank → robot arm is stuck at a *singularity* |
+| **Eigenvectors / eigenvalues** | directions that the matrix only stretches, never turns | PCA, stability of control systems |
+| **SVD** | any matrix = rotate → stretch → rotate | pseudo-inverse, ICP point-cloud alignment, PCA |
+| **Positive definite** | "always positive energy", like a bowl shape | covariance matrices, inertia matrix |
+| **Condition number** | how close a matrix is to being useless (singular) | near-singular arm configurations explode joint speeds |
+| **Least squares** | best compromise when no exact answer exists | calibration, SLAM, regression |
 
-### Quick derivation to know cold: Linear regression closed form
+### Least squares: the workhorse
+When you have more equations than unknowns (noisy measurements), no solution is perfect. Least squares picks the one with the smallest total squared error.
 
-$L(w)=\tfrac12\|Xw-y\|^2 \Rightarrow \nabla L=X^\top(Xw-y)=0 \Rightarrow w=(X^\top X)^{-1}X^\top y$. With ridge: $(X^\top X+\lambda I)^{-1}X^\top y$ — always invertible.
+$$ x^{*} = (A^\top A)^{-1} A^\top b $$
+
+> **In words:** "find the answer that fits all the measurements as well as possible on average." This is how a robot fits a plane to a point cloud, or finds its pose from many noisy landmark sightings.
+
+## 2. Probability: thinking with uncertainty
+
+Sensors lie a little. A GPS says "you are here ± 3 m". Probability gives us a language for "how sure am I?"
+
+### Bayes' rule: updating beliefs
+$$ p(\text{state}\mid\text{data}) \;\propto\; p(\text{data}\mid\text{state})\; p(\text{state}) $$
+
+> **In words:** *new belief = what the sensor says × what I believed before* (then renormalise).
+
+![bayes update](/img/fig/bayes-update.svg)
+*Blue = old belief, orange = new measurement, green = updated belief. It lands in between, closer to the more certain source.*
+
+**Every filter in this book (Kalman, particle, SLAM) is this one picture repeated.**
+
+### The Gaussian (bell curve)
+A Gaussian is described by a **mean** (best guess) and a **covariance** (how spread out and how correlated the uncertainty is).
+
+![gaussian covariance](/img/fig/gaussian-covariance.svg)
+*The ellipse is the "cloud of doubt". A tilted ellipse means two quantities are correlated.*
+
+Why robotics loves Gaussians: if you push a Gaussian through a *linear* function, you get another Gaussian, and you can compute it exactly. That is the whole reason the Kalman filter works.
+
+$$ y = Ax + b \;\Rightarrow\; y \sim \mathcal N\big(A\mu + b,\; A\Sigma A^\top\big) $$
+
+> **In words:** "the average moves like the data; the uncertainty cloud gets stretched the same way."
+
+### More probability you will be asked
+- **MLE vs MAP.** MLE: "which parameters make my data most likely?" MAP: same, but also use a prior belief. A Gaussian prior on weights equals **L2 regularisation**; a Laplace prior equals **L1**.
+- **KL divergence.** A measure of how different two distributions are (not symmetric). Cross-entropy loss is KL plus a constant.
+- **Monte-Carlo.** Estimate an average by random sampling; the error shrinks like $1/\sqrt{N}$. Particle filters are Monte-Carlo.
+- **Entropy.** How surprised you are on average; used in RL (SAC) and information gain.
+
+## 3. Optimization: finding the best answer
+
+Training a network, solving inverse kinematics, aligning two scans: all are "find the inputs that minimise a cost".
+
+### Gradient descent: walking downhill in fog
+You can only feel the slope under your feet. So you step downhill, repeat.
+
+$$ x \leftarrow x - \eta\,\nabla f(x) $$
+
+> **In words:** "move a little bit opposite to the slope; η (the learning rate) is the step size."
+
+![gradient descent](/img/fig/gradient-descent.svg)
+*Left: tiny steps crawl. Middle: good steps. Right: huge steps overshoot and zig-zag.*
+
+### The optimizer family tree
+
+| Method | Plain idea | Used for |
+|---|---|---|
+| **SGD + momentum** | roll downhill like a ball with inertia | most deep learning |
+| **Adam / AdamW** | each parameter gets its own step size | transformers, default choice |
+| **Newton / BFGS** | use curvature to jump straight to the bottom | small smooth problems |
+| **Gauss–Newton / Levenberg–Marquardt** | for "sum of squared errors": treat as repeated least squares | **SLAM, bundle adjustment, IK** |
+| **LP / QP** | optimise with straight-line rules (constraints) | **MPC, whole-body control** |
+| **CMA-ES / Bayesian opt.** | black-box: no gradients available | tuning domain randomization |
+
+**Convex vs non-convex:** a convex problem is a single smooth bowl (one bottom, easy). Neural networks are bumpy landscapes with many dips; SGD noise helps escape bad ones.
+
+**Constraints (KKT / Lagrange):** "minimise cost *while* staying inside limits". This is how a robot minimises effort while respecting joint limits and friction cones.
 
 ## Interview Q&A
 
-**Why is covariance symmetric PSD?** $\Sigma=E[(x-\mu)(x-\mu)^\top]$; for any v, $v^\top\Sigma v=\mathrm{Var}(v^\top x)\ge0$.
+**Why is a covariance matrix always positive semi-definite?**
+*Simply:* variance can't be negative, in any direction. *Deeper:* for any direction $v$, $v^\top\Sigma v=\mathrm{Var}(v^\top x)\ge 0$.
 
-**When does least squares fail?** Rank-deficient $X^\top X$, outliers (use Huber/RANSAC), heteroscedastic noise (weighted LS).
+**When does least squares fail?**
+*Simply:* when a few measurements are wildly wrong (outliers) or the problem has too little information. *Deeper:* use RANSAC / Huber loss for outliers, regularise rank-deficient problems.
 
-**Why does L1 give sparsity?** Diamond-shaped constraint touches loss contours at axes; subgradient at 0 is an interval so weights can sit exactly at zero.
+**Why does L1 regularisation give sparse solutions?**
+*Simply:* its constraint region has pointy corners on the axes, so the best solution tends to land exactly on a corner (a weight = 0).
 
-**Difference between probability and likelihood?** Probability: data varies, params fixed. Likelihood: data fixed, params vary; it is not a distribution over θ.
+**Probability vs likelihood?**
+*Simply:* probability: fix the model, ask about data. Likelihood: fix the data, ask which model fits.
 
-**Why Gauss–Newton over Newton?** Ignores second-derivative-of-residual term; $J^\top J$ is PSD and cheap, great when residuals are small.
+**Why Gauss–Newton instead of Newton for SLAM?**
+*Simply:* the cost is a sum of squares, so you can approximate the curvature cheaply from first derivatives only. It is faster and always well-behaved.
+
+**What does a large condition number tell you?**
+*Simply:* the problem is nearly broken; tiny noise gets hugely amplified. In robotics: the arm is near a singularity.

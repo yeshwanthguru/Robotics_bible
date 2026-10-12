@@ -4,6 +4,10 @@ title: R for Robotics Data & Statistics
 
 # R in Robotics & ML Research
 
+:::tip[The 30-second version]
+You will rarely run R *on* a robot. You use it afterwards to answer "**is policy A really better than policy B, or was I lucky?**" It shines at statistics (confidence intervals, mixed-effects models, survival analysis) and publication-quality plots. It is a strong signal of research rigour.
+:::
+
 R is rarely on the robot; it shines for **experiment analysis, statistics, and publication-quality plots** — important for PhD-style rigor (comparing controllers/policies, human studies, reliability).
 
 ## Core

@@ -4,66 +4,90 @@ title: DL Fundamentals & Training
 
 # Deep Learning Fundamentals
 
-## Neural network basics
+:::tip[The 30-second version]
+A neural network is a **stack of simple "blend-and-squash" steps**. Each layer mixes its inputs with adjustable weights, then squashes the result through a bend (an activation function). With enough layers, this can approximate almost any function: recognise a cup, steer a car, write a sentence.
+**Training** = show examples, measure the error, and nudge every weight a tiny bit to reduce it. The "nudge direction" is computed by **backpropagation**.
+:::
 
-- Neuron: $a=\phi(w^\top x+b)$. Universal approximation: one wide hidden layer can approximate any continuous function on a compact set.
-- **Backprop** = chain rule on a computation graph (reverse-mode autodiff). Cost ≈ 2–3× forward.
-- Layer $\ell$: $\delta^{\ell}=(W^{\ell+1\top}\delta^{\ell+1})\odot\phi'(z^\ell)$; $\partial L/\partial W^\ell=\delta^\ell a^{\ell-1\top}$.
+## One neuron, one layer
 
-### Activations
-| Name | Formula | Note |
+A neuron takes inputs $x$, multiplies each by a weight, adds them up, and applies a bend:
+
+$$ a = \phi\,(w^\top x + b) $$
+
+> **In words:** "weigh the evidence, add a bias, then decide how strongly to fire."
+
+A **layer** is many neurons in parallel; a **network** is layers in a row. The bend $\phi$ is essential: without it, stacking layers collapses into one big linear function.
+
+![activations](/img/fig/activations.svg)
+*Common activation functions. ReLU is the fast default; GELU and SiLU are the smooth versions used in transformers and LLMs.*
+
+## How it learns: the forward and backward pass
+
+![backprop](/img/fig/backprop-flow.svg)
+*Forward: compute the prediction and the error. Backward: send blame back through the layers.*
+
+1. **Forward pass:** push the input through all layers, get a prediction.
+2. **Loss:** one number saying how wrong it was (e.g. mean squared error, cross-entropy).
+3. **Backward pass (backpropagation):** use the chain rule to ask each weight "how much did *you* contribute to the error?"
+4. **Update:** nudge every weight against its blame (gradient descent / Adam).
+
+$$ \frac{\partial L}{\partial W^{\ell}} = \delta^{\ell}\,(a^{\ell-1})^\top,\qquad \delta^{\ell}=\big((W^{\ell+1})^\top\delta^{\ell+1}\big)\odot\phi'(z^{\ell}) $$
+
+> **In words:** the blame at a layer = the blame from the layer above, passed back through the same weights, scaled by how "awake" each neuron was.
+
+## The training recipe (what to say in interviews)
+
+![lr curves](/img/fig/lr-curves.svg)
+*Learning rate is the most important knob. Too small: slow. Too big: unstable. A warm-up followed by a gradual decay (cosine) is the standard schedule.*
+
+| Ingredient | Plain meaning | Go-to choice |
 |---|---|---|
-| Sigmoid | $1/(1+e^{-x})$ | saturates, vanishing grads |
-| Tanh | | zero-centered |
-| ReLU | $\max(0,x)$ | dead neurons |
-| Leaky/PReLU/ELU | | fix dead ReLU |
-| GELU | $x\Phi(x)$ | transformers |
-| SiLU/Swish | $x\sigma(x)$ | modern CNNs, LLMs |
-| SwiGLU | $\mathrm{SiLU}(xW)\odot xV$ | LLaMA-style FFN |
-| Softmax | $e^{z_i}/\sum e^{z_j}$ | stabilize by subtracting max |
+| **Optimizer** | how to use the gradients | **AdamW** (SGD + momentum for some vision) |
+| **Learning-rate schedule** | change step size over time | warm-up → cosine decay |
+| **Initialisation** | starting weights that keep signals healthy | He (ReLU) / Xavier (tanh) |
+| **Normalisation** | keep activations well-scaled | **LayerNorm / RMSNorm** (transformers), BatchNorm (CNNs) |
+| **Regularisation** | stop memorising | weight decay, dropout, data augmentation, label smoothing |
+| **Mixed precision** | faster math with fewer bits | **bf16** (no loss-scaling needed) |
+| **Gradient clipping** | cap crazy updates | clip norm at 1.0 |
 
-### Initialization
-Xavier (tanh): $\mathrm{Var}=2/(n_{in}+n_{out})$; He (ReLU): $2/n_{in}$. Goal: keep activation/gradient variance constant across depth.
+### Debugging checklist (very interview-friendly)
+1. **Overfit a single tiny batch first.** If it can't, you have a bug.
+2. Look at the data and labels with your own eyes.
+3. Loss at the start should be about $\log(\text{number of classes})$.
+4. Watch grad-norm; NaNs usually mean learning rate too high, log(0), or bad data.
+5. Compare train and validation curves (overfitting vs underfitting).
 
-### Losses
-MSE, L1/Huber, cross-entropy, focal, hinge, contrastive/InfoNCE $-\log\frac{e^{s^+/\tau}}{\sum e^{s/\tau}}$, triplet, KL, CTC, Dice, diffusion ε-prediction MSE.
+### Vanishing and exploding gradients
+In a deep net, the blame signal is multiplied layer after layer. If each factor is < 1 it fades to nothing (**vanishing**); if > 1 it blows up (**exploding**). Cures: ReLU-family activations, **residual (skip) connections**, normalisation, sensible initialisation, gradient clipping.
 
-### Optimizers
-| Optimizer | Update |
+## Scaling up training
+
+| Technique | Plain idea |
 |---|---|
-| SGD+momentum | $v\leftarrow\beta v+g;\ \theta\leftarrow\theta-\eta v$ |
-| RMSProp | divide by running RMS of g |
-| Adam | $m,v$ moving averages with bias-correction; $\theta\leftarrow\theta-\eta\hat m/(\sqrt{\hat v}+\epsilon)$ |
-| AdamW | decoupled weight decay — default for transformers |
-| Lion, Adafactor, Muon, Shampoo | memory/curvature-efficient variants |
-
-LR schedules: warmup + cosine decay; one-cycle; linear decay. Batch size ↑ ⇒ lr ↑ (linear scaling rule), use warmup.
-
-### Regularization & normalization
-Weight decay, dropout ($p$ drop, scale at train), data augmentation, label smoothing, mixup/cutmix, early stopping, stochastic depth.
-- **BatchNorm:** normalize over batch; train/eval mismatch, bad for small batch / RL.
-- **LayerNorm / RMSNorm:** per-sample; transformers. Pre-LN more stable than Post-LN.
-- **GroupNorm:** small-batch vision, diffusion policy.
-
-### Training stability checklist
-1. Overfit a single batch first. 2. Check data/labels/augmentations visually. 3. Loss at init ≈ $\log C$. 4. Gradient clipping (norm 1.0). 5. Mixed precision (bf16 > fp16; no loss scaling needed). 6. Monitor grad-norm, update/weight ratio ~1e-3. 7. NaNs: lr too high, log(0), fp16 overflow, bad data.
-
-## Vanishing/exploding gradients
-Fixes: ReLU-family, residual connections, normalization, careful init, gradient clipping, gating (LSTM).
-
-## Distributed / efficient training
-DDP (data parallel, all-reduce grads), FSDP/ZeRO (shard params/grads/optimizer), tensor parallel (split matmuls), pipeline parallel (split layers), sequence/context parallel, gradient checkpointing (trade compute for memory), mixed precision, gradient accumulation, `torch.compile`, FlashAttention.
+| **Data parallel (DDP)** | each GPU holds a full model copy, sees different data, average gradients |
+| **FSDP / ZeRO** | shard the model/optimizer state across GPUs to save memory |
+| **Tensor / pipeline parallel** | split a huge model across GPUs (by matrix or by layer) |
+| **Gradient checkpointing** | recompute instead of storing activations (memory ↔ compute trade) |
+| **Gradient accumulation** | pretend to have a bigger batch by summing several small ones |
+| **FlashAttention / `torch.compile`** | faster kernels, same math |
 
 ## Interview Q&A
 
-**Why residual connections work?** Identity path gives gradient highway: $y=x+F(x)\Rightarrow \partial y/\partial x=I+\partial F/\partial x$; also loss landscape smoother.
+**Why do residual connections help?**
+*Simply:* they give the gradient a shortcut lane so deep networks stay trainable. *Deeper:* $y=x+F(x)$ gives $\partial y/\partial x = I+\partial F/\partial x$, so the identity path keeps gradients alive.
 
-**BatchNorm vs LayerNorm?** BN statistics across batch (needs big batch, differs train/test); LN across features per token (batch independent).
+**BatchNorm vs LayerNorm?**
+*Simply:* BatchNorm normalises across the batch; LayerNorm normalises within each example. *Deeper:* transformers and RL prefer LayerNorm because it doesn't depend on batch size or differ between train and test.
 
-**Why Adam over SGD?** Per-parameter adaptive lr handles sparse/ill-conditioned problems; SGD+momentum can generalize slightly better in vision with tuning.
+**Why Adam instead of plain SGD?**
+*Simply:* Adam gives each weight its own step size, so it copes with messy landscapes with little tuning.
 
-**Dropout at inference?** Off; weights scaled (inverted dropout scales at train time).
+**What does dropout do at test time?**
+*Simply:* nothing; it is switched off. (Scaling is handled during training.)
 
-**What is label smoothing?** Replace one-hot with $(1-\epsilon)$ on true class, $\epsilon/(K-1)$ others; reduces over-confidence.
+**What is label smoothing?**
+*Simply:* instead of "100 % cat", say "90 % cat, 10 % spread elsewhere" so the model doesn't become over-confident.
 
-**Explain mixed precision.** Forward/backward in fp16/bf16, master weights in fp32; bf16 keeps fp32's exponent range.
+**What is mixed precision?**
+*Simply:* do most maths in a smaller number format for speed, keep a full-precision master copy of the weights for accuracy.

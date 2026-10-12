@@ -4,6 +4,10 @@ title: Coding Challenges You Should Be Able to Write
 
 # Coding Challenges (write from memory)
 
+:::tip[The 30-second version]
+These are the short coding exercises that keep appearing in robotics, ML and perception interviews. If you can write each from memory (and explain it in plain words), you're covered for most live-coding rounds.
+:::
+
 ## 1. Rotation matrix ↔ quaternion
 ```python
 import numpy as np

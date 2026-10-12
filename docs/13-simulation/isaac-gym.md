@@ -4,6 +4,10 @@ title: Isaac Gym (Legacy but Still Asked)
 
 # Isaac Gym
 
+:::tip[The 30-second version]
+**Isaac Gym** was NVIDIA's first GPU-based RL simulator (2021). Its big idea: keep *everything* (physics, observations, rewards) on the GPU so thousands of robots train at once. It is now **deprecated**; **Isaac Lab** replaced it. You still need to know it because many research repos (legged_gym, DexPBT, humanoid papers) were built on it, and you may be asked how to migrate.
+:::
+
 **Isaac Gym Preview (1–4)** — NVIDIA's standalone high-performance GPU physics simulator for RL (2021). It kept simulation *and* observation/reward computation on the GPU, exposing state as PyTorch tensors, which is why training locomotion in minutes became possible ("Learning to Walk in Minutes Using Massively Parallel Deep RL", Rudin et al.). It is **deprecated** in favour of **Isaac Lab**, but a lot of papers, `legged_gym`, `IsaacGymEnvs`, `rsl_rl`, `DexPBT`, `DeXtreme`, `ExtremeParkour`, Unitree/Humanoid codebases still use it.
 
 ## Core API (gymapi)

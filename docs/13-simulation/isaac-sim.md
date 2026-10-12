@@ -4,6 +4,13 @@ title: NVIDIA Isaac Sim (Deep Dive)
 
 # Isaac Sim
 
+:::tip[The 30-second version]
+**Isaac Sim** is NVIDIA's *virtual world for robots*: a photorealistic, physically simulated environment where you can drop in a robot, add cameras and LiDAR, connect it to ROS 2, and generate unlimited labelled training images. Think "robot-sized video game engine with real physics and real sensor models".
+:::
+
+![isaac family](/img/fig/isaac-family.svg)
+*How the NVIDIA robotics pieces fit together. Sim is the world, Lab is the gym where robots learn, ROS is the real-robot software, GR00T/Cosmos are the foundation models.*
+
 **Isaac Sim** is NVIDIA's robotics simulation application built on **Omniverse (Kit)**. It provides physically based simulation (PhysX 5), RTX-rendered sensors, OpenUSD scene description, ROS/ROS 2 integration, synthetic data generation (Replicator) and a Python API. Source is open on GitHub since the 5.0 generation; check the docs for the exact current version and requirements.
 
 ## Architecture

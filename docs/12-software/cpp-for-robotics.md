@@ -4,6 +4,12 @@ title: C++ for Robotics
 
 # C++ (C++17/20) for Robotics
 
+:::tip[The 30-second version]
+Robots need code that is **fast and predictable**, and C++ gives you direct control over memory and timing. The core ideas interviewers test: **who owns this memory** (smart pointers, RAII), **how to avoid copies** (move semantics), **how to share data between threads safely**, and **what you must never do in a real-time loop** (allocate memory, take unpredictable locks).
+:::
+
+**Analogy:** RAII is like a hotel key card: when you check out (leave scope), the room (resource) is released automatically, even if you left in a hurry (exception).
+
 ## Language essentials interviewers probe
 - **RAII & ownership:** `std::unique_ptr` (sole), `std::shared_ptr` (ref-count; `weak_ptr` breaks cycles), prefer `make_unique/make_shared`; rule of 0/3/5.
 - **Move semantics:** rvalue refs, `std::move`, `std::forward` (perfect forwarding), copy elision (guaranteed in C++17).

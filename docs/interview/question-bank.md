@@ -4,6 +4,10 @@ title: Rapid-Fire Question Bank
 
 # Rapid-Fire Question Bank
 
+:::tip[How to use this page]
+Cover the answers and say each one out loud in **under 30 seconds**: one plain sentence first, then one technical detail. Mark the ones you stumble on and go back to that chapter.
+:::
+
 Answer each in **≤ 30 seconds**. Cover the answer and test yourself.
 
 ## ML / DL

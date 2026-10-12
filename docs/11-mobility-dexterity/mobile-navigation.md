@@ -4,64 +4,76 @@ title: Mobility — Wheeled, Aerial, Mobile Navigation
 
 # Mobility
 
-"Mobility" = ability of the robot body to traverse environment. Break down by **locomotion modality → kinematics/dynamics → perception/localization → planning → control → safety**.
+:::tip[The 30-second version]
+**Mobility** = how the robot's body gets around: wheels, legs, rotors, tracks, fins. Whatever the body, a navigating robot needs the same loop: **know where you are → decide where to go → avoid things → move the motors**. The details change with the body.
+:::
 
-## Locomotion modalities
-| Modality | Platforms | Key issue |
+## Ways to move
+
+| Modality | Examples | Key challenge |
 |---|---|---|
-| Wheeled (diff-drive, Ackermann, skid-steer, mecanum/omni, swerve) | AMRs, AGVs, cars | slip, nonholonomy |
-| Tracked | rescue, military | skid steer, terrain |
-| Legged | biped, quadruped, hexapod | balance, contact scheduling → see [Legged](./legged-locomotion.md) |
-| Aerial | quadrotor, fixed-wing, VTOL | underactuation, wind, battery |
-| Aquatic | AUV/ROV, USV | comms, buoyancy |
-| Space | free-flyers, orbital manipulators, rovers | microgravity, comms delay |
-| Hybrid | wheel-legged (Ascento, Tron), climbing | mode switch |
+| **Wheeled** (diff-drive, car-like, skid-steer, omni/mecanum, swerve) | warehouse AMRs, cars | slip, non-holonomic limits |
+| **Tracked** | rescue and military | skid steering on rough terrain |
+| **Legged** | quadrupeds, humanoids | balance and contact scheduling → [Legged](./legged-locomotion.md) |
+| **Aerial** | quadrotors, VTOL | under-actuation, wind, battery |
+| **Aquatic** | AUV / ROV | comms, buoyancy |
+| **Space** | free-flyers, rovers | microgravity, comms delay |
+| **Hybrid** | wheel-legged, climbing | mode switching |
 
-## Navigation pipeline
+![diff drive](/img/fig/diff-drive.svg)
+*A differential-drive robot gets all its motion from the difference between two wheel speeds. It cannot slide sideways (a "non-holonomic" constraint).*
+
+## The navigation pipeline
+
 ```mermaid
-flowchart LR
+flowchart TD
   S[Sensors] --> LOC[Localization / SLAM]
-  S --> COST[Costmaps: static, obstacle, inflation]
-  LOC --> GP[Global planner]
-  COST --> GP --> LP[Local controller]
-  COST --> LP --> CMD[cmd_vel] --> DRV[Base driver]
+  S --> COST[Costmaps]
+  LOC --> GP[Global planner: route on the map]
+  COST --> GP --> LP[Local controller: avoid obstacles now]
+  COST --> LP --> CMD[cmd_vel: speed + turn rate] --> DRV[Base driver]
   BT[Behavior tree + recoveries] --> GP
   BT --> LP
 ```
 
-### Local planners
-- **Pure pursuit** (look-ahead point), **Stanley** (cross-track + heading), **Regulated Pure Pursuit** (Nav2: speed regulation near obstacles/curves).
-- **DWA:** sample $(v,\omega)$ in dynamic window, forward-simulate, score (goal, clearance, speed).
-- **TEB:** elastic band optimization with time.
-- **MPC/MPPI:** sample many trajectories, weight by cost, average; handles non-linear & arbitrary costs.
-- Social navigation: pedestrian prediction, social force, interaction-aware RL/MPC.
+**Why two planners?** The **global planner** finds the whole route on the known map (slow, far-sighted). The **local controller** reacts to what the sensors see right now (fast, short-sighted).
 
-### Costmap
-Layered grid: inflation radius ≥ robot circumscribed radius; footprint collision check; keepout/speed zones; 3D (voxel, ESDF) for legged/aerial.
+### Local controllers
+| Controller | Plain idea |
+|---|---|
+| **Pure pursuit** | steer toward a point a bit ahead on the path |
+| **Stanley** | correct both sideways offset and heading |
+| **Regulated Pure Pursuit** (Nav2) | slow down near obstacles and in sharp turns |
+| **DWA** | try many (speed, turn) pairs, simulate, score |
+| **TEB** | elastic band of poses over time |
+| **MPC / MPPI** | sample or optimise many trajectories, pick the cheapest |
+| **Social navigation** | predict people and keep personal space |
 
-### Frames in a mobile stack
-`map → odom → base_link → sensors`. `odom` continuous but drifting; `map→odom` jumps from localization. (REP-105)
+### Costmap and frames
+**Costmap** layers: static map + obstacles + inflation (padding by the robot's size) + keep-out zones. **Frames:** `map → odom → base_link → sensors`. `odom` is smooth but drifts; `map → odom` jumps when localisation corrects (ROS REP-105).
 
 ## Mobile manipulation
-Whole-body: base + arm treated jointly; base positioning for reachability (inverse reachability maps), "navigate then manipulate" vs simultaneous; examples: Stretch, Fetch, TIAGo, Spot-arm, Mobile ALOHA, mobile humanoids. Challenges: base uncertainty vs. precise manipulation → visual servoing/fiducials, arm compensation.
+Base + arm together (Stretch, Spot-arm, TIAGo, Mobile ALOHA). Plan where to park the base so the arm can reach ("inverse reachability"), and fix the small base error with vision or fiducials before a precise grasp.
 
-## Aerial specifics (UAV)
-Quadrotor dynamics: $m\ddot p=-mge_3+R f e_3$, $J\dot\omega=\tau-\omega\times J\omega$. Differential flatness (positions + yaw) → minimum-snap trajectories. Cascaded control: position → attitude → rate → motor mix (PX4, ArduPilot). Estimation: EKF2 (IMU+GNSS+baro+flow). Racing: time-optimal planning/ RL (Swift beat champions). Autonomy: VIO, ego-planner, EGO-Swarm.
+## Drones in brief
+The quadrotor is **differentially flat**: plan a smooth position/yaw path (minimum-snap) and the rotor commands follow. Control is cascaded: position → attitude → rate → motor mix (PX4, ArduPilot). Estimation: EKF (IMU + GNSS + barometer + optical flow, or VIO indoors). Racing drones now use time-optimal planning and RL.
 
-## Safety & reliability
-Watchdogs, speed limits near humans, safety-rated LiDAR zones, cliff/drop detection, bumpers, emergency stop, geofence, degraded-mode behaviours, health diagnostics (`diagnostic_updater`), logging (rosbag2/MCAP).
-
-## Fleet / AMR systems
-Open-RMF (multi-vendor fleet), VDA5050, traffic lanes, elevators/doors integration, map management & versioning, OTA updates, remote monitoring.
+## Safety and fleets
+Watchdogs, safety-rated LiDAR zones, speed limits near people, cliff detection, geofences, e-stop, degraded modes, diagnostics. Fleets: **Open-RMF**, VDA5050, traffic management, elevators/doors, map versioning, OTA updates.
 
 ## Interview Q&A
 
-**What is a nonholonomic constraint?** A velocity-level constraint not integrable to a position constraint (e.g. no lateral motion), so robot can reach any pose but not with arbitrary instantaneous velocity.
+**What is a non-holonomic constraint?**
+*Simply:* the robot can't move in some directions instantaneously (a car can't slide sideways), though it can still reach any pose by manoeuvring.
 
-**Why separate global and local planners?** Global: long-horizon optimal on static map; local: reactive, dynamics-aware at high rate.
+**Why separate global and local planning?**
+*Simply:* global gives the long-range plan on a static map; local deals with surprises at high rate.
 
-**Recovery behaviours?** Clear costmap, spin, back up, wait, re-localize; escalate to human.
+**What are recovery behaviours?**
+*Simply:* what the robot does when stuck: clear the costmap, spin, back up, wait, ask for help.
 
-**Odometry sources & errors?** Wheel encoders (slip, wheel diameter, baseline errors → systematic), visual/LiDAR odometry, IMU; fuse in EKF.
+**Sources of odometry error?**
+*Simply:* wheel slip, wrong wheel size or track width, encoder resolution; fuse with IMU and visual/LiDAR odometry.
 
-**Why inflate costmap?** Convert footprint collision to point check; keeps clearance margin.
+**Why inflate the costmap?**
+*Simply:* turns "does the robot's body hit something?" into "is this one cell too close?", which is a fast check.

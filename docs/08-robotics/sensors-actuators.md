@@ -4,55 +4,69 @@ title: Sensors, Actuators, Hardware
 
 # Sensors, Actuators & Hardware
 
-## Proprioceptive
-| Sensor | Measures | Notes |
+:::tip[The 30-second version]
+A robot is **senses + brain + muscles**. Sensors tell it about the world (*exteroceptive*: cameras, LiDAR) and about itself (*proprioceptive*: joint angles, IMU, motor current). Every sensor lies a little in its own way, so robots **fuse several sensors** to get one trustworthy picture.
+:::
+
+![sensors overview](/img/fig/sensors-overview.svg)
+*The usual sensor suite and what each is good at.*
+
+## Sensing the robot itself (proprioceptive)
+
+| Sensor | Measures | Gotchas |
 |---|---|---|
-| Encoders (incremental/absolute, magnetic, optical) | joint angle | resolution, quantization; absolute avoids homing |
-| IMU (gyro + accel [+mag]) | ω, specific force | bias random walk, noise density, temperature drift; integrate carefully; MEMS vs FOG |
-| Joint torque / current sensing | τ | strain gauge or motor current estimate |
-| 6-axis F/T sensor | wrench at wrist/ankle | key to force control, contact detection |
-| Foot/contact sensors | contact state | legged state estimation |
+| **Encoders** (optical / magnetic, absolute) | joint or wheel angle | resolution; absolute encoders avoid "homing" |
+| **IMU** (gyro + accelerometer, ± magnetometer) | rotation rate and acceleration | **drifts**: integrating a biased accelerometer gives position error growing with time² |
+| **Motor current / torque sensors** | effort | current only estimates torque (friction!) |
+| **6-axis force/torque sensor** | push and twist at a wrist or ankle | key for contact and compliant control |
+| **Foot / contact sensors** | is the foot on the ground? | legged state estimation |
 
-## Exteroceptive
-| Sensor | Principle | Strengths / weaknesses |
-|---|---|---|
-| RGB camera | intensity | rich semantics; lighting, no scale |
-| Stereo | triangulation $Z=fB/d$ | passive depth; textureless fail |
-| ToF / structured light (RealSense, Kinect, Orbbec) | active depth | indoor, sun interference |
-| **LiDAR** (spinning, solid-state, FMCW) | ranging | accurate geometry; cost, rain/glass |
-| Radar (mmWave) | Doppler | all-weather, velocity; low resolution |
-| Sonar/ultrasonic | acoustic | cheap, wide beam |
-| Event camera | async brightness change | µs latency, HDR; needs special algorithms |
-| Thermal | IR | night, SAR |
-| GNSS/RTK, UWB | global position | outdoors cm-level (RTK); multipath |
-| Tactile (GelSight/DIGIT, BioTac, e-skin, taxels) | contact geometry/force | dexterity, slip detection |
-| Microphone arrays | audio | speech, localization |
+## Sensing the world (exteroceptive)
 
-**Calibration:** camera intrinsics $K=\begin{pmatrix}f_x&0&c_x\\0&f_y&c_y\\0&0&1\end{pmatrix}$ + distortion (checkerboard/Kalibr), extrinsics (camera–LiDAR, camera–IMU), hand–eye, time sync (PTP/hardware trigger). Mis-calibration is a top real-world failure.
+| Sensor | How it works | Strengths | Weaknesses |
+|---|---|---|---|
+| **RGB camera** | light intensity | rich semantics, cheap | no direct depth, lighting-sensitive |
+| **Stereo camera** | triangulate two views: depth $Z=fB/d$ | passive, long range | fails on blank surfaces |
+| **RGB-D (ToF / structured light)** | measures depth actively | dense indoors | sunlight, shiny things |
+| **LiDAR** | laser time-of-flight | accurate geometry | cost, glass, rain |
+| **Radar (mmWave)** | radio + Doppler | all-weather, velocity | low resolution |
+| **Ultrasonic** | sound echo | cheap | wide beam |
+| **Event camera** | per-pixel brightness *changes* | microsecond latency, HDR | needs special algorithms |
+| **Thermal** | infrared | night, search & rescue | low resolution |
+| **GNSS / RTK, UWB** | satellite / radio ranging | global position | multipath, indoors |
+| **Tactile (GelSight, DIGIT, e-skin)** | contact image / pressure | slip and shape for dexterity | fragile, calibration |
 
-## Actuators
-| Type | Pros | Cons |
-|---|---|---|
-| BLDC/PMSM + FOC | efficient, high torque density | needs driver & encoder |
-| Harmonic drive | zero-backlash, compact | friction, compliance |
-| Planetary / cycloidal / QDD | backdrivable, robust | lower torque density |
-| SEA / VSA | force control, safe, energy storage | bandwidth |
-| Hydraulic | highest power density | leaks, noise |
-| Pneumatic / soft | compliant, light | hard to control |
-| Tendon-driven | remote actuation (hands) | friction, stretch |
-| Piezo / SMA / EAP | tiny, precise | niche |
+**Calibration is half the job:** camera intrinsics (focal length, centre, distortion), extrinsics (where each sensor sits on the body), hand–eye, and **time synchronisation** (PTP/hardware triggers). A bad calibration or a 30 ms timing offset is a top cause of "the algorithm works in sim but not on the robot".
 
-Control loops: current (≈10–40 kHz) → velocity (~kHz) → position/torque (1 kHz) → whole-body/MPC (100–500 Hz) → planner (10 Hz) → VLM (1–10 Hz).
+## Actuators (muscles)
 
-## Compute & communication
-MCU (STM32, real-time, micro-ROS), SBC (RPi), edge GPU (Jetson Orin/Thor), x86 RT PC; buses: **CAN/CAN-FD, EtherCAT** (deterministic, ≤µs jitter), RS485, USB, Ethernet/TSN, SPI/I²C; wireless: Wi-Fi 6, 5G, mesh. Power: battery chemistry (Li-ion/LiFePO₄), BMS, regenerative braking, brown-out protection. Safety: e-stop, STO, ISO 10218 / ISO 13482 / ISO 26262, speed & separation monitoring, power & force limiting (ISO/TS 15066 collaborative).
+See the table in [Dynamics](./dynamics.md). In short: BLDC motors with field-oriented control, harmonic or planetary gearboxes, quasi-direct drive for legs, series-elastic for safe force control, tendons for hands, and hydraulics for raw power.
+
+**Nested control loops** run from tens of kHz (motor current) up to a few Hz (high-level AI): see [Control](../10-planning-control/control.md).
+
+## Compute, communication and safety
+
+| Topic | Notes |
+|---|---|
+| **Compute** | microcontrollers (real-time, micro-ROS), edge GPU (Jetson Orin/Thor), x86 real-time PC |
+| **Buses** | **CAN / CAN-FD**, **EtherCAT** (deterministic, ~1 kHz for many axes), USB, Ethernet/TSN |
+| **Power** | Li-ion / LiFePO₄, battery management, regenerative braking, brown-out protection |
+| **Safety standards** | ISO 10218 (industrial robots), ISO/TS 15066 (collaborative), ISO 13482 (personal care), ISO 26262 (automotive) |
+| **Safety functions** | e-stop, safe torque off, speed-and-separation monitoring, power and force limiting |
 
 ## Interview Q&A
 
-**IMU drift?** Double-integrating accelerometer bias gives quadratic position error; fuse with vision/LiDAR/GNSS (EKF/factor graph).
+**Why does an IMU drift?**
+*Simply:* tiny biases get integrated, and double integration makes position error grow quickly. *Fix:* fuse with vision, LiDAR or GNSS using an EKF or factor graph.
 
-**Why EtherCAT?** Deterministic cycle with distributed clocks, 1 kHz+ for many axes.
+**Why is EtherCAT popular in robots?**
+*Simply:* deterministic, low-jitter communication for many motors at ~1 kHz.
 
-**Event camera use cases?** High-speed tracking, HDR, low-power; not good for static scenes.
+**When would you pick an event camera?**
+*Simply:* very fast motion or extreme lighting; not for static scenes.
 
-**Rolling vs global shutter?** Rolling causes distortion under motion; important for VIO — calibrate readout time or use global shutter.
+**Rolling vs global shutter?**
+*Simply:* rolling-shutter cameras read rows at different times, which distorts fast motion; global shutter exposes all at once and is better for visual-inertial odometry.
+
+**Proprioceptive vs exteroceptive?**
+*Simply:* sensing the robot's own body versus sensing the outside world.

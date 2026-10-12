@@ -4,6 +4,10 @@ title: MATLAB & Simulink for Robotics
 
 # MATLAB / Simulink
 
+:::tip[The 30-second version]
+MATLAB is a **maths and engineering workbench**. In robotics it is loved for quick control and estimation prototyping, Simulink block diagrams and automatic code generation to embedded targets. Python wins for ML and deployment; MATLAB wins when you want ready-made control/robotics toolboxes and model-based design workflows.
+:::
+
 ## Why it shows up
 Prototyping control, estimation, dynamics, signal processing; Simulink model-based design with code generation to embedded/ROS; used heavily in academia and aerospace/automotive. Toolboxes: **Robotics System Toolbox** (rigidBodyTree, IK, trajectory, ROS/ROS2 integration, Gazebo co-sim), **Navigation Toolbox** (SLAM, AMCL, planners), **Control System Toolbox**, **Optimization**, **Model Predictive Control Toolbox**, **Simscape Multibody**, **Computer Vision**, **Deep Learning**, **Reinforcement Learning Toolbox**, **Sensor Fusion & Tracking**, **UAV Toolbox**, **Symbolic Math**, **Parallel Computing**, **MATLAB Coder / Embedded Coder / GPU Coder**.
 

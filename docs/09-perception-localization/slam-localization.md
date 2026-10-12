@@ -4,61 +4,100 @@ title: SLAM & Localization
 
 # Localization, Mapping, SLAM
 
-## Problem statements
-- **Localization:** know the map, estimate pose. *Tracking* (known start), *global* (kidnapped robot), *re-localization*.
-- **Mapping:** known poses, build map (occupancy grid with log-odds $l=\log\frac{p}{1-p}$ additive update).
-- **SLAM:** jointly estimate trajectory and map. $p(x_{1:t},m|z_{1:t},u_{1:t})$.
+:::tip[The 30-second version]
+**Localization:** "I have a map, where am I?" **Mapping:** "I know where I am, what does the world look like?" **SLAM:** *both at once*, like exploring a dark building with a torch and drawing the floor-plan while keeping track of where you stand.
+The main enemy is **drift**: tiny errors in each step add up. The cure is **loop closure**: recognising "I've been here before" and snapping the path back into shape.
+:::
 
-## Map representations
-Occupancy grid (2D/3D), OctoMap, TSDF/ESDF (voxblox, **nvblox** on GPU), landmark maps, point-cloud map, surfels, mesh, topological graph, semantic/scene graph (Kimera, Hydra, ConceptGraphs), **NeRF / 3D Gaussian Splatting** SLAM (SplaTAM, MonoGS), HD maps.
+## The big picture
 
-## Scan matching & registration
-- **ICP:** iterate nearest-neighbour correspondences + SVD (Kabsch) alignment; point-to-point vs **point-to-plane**; needs a good initial guess. Variants GICP, NDT (Gaussian cells; Autoware), KISS-ICP.
-- **Global registration:** FPFH features + RANSAC, TEASER++, Fast Global Registration.
-- **Correlative scan matching** (Cartographer branch-and-bound).
+![slam loop closure](/img/fig/slam-loop-closure.svg)
+*Left: odometry alone drifts, so the loop doesn't close. Right: once the robot recognises the starting place, one extra constraint corrects the whole trajectory.*
 
-## Classic SLAM families
+| Task | Known | Unknown |
+|---|---|---|
+| **Localization** (tracking, global, re-localisation) | map | pose |
+| **Mapping** | poses | map |
+| **SLAM** | nothing | both |
+| **Odometry** | previous pose | next pose (drifts, no global fix) |
+
+## Maps: how robots remember the world
+
+![occupancy and costmap](/img/fig/occupancy-costmap.svg)
+*Left: an occupancy grid (every cell: free / occupied / unknown). Right: a navigation costmap inflates obstacles by the robot's size so the planner can treat the robot as a point.*
+
+| Map | What it stores | Used by |
+|---|---|---|
+| **Occupancy grid** (2-D/3-D, OctoMap) | probability each cell is occupied | Nav2, planners |
+| **TSDF / ESDF** (voxblox, **nvblox**) | distance to nearest surface | manipulation, drones, GPU planning |
+| **Landmark map** | positions of recognisable features | feature SLAM |
+| **Point-cloud map** | raw 3-D points | LiDAR localisation |
+| **Semantic / scene graph** | objects and relations ("mug on table") | task planning with LLMs |
+| **NeRF / 3D Gaussian splatting** | photoreal appearance | newer dense SLAM |
+
+Occupancy update uses **log-odds**: each hit adds a constant, each miss subtracts one, so updating is just addition.
+
+## Aligning scans: ICP
+
+**ICP** (Iterative Closest Point) lines up two point clouds: match each point to its nearest neighbour, compute the best rigid motion (via SVD), apply, repeat.
+Pitfalls: needs a decent starting guess, gets stuck in local minima, fails in featureless corridors. Better variants: point-to-plane, GICP, **NDT**, KISS-ICP. For a global guess use feature matching (FPFH + RANSAC, TEASER++).
+
+## SLAM families
+
 | Approach | Examples | Idea |
 |---|---|---|
-| EKF-SLAM | MonoSLAM | state = pose + landmarks, $O(n^2)$ |
-| Particle filter | **FastSLAM**, **GMapping** | Rao–Blackwellization: sample paths, EKF per landmark |
-| Graph-based | **Cartographer, slam_toolbox, g2o, GTSAM, Ceres** | nodes=poses, edges=constraints; solve nonlinear LS with Gauss–Newton/LM; sparse Cholesky |
-| Direct LiDAR-inertial | **LIO-SAM, FAST-LIO2, LOAM, LeGO-LOAM, KISS-ICP, Point-LIO** | tightly coupled IMU + LiDAR, iterated EKF/factor graph |
-| Visual feature-based | **ORB-SLAM3**, PTAM | tracking / local mapping / loop-closing threads, bundle adjustment |
-| Direct/semi-direct visual | LSD-SLAM, DSO, SVO | photometric error |
-| Visual-inertial | VINS-Fusion, OpenVINS, Basalt, MSCKF | IMU preintegration (Forster) |
-| Learning-based | DROID-SLAM, DPVO, MASt3R-SLAM, CUT3R, DUSt3R/VGGT | feed-forward geometry, dense optical-flow BA |
+| **Filter-based** | EKF-SLAM, FastSLAM, GMapping | track a belief over robot + landmarks |
+| **Graph-based** | slam_toolbox, Cartographer, g2o, GTSAM | nodes = poses, edges = constraints; solve one big least-squares problem |
+| **LiDAR-inertial** | LIO-SAM, FAST-LIO2, KISS-ICP | tightly fuse LiDAR + IMU |
+| **Visual feature SLAM** | ORB-SLAM3 | track image features; tracking / mapping / loop-closure threads |
+| **Direct visual** | DSO, LSD-SLAM | minimise pixel brightness error |
+| **Visual-inertial** | VINS-Fusion, OpenVINS, Basalt | camera + IMU (gives metric scale) |
+| **Learning-based** | DROID-SLAM, MASt3R-SLAM | neural dense matching |
 
-### Graph SLAM formulation
-$X^*=\arg\min\sum\|e_{ij}(x_i,x_j)\|^2_{\Omega_{ij}}$. Information matrix is sparse; marginalization causes fill-in; keyframes & sliding windows limit cost. **Loop closure**: place recognition (DBoW2/BoW, NetVLAD, Scan Context, MixVPR, AnyLoc) → geometric verification → add edge → global optimization. False loop closures are catastrophic → robust back-end (switchable constraints, PCM, max-mixtures, GNC).
+### Graph SLAM in one sentence
+Each odometry step and each loop closure is a **spring** between two poses; SLAM finds the arrangement of poses that stretches the springs least.
 
-### Bundle adjustment
-$\min\sum\rho(\|z_{ij}-\pi(K,T_i,X_j)\|^2)$; Schur complement eliminates points; reprojection error; solve with LM (Ceres/g2o).
+$$ X^{*}=\arg\min_X \sum_{ij}\big\|e_{ij}(x_i,x_j)\big\|^2_{\Omega_{ij}} $$
+
+> **In words:** "find the trajectory whose predicted relative motions best match everything we measured, weighting each constraint by how much we trust it." Solved with Gauss–Newton / Levenberg–Marquardt on a sparse matrix.
+
+**Loop closure** = place recognition (bag-of-words, NetVLAD, Scan Context) + geometric verification. A *false* loop closure ruins the map, so back-ends use robust methods (switchable constraints, GNC).
+
+**Bundle adjustment:** jointly refine camera poses and 3-D points by minimising reprojection error.
 
 ## Visual geometry essentials
-- Pinhole: $\lambda\tilde u=K[R|t]\tilde X$. Epipolar constraint $x'^\top Fx=0$; essential matrix $E=[t]_\times R$ (calibrated), 5-pt algorithm (+RANSAC); 8-pt for F; homography for planar/pure rotation.
-- PnP (EPnP, P3P), triangulation (DLT), scale ambiguity for monocular (resolved by IMU/stereo/depth).
-- Feature types: SIFT, SURF, ORB (FAST+BRIEF), SuperPoint+LightGlue/SuperGlue, LoFTR; optical flow (KLT, RAFT).
 
-## Monte Carlo Localization (AMCL)
-Particle filter over $(x,y,\theta)$ on known grid map; motion model (odometry model with noise), sensor model (likelihood field / beam); resample; adaptive N (KLD). Issues: symmetric environments, kidnapped robot, dynamic obstacles. ROS: `nav2_amcl`. Alternatives: LiDAR NDT localization, visual re-loc (hloc), AprilTag/QR fiducials, UWB anchors, GNSS-RTK + lane maps, magnetic/WiFi fingerprinting.
+![pinhole](/img/fig/pinhole-camera.svg)
+*The pinhole camera: far things look small because of similar triangles.*
 
-## Evaluation
-ATE (absolute trajectory error after SE(3)/Sim(3) alignment), RPE (relative), drift %, loop-closure precision/recall, map accuracy, tools: `evo`, KITTI, EuRoC, TUM-RGBD, Hilti, NCLT, Newer College.
+- **Projection:** a 3-D point $(X,Y,Z)$ lands at pixel $u=f_xX/Z+c_x$, $v=f_yY/Z+c_y$.
+- **Epipolar geometry:** a point in one image lies on a *line* in the other; the essential matrix ($E=[t]_\times R$) encodes the relative pose of two views.
+- **PnP:** known 3-D points + their pixels → camera pose. **Triangulation:** two views → 3-D point.
+- **Monocular scale ambiguity:** one camera can't tell a big far thing from a small near one; fix with an IMU, stereo, depth or known object size.
+- **Features:** ORB, SIFT, SuperPoint + LightGlue, optical flow (KLT, RAFT).
 
-## Failure modes
-Perceptual aliasing, dynamic objects, textureless/ glare, feature-poor corridors (LiDAR degeneracy – detect via Hessian eigenvalues), motion blur, IMU saturation, time offsets, lost tracking, wheel slip, long-term map change.
+## Monte-Carlo Localization (AMCL)
+Particle filter over $(x,y,\theta)$ on a known map: move particles with odometry, weight by how well the LiDAR scan fits the map, resample. Weak spots: symmetric corridors, the "kidnapped robot", moving people. Alternatives: NDT localisation, visual re-localisation, AprilTags, UWB, RTK-GNSS.
+
+## How SLAM is evaluated
+**ATE** (absolute trajectory error after alignment), **RPE** (relative error), drift %, loop-closure precision/recall. Tools: `evo`. Datasets: KITTI, EuRoC, TUM-RGBD, Hilti, Newer College.
+
+## Failure modes to mention
+Perceptual aliasing (two places look the same), moving objects, textureless or glaring scenes, feature-poor corridors (LiDAR degeneracy), motion blur, IMU saturation, time offsets, wheel slip, long-term map changes.
 
 ## Interview Q&A
 
-**Why loop closure?** Odometry drifts unboundedly; loop closure adds a constraint that corrects whole trajectory.
+**Why do we need loop closure?**
+*Simply:* odometry drifts without bound; recognising a previously visited place gives a constraint that corrects the whole path.
 
-**Why graph-based over EKF SLAM?** Sparse, re-linearizable, scales to large maps; EKF is dense and inconsistent due to early linearization.
+**Why graph-based SLAM instead of EKF-SLAM?**
+*Simply:* graphs are sparse, re-linearisable and scale to big maps; EKF-SLAM is dense, becomes inconsistent and costs $O(n^2)$.
 
-**What is IMU preintegration?** Integrate IMU between keyframes in a body frame relative to the starting state, so the factor needn't be recomputed when the linearization point changes.
+**What is IMU preintegration?**
+*Simply:* summarise many IMU readings between two keyframes into one relative-motion factor, so the optimiser doesn't redo the integration at each step.
 
-**ICP convergence issues?** Local minima, bad init, partial overlap, degenerate geometry; use point-to-plane, robust kernels, multi-resolution, global init.
+**Why can ICP fail?**
+*Simply:* bad initial guess, little overlap, or degenerate geometry (a long flat wall). Use point-to-plane, robust loss, multi-resolution, or a global initialiser.
 
-**Monocular scale?** Unobservable; fix with IMU, depth, known object size, or learned metric depth.
-
-**Difference between odometry and SLAM?** Odometry = local, drifting; SLAM = adds global consistency (loop closure + map).
+**Odometry vs SLAM?**
+*Simply:* odometry is local and drifts; SLAM adds a map and loop closure for global consistency.

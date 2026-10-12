@@ -4,6 +4,19 @@ title: Sim-to-Real Transfer
 
 # Sim-to-Real
 
+:::tip[The 30-second version]
+A policy that is perfect in simulation often stumbles on the real robot because the simulator is slightly wrong (friction, motor response, camera noise, delays). **Sim-to-real** is the toolbox for closing that gap: *randomise* the simulator so reality looks like "just another sample", *measure* the real robot to fix the simulator, and *add safety layers* for the rest.
+:::
+
+![sim2real gap](/img/fig/sim2real-gap.svg)
+*The same policy in sim (blue) and naively on hardware (red); randomisation plus system identification pulls it back (green dashed).*
+
+![domain randomization](/img/fig/domain-randomization.svg)
+*Domain randomization: train across a range of settings so the real value is inside the training distribution.*
+
+![teacher student](/img/fig/teacher-student.svg)
+*A common companion trick: train a teacher with simulator secrets, then distil to a student that only uses real sensors.*
+
 ## Sources of the reality gap
 1. **Dynamics:** inertial params, friction/restitution, contact model, joint damping, backlash, cable forces.
 2. **Actuation:** motor torque-speed limits, PD latency, bandwidth, thermal limits, gearbox compliance.

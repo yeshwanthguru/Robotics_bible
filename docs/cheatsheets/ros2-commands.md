@@ -4,6 +4,10 @@ title: ROS 2 / Isaac / Docker Command Cheat Sheet
 
 # Commands
 
+:::tip[How to use this page]
+A copy-paste reference for the commands you reach for daily: ROS 2 introspection, building, Isaac Lab training, Docker with GPU, Git and debugging.
+:::
+
 ## ROS 2
 ```bash
 ros2 run <pkg> <exe>              ros2 launch <pkg> <file.launch.py> arg:=val

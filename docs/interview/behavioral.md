@@ -4,6 +4,10 @@ title: Behavioral Story Bank (fill this in!)
 
 # Behavioral & Research Story Bank
 
+:::tip[The 30-second version]
+Technical skills get you the interview; **stories** get you the offer. Prepare 8–10 short stories from your research and projects and reuse them for any behavioural question. Keep each to ~90 seconds with real numbers.
+:::
+
 Use **STAR** (Situation, Task, Action, Result) + **lesson learned**. Fill every template with your real work. Keep each to 90 seconds.
 
 ## Your research & projects (edit)

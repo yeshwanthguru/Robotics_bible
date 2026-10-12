@@ -4,59 +4,98 @@ title: Control Theory (PID → MPC → Impedance)
 
 # Control
 
-## Classical
-- **Open vs closed loop**, plant $G(s)$, transfer function, poles/zeros, stability (all poles in LHP), Routh–Hurwitz, Nyquist, Bode (gain/phase margin), root locus.
-- Time-domain specs: rise time, overshoot, settling time, steady-state error.
-- **PID:** $u=K_pe+K_i\int e+K_d\dot e$. P speeds response; I removes steady-state error (windup → anti-windup clamp/back-calculation); D damps (noise → filtered derivative, derivative-on-measurement). Tuning: Ziegler–Nichols, relay auto-tune, loop-shaping. Cascaded loops (current→velocity→position), feedforward ($\tau_{ff}$ gravity/friction compensation) reduces error massively.
-- Discretization (Tustin, ZOH), sample-time effects, delay compensation (Smith predictor), saturation.
+:::tip[The 30-second version]
+**Control** = making a system do what you want, *continuously*, using feedback. Think of a thermostat or cruise control: measure, compare with the goal, adjust, repeat many times a second.
+- **PID** is the everyday tool (simple, works on most things).
+- **LQR / MPC** are smarter: they use a *model* of the system to plan the best correction.
+- **Impedance control** makes a robot act like a soft spring so it can safely touch things.
+:::
 
-## State-space & optimal
-$\dot x=Ax+Bu,\ y=Cx$. Controllability $[B\ AB\cdots]$ full rank; observability $[C;CA;\ldots]$ full rank. Pole placement $u=-Kx$.
-- **LQR:** $\min\int x^\top Qx+u^\top Ru$; $u=-Kx$, $K=R^{-1}B^\top P$, P solves the Riccati equation (CARE/DARE). Guaranteed margins (SISO); used for balancing, humanoid ZMP preview.
-- **LQG** = LQR + Kalman (separation principle); **iLQR/DDP** for nonlinear trajectory optimization.
-- **H∞ / μ-synthesis** robust control; **Lyapunov** stability $V>0,\dot V<0$; **LaSalle**; passivity.
+## Feedback in one picture
 
-## Nonlinear & robot control
-| Method | Idea |
-|---|---|
-| Computed torque / inverse dynamics | cancel dynamics + PD in task/joint space |
-| Sliding mode | switching surface, robust to bounded disturbance; chattering |
-| Adaptive control (Slotine–Li) | estimate inertial parameters online |
-| **Impedance control** | $M_d\ddot e+D_d\dot e+K_de=F_{ext}$ — robot behaves as mass-spring-damper; safe contact |
-| **Admittance control** | measure force, output motion ($\dot x$ command) — for position-controlled robots w/ F/T sensor |
-| Hybrid position/force | split task space into force-/position-controlled directions |
-| Operational-space control (Khatib) | $F=\Lambda\ddot x_d+\mu+p$, $\tau=J^\top F+N^\top\tau_0$ |
-| Task-priority / null-space | hierarchical tasks via projectors |
-| **Whole-body control (WBC)** | QP: minimize task errors s.t. dynamics, contact cone, torque/joint limits (e.g. HQP, TSID) |
-| Passivity/energy shaping, CBF/CLF-QP | provable safety/stability |
-| Visual servoing (IBVS/PBVS) | image-feature error drives velocity via interaction matrix |
-| Iterative learning, repetitive control | repeated tasks |
+Error = goal − measurement. The controller turns error into a command; the plant (robot) responds; the sensor feeds back. **Feedforward** (a prediction like "holding this arm up needs gravity-compensation torque") does the heavy lifting; **feedback** cleans up the rest.
+
+## PID: the workhorse
+
+$$ u = K_p\,e + K_i\!\int e\,dt + K_d\,\dot e $$
+
+- **P** (proportional): push in proportion to the error now.
+- **I** (integral): keep pushing while any error *remains* (removes steady-state error).
+- **D** (derivative): brake based on how fast the error is changing (adds damping).
+
+![PID response](/img/fig/pid-response.svg)
+*Same target, four controllers. P alone stops short; too much P oscillates; adding D calms it; adding I removes the leftover gap.*
+
+**Practical tips:** limit the integrator (*anti-windup*) when the motor saturates; apply the derivative to the **measurement** (not the setpoint) to avoid a "kick"; filter the D term (noise); add **gravity/friction feedforward** so gains can stay low and safe. Tune with Ziegler–Nichols or relay auto-tune. Use cascaded loops (current → velocity → position).
+
+**Classical theory to name-drop:** poles and stability (all poles in the left half-plane), Bode plots and gain/phase margin, Nyquist, root locus, settling time/overshoot, discretisation (Tustin), delay compensation.
+
+## State-space and optimal control
+
+Describe the system as $\dot x=Ax+Bu$. **Controllable** (you can steer it anywhere) and **observable** (you can infer the state from the output) are the key properties.
+
+**LQR** chooses the feedback gain that best trades "keep the state near zero" against "don't use too much effort":
+$$ \min \int x^\top Q x + u^\top R u\,dt \;\Rightarrow\; u=-Kx $$
+
+> **In words:** "Q says what errors hurt, R says what effort costs; LQR finds the gain that balances the two optimally." Used for balancing robots, humanoid walking previews, drones.
+
+**LQG** = LQR + Kalman filter. **iLQR / DDP** extend this to non-linear trajectories. **Lyapunov** analysis proves stability by finding an energy-like function that always decreases.
+
+## Robot-specific controllers
+
+| Controller | Plain idea | Use |
+|---|---|---|
+| **Computed torque / inverse dynamics** | cancel the robot's physics, then PD | precise arm tracking |
+| **Impedance control** | robot behaves like a mass-spring-damper | **safe contact**, human interaction |
+| **Admittance control** | measure force, output motion | stiff position-controlled arms with a F/T sensor |
+| **Hybrid force/position** | position along some axes, force along others | polishing, insertion, wiping |
+| **Operational-space control** | control the hand directly, using the dynamics | arms and humanoid hands |
+| **Whole-body control (WBC)** | one QP solving all tasks under contact and torque limits | humanoids, legged robots |
+| **Visual servoing** | drive the image error to zero | camera-guided approach |
+| **Sliding mode / adaptive** | robust to model errors / learn parameters | uncertain dynamics |
+| **CBF / CLF-QP** | safety and stability as constraints | provable safety filters |
+
+$$ M_d\ddot e + D_d\dot e + K_d e = F_{ext} $$
+
+> **Impedance in words:** "if you push the robot, it gives way like a spring of stiffness $K_d$ and damping $D_d$." Softer = safer; stiffer = more precise. Choose per task.
 
 ## Model Predictive Control (MPC)
-At each step solve finite-horizon problem, apply first input, repeat:
-$$\min_{u_{0:N-1}}\ \sum_{k=0}^{N-1}\ell(x_k,u_k)+V_f(x_N)\ \ \text{s.t. } x_{k+1}=f(x_k,u_k),\ x\in\mathcal X,\ u\in\mathcal U$$
-- Linear MPC → QP (OSQP, qpOASES, HPIPM, ECOS); nonlinear → SQP/RTI (acados, CasADi+IPOPT, ACADOS, FORCES Pro), **iLQR/DDP** (Crocoddyl, ALTRO), sampling-based **MPPI/CEM** (GPU-friendly, handles non-differentiable costs).
-- Stability via terminal cost/set; recursive feasibility; soft constraints; warm start; real-time iteration scheme.
-- Applications: **centroidal MPC for legged robots** (MIT Cheetah, ANYmal), car/path tracking, drone racing, contact-implicit MPC.
+
+![MPC horizon](/img/fig/mpc-horizon.svg)
+*At each step MPC plans the best sequence of actions over a short horizon, executes **only the first**, then re-plans with fresh measurements.*
+
+$$ \min_{u_{0:N-1}}\ \sum_{k}\ell(x_k,u_k)+V_f(x_N)\quad\text{s.t. }x_{k+1}=f(x_k,u_k),\ x\in\mathcal X,\ u\in\mathcal U $$
+
+> **In words:** "predict the future with a model, choose the cheapest sequence of moves that respects all limits, do the first move, repeat."
+
+Why it's loved: handles **constraints** (joint limits, friction cones, obstacles) naturally. Solvers: QP (OSQP, HPIPM), nonlinear (acados, CasADi+IPOPT), **iLQR/DDP** (Crocoddyl), sampling-based **MPPI / CEM** (GPU-friendly). Applications: **centroidal MPC for legged robots**, car and drone tracking, contact-implicit planning.
 
 ## Trajectory generation
-Polynomial (cubic/quintic), trapezoidal velocity profile, S-curve (jerk-limited), minimum-snap for quadrotors (differentially flat), time-optimal path parameterization **TOPP-RA**, splines, Ruckig online trajectory generator.
+Cubic/quintic polynomials, trapezoidal velocity profiles, jerk-limited S-curves, minimum-snap for drones, time-optimal path parameterisation (TOPP-RA), **Ruckig** (online, jerk-limited).
 
-## Controller stack for robot arm (typical)
-`trajectory → IK/OSC → joint impedance/torque control @1 kHz → motor FOC`; use `ros2_control` hardware interface + controllers (joint_trajectory_controller, forward_command, admittance, cartesian_impedance).
+## How a whole robot's control stack nests
+
+![control hierarchy](/img/fig/control-hierarchy.svg)
+*Fast loops sit near the motors; slow, smart loops sit at the top.*
+
+In ROS 2, `ros2_control` implements the real-time layer (controllers like `joint_trajectory_controller` plus hardware interfaces).
 
 ## Interview Q&A
 
-**Integral windup?** Integrator accumulates while actuator saturates; clamp or back-calculate.
+**What is integral windup?**
+*Simply:* the I term keeps growing while the motor is stuck at its limit, then overshoots badly. *Fix:* clamp the integrator or back-calculate.
 
-**Why derivative on measurement?** Avoids derivative kick on setpoint step.
+**LQR vs MPC?**
+*Simply:* LQR is a fixed formula for unconstrained, linear systems; MPC re-solves a constrained problem every step, handles non-linearity, but costs compute.
 
-**LQR vs MPC?** LQR unconstrained, infinite horizon, offline gain; MPC handles constraints & nonlinearity online at compute cost.
+**Impedance vs admittance control?**
+*Simply:* impedance: motion in → force out (needs torque-controlled, backdrivable robot). Admittance: force in → motion out (works on stiff position-controlled arms).
 
-**Impedance vs admittance?** Impedance: motion in → force out (needs torque control, back-drivable). Admittance: force in → motion out (works on stiff position-controlled arms, less transparent).
+**Why is gravity compensation useful?**
+*Simply:* it removes the posture-dependent load so PID gains can be small, safe and accurate.
 
-**Why is gravity compensation important?** Removes configuration-dependent load so PID gains can be low (safer, less steady-state error).
+**How do you prove a controller is stable?**
+*Simply:* find a Lyapunov function whose value always decreases; for linear systems check eigenvalues/poles.
 
-**How to prove stability?** Find Lyapunov function; for linear check eigenvalues; for sampled systems check discrete poles inside unit circle.
-
-**How to choose MPC horizon?** Long enough to capture dynamics/constraints (≥ settling time), short enough for real-time; use terminal cost to compensate.
+**How do you pick an MPC horizon?**
+*Simply:* long enough to "see" the dynamics and constraints (about the settling time), short enough to solve in real time; add a terminal cost to cover the rest.

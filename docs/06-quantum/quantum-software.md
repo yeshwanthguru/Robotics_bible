@@ -4,67 +4,92 @@ title: Quantum Software Stack & Code
 
 # Quantum Software Stack
 
-| Framework | Owner | Use |
+:::tip[The 30-second version]
+You program a quantum computer by writing a **circuit**: a list of gates on qubits, then "measure". The software stack takes your circuit, translates it to the chip's native gates, fits it onto the chip's wiring, and runs it many times ("shots") to estimate probabilities. **Qiskit** (IBM) and **PennyLane** (Xanadu) are the two names to know.
+:::
+
+## What each framework is for
+
+| Framework | Owner | Pick it for |
 |---|---|---|
-| **Qiskit** | IBM | circuits, transpiler, Runtime primitives (Sampler/Estimator), Aer simulator |
-| **PennyLane** | Xanadu | differentiable QML, plugs into PyTorch/JAX, many backends |
-| **Cirq** | Google | NISQ circuits, noise models |
-| **CUDA-Q** | NVIDIA | GPU-accelerated simulation, hybrid quantum-classical, C++/Python |
-| **Q#** / Azure Quantum | Microsoft | FT resource estimation |
-| **Braket SDK** | AWS | multiple hardware vendors |
-| **Ocean** | D-Wave | annealing, BQM |
-| **tket / OpenQASM 3** | Quantinuum / community | compilation, IR |
+| **Qiskit** | IBM | circuits, transpiler, real IBM hardware, Runtime primitives |
+| **PennyLane** | Xanadu | differentiable quantum ML; plugs into PyTorch/JAX |
+| **Cirq** | Google | noise-aware NISQ circuits |
+| **CUDA-Q** | NVIDIA | GPU-accelerated simulation, hybrid quantum–classical |
+| **Q#** / Azure Quantum | Microsoft | fault-tolerant resource estimation |
+| **Amazon Braket** | AWS | many hardware vendors in one SDK |
+| **Ocean** | D-Wave | annealing / QUBO |
+| **OpenQASM 3 / tket** | community / Quantinuum | circuit IR and compilation |
 
-Compilation stages: logical circuit → decomposition to native gates → layout/routing (SWAP insertion for coupling map) → optimization → pulse schedule.
+**Compilation pipeline:** logical circuit → decompose into native gates → **layout and routing** (insert SWAPs because qubits only talk to neighbours) → optimise → pulse schedule.
 
-## Bell state in Qiskit
+**Primitives (Qiskit):** *Sampler* returns bit-string counts; *Estimator* returns expectation values of observables (what VQE needs).
+
+## Example 1: a Bell pair (the "hello world")
+
 ```python
 from qiskit import QuantumCircuit
 from qiskit.primitives import StatevectorSampler
+
 qc = QuantumCircuit(2, 2)
-qc.h(0); qc.cx(0, 1); qc.measure([0, 1], [0, 1])
+qc.h(0)              # put qubit 0 in a 50/50 blend
+qc.cx(0, 1)          # entangle: qubit 1 follows qubit 0
+qc.measure([0, 1], [0, 1])
+
 counts = StatevectorSampler().run([qc], shots=1000).result()[0].data.c.get_counts()
-print(counts)   # ~{'00': 500, '11': 500}
+print(counts)        # about {'00': 500, '11': 500}   (never '01' or '10')
 ```
 
-## VQE-style variational circuit in PennyLane
+## Example 2: a tiny VQE in PennyLane
+
 ```python
 import pennylane as qml
 from pennylane import numpy as np
 
 dev = qml.device("default.qubit", wires=2)
-H = qml.Hamiltonian([1.0, 0.5], [qml.PauliZ(0) @ qml.PauliZ(1), qml.PauliX(0)])
+H = qml.Hamiltonian([1.0, 0.5], [qml.PauliZ(0) @ qml.PauliZ(1), qml.PauliX(0)])   # the "energy" to minimise
 
 @qml.qnode(dev)
-def cost(theta):
-    qml.RY(theta[0], wires=0); qml.RY(theta[1], wires=1)
+def energy(theta):
+    qml.RY(theta[0], wires=0)
+    qml.RY(theta[1], wires=1)
     qml.CNOT(wires=[0, 1])
     return qml.expval(H)
 
 opt = qml.AdamOptimizer(0.1)
 theta = np.array([0.1, 0.2], requires_grad=True)
 for _ in range(100):
-    theta = opt.step(cost, theta)
-print(cost(theta))
+    theta = opt.step(energy, theta)       # classical optimiser tunes the quantum circuit
+print(energy(theta))
 ```
 
-## Grover (2 qubits, marking |11⟩)
+## Example 3: Grover on 2 qubits (finds |11⟩ in one round)
+
 ```python
 from qiskit import QuantumCircuit
 qc = QuantumCircuit(2)
-qc.h([0, 1])
-qc.cz(0, 1)                       # oracle
-qc.h([0, 1]); qc.x([0, 1]); qc.cz(0, 1); qc.x([0, 1]); qc.h([0, 1])  # diffusion
-qc.measure_all()                  # measures 11 with prob 1 (N=4, 1 iteration)
+qc.h([0, 1])                                        # all answers equally likely
+qc.cz(0, 1)                                         # oracle: mark |11>
+qc.h([0, 1]); qc.x([0, 1]); qc.cz(0, 1); qc.x([0, 1]); qc.h([0, 1])   # diffusion: amplify
+qc.measure_all()                                    # now measures 11 with ~100% probability
 ```
 
-## Hybrid quantum-classical in robotics
-Typical loop: ROS2 node publishes problem (e.g. assignment cost matrix) → quantum service (simulator/QPU via cloud) → returns solution → fallback to classical solver on timeout. Treat QPU as an **accelerator behind an async action server**, never in a hard real-time loop.
+## Using a quantum solver from a robot stack
+1. A ROS 2 node publishes the optimisation problem (e.g. a cost matrix).
+2. A **quantum service node** submits it to a simulator or cloud QPU (queue times can be minutes).
+3. The result returns through an **action server**, with a **classical solver as fallback**.
+4. Quantum never sits inside a real-time control loop.
 
 ## Interview Q&A
 
-**What do Estimator and Sampler primitives return?** Estimator → expectation values of observables; Sampler → bitstring quasi-distributions.
+**What do Sampler and Estimator return?**
+*Simply:* Sampler gives bit-string frequencies; Estimator gives the average value of an observable.
 
-**Why transpile?** Hardware supports only native gates & limited connectivity.
+**Why transpile?**
+*Simply:* real chips only support a few native gates and limited connectivity.
 
-**Why simulate classically only to ~50 qubits?** State vector needs $2^n\cdot16$ bytes (50 qubits ≈ 16 PB); tensor-network methods stretch low-entanglement circuits.
+**Why can classical computers simulate only ~50 qubits exactly?**
+*Simply:* the state needs $2^n$ numbers: 50 qubits is petabytes. Tensor-network methods stretch this for lightly entangled circuits.
+
+**What is a "shot"?**
+*Simply:* one run of the circuit; you repeat it thousands of times to estimate probabilities.

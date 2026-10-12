@@ -4,6 +4,19 @@ title: NVIDIA Isaac Lab (Deep Dive)
 
 # Isaac Lab
 
+:::tip[The 30-second version]
+**Isaac Lab** is the *gym* built on Isaac Sim. It gives you ready-made robot-learning tasks (walk, reach, grasp, open a drawer), runs **thousands of copies in parallel on one GPU**, and plugs in RL libraries so you can train a policy with one command. You define: the robot, the scene, what the policy sees, what it can do, what it is rewarded for, and when an episode ends.
+:::
+
+![parallel envs](/img/fig/parallel-envs.svg)
+*One GPU, thousands of robots practising simultaneously; all their experience trains one policy.*
+
+![policy io](/img/fig/policy-io.svg)
+*What a locomotion task wires up: observations in, joint targets out, PD control underneath.*
+
+![reward terms](/img/fig/reward-terms.svg)
+*The reward is a weighted sum of terms you write (and tune).*
+
 **Isaac Lab** (formerly Orbit; successor to Isaac Gym/IsaacGymEnvs) is an open-source (BSD-3) GPU-accelerated framework for **robot learning** built on Isaac Sim. It provides modular environments for RL, imitation learning, motion planning and sim-to-real, with thousands of parallel environments on one GPU.
 
 ```mermaid
