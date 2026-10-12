@@ -31,6 +31,10 @@ Each page follows the same pattern so you always know where to look:
 | **1 week** | every page in your role path; redraw the figures from memory |
 | **Always** | [story bank](../interview/behavioral.md) with your PhD and project stories |
 
+## Want to build one yourself?
+
+See **[★ Build It Yourself](../build-your-own/00-start-building.md)**: step-by-step guides (with tested code) to build an AI model, a VLM and a VLA, plus the shared evaluation, deployment and debugging toolkit.
+
 ## Role paths
 
 | Target role | Read in this order |
