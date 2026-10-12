@@ -1,0 +1,4 @@
+:root { --ifm-color-primary: #2e6bd6; --ifm-code-font-size: 92%; }
+[data-theme='dark'] { --ifm-color-primary: #6aa5ff; }
+.markdown table { display: table; width: 100%; font-size: 0.92rem; }
+.markdown h2 { margin-top: 2.2rem; border-bottom: 1px solid var(--ifm-toc-border-color); padding-bottom: .2rem; }
