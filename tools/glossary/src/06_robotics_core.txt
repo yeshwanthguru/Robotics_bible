@@ -1,0 +1,153 @@
+# Term | Domain | Definition | refs
+Ackermann steering | Robotics | Car-like steering where the front wheels turn about a common point so wheels roll without slipping; modelled by the bicycle model. | kin,nav
+Actuator | Robotics | A device that produces motion or force: electric motor, hydraulic cylinder, pneumatic muscle, tendon. | sens,dyn
+Admittance control | Control | Measures force and outputs motion; lets a stiff position-controlled robot act compliantly. | ctrl
+Angular velocity | Robotics | How fast and about which axis a body rotates (a 3-vector). | kin
+Articulated robot | Robotics | A robot arm made of rotary joints connected by links. | kin
+Axis–angle | Robotics | Representing a rotation by an axis and an angle (the rotation vector). | kin
+Backdrivability | Robotics | How easily external forces can move the joint through its gearbox; high backdrivability gives good force sensitivity and impact tolerance. | dyn,leg
+Backlash | Robotics | Play in a gear train that causes lost motion when direction reverses. | sens
+Base frame | Robotics | The coordinate frame fixed to a robot's base. | kin
+Bipedal robot | Robotics | A robot that walks on two legs. | leg
+BLDC motor | Robotics | Brushless DC motor: an efficient electric motor commutated electronically; the standard robot actuator. | sens,dyn
+Bimanual manipulation | Robotics | Using two arms or hands together on one task. | manip
+Cartesian space | Robotics | Task space described by position and orientation in 3-D, as opposed to joint space. | kin
+Centre of mass (CoM) | Robotics | The point where a body's mass can be considered concentrated; central to balance. | dyn,leg
+Centroidal dynamics | Robotics | The dynamics of a robot's total linear and angular momentum about its centre of mass; the basis of legged MPC. | dyn,leg
+Closed kinematic chain | Robotics | A mechanism where links form loops (parallel robots, a hand holding an object). | kin
+Cobot | Robotics | A collaborative robot designed to work safely near people (force-limited). | space
+Compliance | Robotics | The ability to yield to external forces; the inverse of stiffness. | ctrl,manip
+Configuration space (C-space) | Planning | The space of all joint configurations of a robot; planning is a path search in it. | plan
+Coriolis force | Robotics | Velocity-dependent coupling forces between joints in the equation of motion. | dyn
+Degrees of freedom (DoF) | Robotics | The number of independent ways a robot can move; a free rigid body has 6. | kin
+Denavit–Hartenberg (DH) parameters | Robotics | A standard convention using four numbers per joint to describe a serial arm's geometry. | kin
+Differentially flat | Robotics | A system whose states and inputs can be computed from a few flat outputs and their derivatives; quadrotors are flat in position and yaw. | nav,ctrl
+Differential drive | Robotics | A mobile base with two independently driven wheels; turns by speed difference. | kin,nav
+Dexterity | Robotics | Skill in controlling object pose and contact with a hand: in-hand manipulation, tool use. | manip
+End-effector | Robotics | The tool or hand at the end of a robot arm. | kin
+Euler angles | Robotics | Three sequential rotations (roll, pitch, yaw); intuitive but suffers from gimbal lock. | kin
+Exoskeleton | Robotics | A wearable robotic frame for assistance, rehabilitation or teleoperation. | space,manip
+Floating base | Robotics | A robot whose base is not fixed to the world (legged, flying, space robots). | dyn
+Force closure | Robotics | A grasp that can resist any external force and torque using friction. | manip
+Force/torque sensor | Robotics | A sensor measuring the 6-axis wrench at a wrist or ankle. | sens
+Form closure | Robotics | A grasp that immobilises an object by geometry alone. | manip
+Forward kinematics (FK) | Robotics | Computing the end-effector pose from joint values. | kin
+Friction cone | Robotics | The set of contact forces that do not cause slipping: tangential force at most friction coefficient times normal force. | dyn,manip
+Gait | Robotics | A pattern of leg movements (walk, trot, bound, gallop). | leg
+Gear ratio | Robotics | The ratio of motor speed to output speed; multiplies torque and reflected inertia (by its square). | dyn,sens
+Gimbal lock | Robotics | Loss of one rotational degree of freedom when two Euler axes align. | kin
+Gravity compensation | Control | Applying torques that cancel gravity so the arm holds its pose with low gains. | ctrl,dyn
+Gripper | Robotics | An end-effector for grasping (parallel-jaw, suction, adaptive, multi-finger). | manip
+Haptic feedback | Robotics | Returning force or touch sensation to a human operator. | manip
+Holonomic | Robotics | A robot that can move instantaneously in any direction of its configuration space (omni-wheel base). | kin,nav
+Homogeneous transformation | Robotics | A 4×4 matrix combining rotation and translation; chains by multiplication. | kin
+Humanoid robot | Robotics | A robot with a human-like body: two legs, two arms, torso, head. | leg,space
+Impedance | Robotics | The dynamic relationship between motion and force (spring-damper behaviour) a robot presents to its environment. | ctrl
+Inertia matrix (mass matrix) | Robotics | The configuration-dependent matrix relating joint accelerations to required torques. | dyn
+Inverse dynamics | Robotics | Computing the joint torques needed to produce a desired motion. | dyn
+Inverse kinematics (IK) | Robotics | Computing joint values that place the end-effector at a desired pose. | kin
+Jacobian (robot) | Robotics | The matrix mapping joint velocities to end-effector velocity; also maps end-effector force to joint torque. | kin
+Joint | Robotics | A connection that allows relative motion between links: revolute (rotary) or prismatic (sliding). | kin
+Joint space | Robotics | The space of joint angles or positions. | kin
+Kinematic chain | Robotics | A series of links connected by joints. | kin
+Kinematics | Robotics | The geometry of motion without regard to forces. | kin
+Lagrangian mechanics | Robotics | Deriving equations of motion from kinetic minus potential energy. | dyn
+Legged robot | Robotics | A robot that moves by stepping (biped, quadruped, hexapod). | leg
+Link | Robotics | A rigid body between two joints. | kin
+Locomotion | Robotics | Moving the robot's body through the environment. | leg,nav
+Loco-manipulation | Robotics | Combining locomotion and manipulation, e.g. a humanoid walking while carrying an object. | leg,manip
+Manipulability | Robotics | A measure of how freely the end-effector can move in each direction at a given pose. | kin
+Manipulator | Robotics | A robot arm for handling objects. | kin
+Mobile manipulator | Robotics | A robot arm mounted on a mobile base. | nav,manip
+Newton–Euler equations | Robotics | Equations of motion from force and torque balance on each link; recursive form (RNEA) is O(n). | dyn
+Non-holonomic | Robotics | A velocity constraint that cannot be integrated into a position constraint, such as a car's no-sideways-slip. | kin,nav
+Odometry | Robotics | Estimating position change from motion sensors (wheel encoders, IMU, visual); drifts over time. | slam,nav
+Parallel robot | Robotics | A mechanism with several kinematic chains connecting base to platform (delta, Stewart platform). | kin
+Payload | Robotics | The maximum mass a robot can carry. | sens
+Pose | Robotics | Position plus orientation of a frame. | kin
+Prismatic joint | Robotics | A sliding joint. | kin
+Proprioception | Robotics | Sensing the robot's own body state: joint angles, torques, IMU. | sens
+Quadruped | Robotics | A four-legged robot (Spot, ANYmal, Unitree Go2). | leg
+Quaternion | Robotics | Four-number unit representation of rotation without gimbal lock. | kin
+Reachability | Robotics | Whether a pose can be reached by the end-effector; the reachable set is the workspace. | kin,manip
+Redundancy (kinematic) | Robotics | Having more joints than needed for the task, allowing extra motion in the null space. | kin
+Remote centre of motion (RCM) | Robotics | A fixed pivot point about which a tool rotates, used in minimally invasive surgery. | space
+Revolute joint | Robotics | A rotary hinge joint. | kin
+Rigid body | Robotics | An idealised object whose points keep fixed distances. | dyn
+Rotation matrix | Robotics | A 3×3 orthogonal matrix with determinant one representing orientation. | kin
+SCARA robot | Robotics | A selective-compliance articulated arm: fast planar motion for assembly. | kin
+Series elastic actuator (SEA) | Robotics | An actuator with a spring in series with the motor, giving force sensing and shock tolerance. | dyn,sens
+Singularity | Robotics | A configuration where the Jacobian loses rank; some end-effector motions become impossible. | kin
+SE(3) | Robotics | The group of 3-D rigid transformations (rotation plus translation). | kin
+SO(3) | Robotics | The group of 3-D rotations. | kin
+Soft robot | Robotics | A robot made of compliant materials that deform to move or grasp. | space
+Stiffness | Robotics | Resistance to deformation, force per displacement. | ctrl
+Support polygon | Robotics | The convex hull of a legged robot's ground contact points; the centre of mass must project inside it for static stability. | leg
+Task space | Robotics | The space in which the task is described, usually end-effector pose. | kin,ctrl
+Tool centre point (TCP) | Robotics | The reference point on a tool used to define its pose. | kin
+Torque | Robotics | Rotational force. | dyn
+Twist | Robotics | A 6-vector combining angular and linear velocity of a rigid body. | kin
+Underactuated | Robotics | A system with fewer actuators than degrees of freedom (a walking robot's floating base). | dyn,leg
+URDF | Robotics | Unified Robot Description Format: XML describing a robot's links, joints, inertias and meshes. | ros2,sim
+Velocity kinematics | Robotics | The relation between joint velocities and end-effector velocity, via the Jacobian. | kin
+Wheel odometry | Robotics | Estimating base motion from wheel encoder counts. | slam,nav
+Workspace | Robotics | The set of positions a robot's end-effector can reach. | kin
+Wrench | Robotics | A 6-vector combining force and torque. | manip,dyn
+Zero-moment point (ZMP) | Robotics | The ground point where the net moment of gravity and inertia forces is zero; must stay inside the foot for flat-ground walking stability. | dyn,leg
+Capture point (DCM) | Robotics | The point where a robot should step to come to rest; the divergent component of motion. | dyn,leg
+Linear inverted pendulum model (LIPM) | Robotics | A simple walking model: a point mass at constant height on a massless leg. | dyn,leg
+Spring-loaded inverted pendulum (SLIP) | Robotics | A running model: a point mass bouncing on a spring leg. | dyn,leg
+Whole-body control (WBC) | Control | A controller (often a QP) that coordinates all joints to achieve several tasks under contact and torque limits. | ctrl,leg
+Operational-space control | Control | Controlling the end-effector in task space using the robot's dynamics (Khatib). | ctrl
+Computed-torque control | Control | Cancelling the robot's dynamics with the model and adding a PD law on the error. | ctrl,dyn
+PID controller | Control | Proportional–integral–derivative feedback: acts on present, accumulated and trending error. | ctrl
+Integral windup | Control | The integral term growing while the actuator is saturated, causing overshoot when released. | ctrl
+Feedforward | Control | A command computed from a model or reference to cancel known effects before any error appears. | ctrl
+Feedback control | Control | Using measured output to correct the input and reduce error. | ctrl
+Transfer function | Control | The ratio of output to input in the Laplace domain describing a linear system. | ctrl,math
+Pole (control) | Control | A root of a system's characteristic equation; poles in the left half-plane mean stability. | ctrl
+Stability margin | Control | How far a feedback loop is from instability (gain and phase margin). | ctrl
+Lyapunov stability | Control | Proving stability by finding an energy-like function that never increases. | ctrl
+LQR | Control | Linear-quadratic regulator: optimal state feedback for linear systems with quadratic cost. | ctrl
+LQG | Control | LQR combined with a Kalman filter. | ctrl,est
+Model predictive control (MPC) | Control | Repeatedly solving a finite-horizon optimal control problem with constraints and applying the first action. | ctrl
+MPPI | Control | Model predictive path-integral control: sampling-based MPC that averages many random rollouts. | ctrl,nav
+iLQR / DDP | Control | Iterative methods for trajectory optimisation of nonlinear systems using local linear-quadratic approximations. | ctrl
+Control barrier function (CBF) | Control | A function used to enforce safety constraints by limiting control inputs so the state stays in a safe set. | ctrl
+Sliding-mode control | Control | A robust nonlinear controller that forces the state onto a surface; can chatter. | ctrl
+Visual servoing | Control | Controlling robot motion directly from image feedback (IBVS, PBVS). | ctrl,cv
+Hybrid force/position control | Control | Controlling force in some directions and position in the others. | ctrl,manip
+Cascade control | Control | Nested control loops (current inside velocity inside position). | ctrl
+Field-oriented control (FOC) | Control | A motor control technique that regulates torque-producing and flux-producing currents separately. | ctrl,sens
+Trajectory | Planning | A path together with its timing (positions, velocities over time). | plan,ctrl
+Path planning | Planning | Finding a feasible geometric route avoiding obstacles. | plan
+Motion planning | Planning | Finding collision-free, dynamically feasible motions for a robot. | plan
+RRT | Planning | Rapidly-exploring random tree: grows a tree by extending toward random samples. | plan
+RRT* | Planning | An RRT variant that rewires the tree to converge to the optimal path. | plan
+PRM | Planning | Probabilistic roadmap: samples collision-free configurations and connects them into a reusable graph. | plan
+Potential field | Planning | A planning method where the goal attracts and obstacles repel; prone to local minima. | plan
+Dynamic window approach (DWA) | Planning | A local planner that evaluates sampled velocity commands within dynamic limits. | plan,nav
+Timed elastic band (TEB) | Planning | A local planner that optimises a time-parameterised band of poses. | nav
+Costmap | Planning | A grid of costs (obstacles, inflation) used by navigation planners. | nav,slam
+Inflation (costmap) | Planning | Expanding obstacle costs by the robot radius so the planner can treat the robot as a point. | nav
+Collision checking | Planning | Testing whether a configuration or path intersects obstacles (FCL, GJK, signed distance fields). | plan
+Signed distance field (SDF) | Planning | A map giving signed distance to the nearest surface; negative inside obstacles. | plan,slam
+cuRobo | Planning | NVIDIA's GPU-accelerated motion generation library. | plan,isaacsim
+Trajectory optimisation | Planning | Optimising a whole trajectory for smoothness and constraints (CHOMP, TrajOpt, iLQR). | plan,ctrl
+TOPP-RA | Planning | A fast algorithm for time-optimal path parameterisation under velocity and acceleration limits. | plan
+Ruckig | Planning | A library for online, jerk-limited trajectory generation. | plan
+MoveIt | Planning | The ROS manipulation planning framework (planning scene, OMPL, IK, execution). | plan,ros2
+OMPL | Planning | The Open Motion Planning Library of sampling-based planners. | plan
+Nav2 | Planning | The ROS 2 navigation stack: planners, controllers, costmaps, behavior trees. | nav,ros2
+Behavior tree | Planning | A tree of tasks and conditions ticked repeatedly; modular alternative to state machines. | pddl
+Finite-state machine (FSM) | Planning | A model with states and transitions; simple but grows unwieldy. | pddl
+PDDL | Planning | Planning Domain Definition Language: describes actions with preconditions and effects for symbolic planners. | pddl
+STRIPS | Planning | An early planning formalism with preconditions, add effects and delete effects. | pddl
+HTN planning | Planning | Hierarchical task network planning: decomposing high-level tasks into subtasks. | pddl
+Task and motion planning (TAMP) | Planning | Combining symbolic task planning with geometric motion planning. | pddl,plan
+Fast Downward | Planning | A widely used classical planner (LAMA) for PDDL problems. | pddl
+PlanSys2 | Planning | A ROS 2 framework for PDDL-based planning and execution. | pddl,ros2
+Heuristic (planning) | Planning | An estimate of the remaining cost to the goal that guides search. | plan,pddl
+Admissible heuristic | Planning | A heuristic that never overestimates the true cost; guarantees optimal A*. | plan,cs
+Multi-agent path finding (MAPF) | Planning | Planning collision-free paths for many agents at once. | plan
+Coverage path planning | Planning | Planning a path that visits every part of an area (mowing, cleaning, inspection). | plan,nav

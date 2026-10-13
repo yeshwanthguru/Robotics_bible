@@ -1,0 +1,117 @@
+# Term | Domain | Definition | refs
+ament | Software | The ROS 2 build system and package tooling (ament_cmake, ament_python). | ros2
+Action (ROS) | Software | A ROS 2 interface for long-running goals with feedback, a result and cancellation. | ros2
+BehaviorTree.CPP | Software | A C++ library for behavior trees used by Nav2, with the Groot visualiser. | pddl,ros2
+Callback group | Software | Controls which ROS 2 callbacks may run concurrently (mutually exclusive or reentrant). | ros2
+catkin | Software | The ROS 1 build system. | ros1
+colcon | Software | The command-line tool that builds ROS 2 workspaces. | ros2
+Composable node | Software | A ROS 2 node loaded into a shared process for intra-process zero-copy communication. | ros2
+Cyclone DDS | Software | An open-source DDS implementation used as a ROS 2 middleware. | ros2
+DDS | Software | Data Distribution Service: the publish-subscribe middleware beneath ROS 2 with quality-of-service settings. | ros2
+Executor | Software | The ROS 2 component that decides which callbacks run on which threads. | ros2
+Fast DDS | Software | eProsima's DDS implementation, a default ROS 2 middleware in several distributions. | ros2
+Foxglove | Software | A visualisation and debugging tool for robot data (MCAP, ROS topics). | ros2,devtools
+Groot | Software | A graphical editor and monitor for behavior trees. | pddl
+Launch file | Software | A script that starts and configures many ROS nodes together. | ros2
+Lifecycle node | Software | A managed ROS 2 node with defined states (unconfigured, inactive, active, finalised). | ros2
+MCAP | Software | An open container format for logging multimodal robot data; default rosbag2 storage. | ros2,devtools
+Message (ROS) | Software | A typed data structure sent over topics. | ros2
+micro-ROS | Software | ROS 2 for microcontrollers. | ros2
+Namespace (ROS) | Software | A prefix grouping node, topic and parameter names. | ros2
+Node (ROS) | Software | A process that performs one function in a ROS graph. | ros2
+Parameter (ROS) | Software | A configurable value belonging to a node. | ros2
+pluginlib | Software | A ROS library for loading classes dynamically at runtime. | ros2,cpp
+QoS (quality of service) | Software | DDS delivery policies in ROS 2: reliability, durability, history, deadline. | ros2
+rclcpp | Software | The ROS 2 C++ client library. | ros2,cpp
+rclpy | Software | The ROS 2 Python client library. | ros2,py
+REP-103 / REP-105 | Software | ROS conventions: standard units and axes (103) and the map-odom-base_link frame hierarchy (105). | ros2,nav
+RMW | Software | ROS middleware interface layer that lets ROS 2 swap DDS vendors. | ros2
+ros2_control | Software | A real-time framework with hardware interfaces and controllers for robot actuators. | ros2,ctrl
+ros_gz | Software | Packages connecting ROS 2 with Gazebo. | ros2,othersim
+rosbag2 | Software | The ROS 2 tool for recording and replaying topic data. | ros2
+ROS 2 | Software | Robot Operating System 2: middleware and tools for building robot software with DDS, QoS and real-time support. | ros2
+ROS 1 | Software | The original Robot Operating System with a central master; Noetic ended support in May 2025. | ros1
+roscore | Software | The ROS 1 master process. | ros1
+rqt | Software | A Qt-based GUI framework with plugins for ROS introspection. | ros2
+RViz | Software | The ROS 3-D visualiser. | ros2
+Service (ROS) | Software | A request-response interface in ROS. | ros2
+Topic (ROS) | Software | A named channel for publish-subscribe messages. | ros2
+TF2 | Software | The ROS library that tracks coordinate-frame transforms over time. | ros2,kin
+Xacro | Software | An XML macro language for writing URDF files. | ros2,sim
+Zenoh | Software | A lightweight pub/sub protocol with a ROS 2 middleware (rmw_zenoh). | ros2
+Open-RMF | Software | An open framework for interoperating fleets of robots and building systems. | nav,ros2
+Autoware | Software | An open-source autonomous-driving software stack built on ROS 2. | ros2
+Eigen | Software | A C++ template library for linear algebra. | cpp
+Move semantics | Software | Transferring a resource from one C++ object to another without copying. | cpp
+RAII | Software | Resource acquisition is initialisation: tying a resource's lifetime to an object's scope. | cpp
+Smart pointer | Software | A C++ pointer that manages ownership (unique_ptr, shared_ptr, weak_ptr). | cpp
+Template (C++) | Software | Compile-time generic programming. | cpp
+CMake | Software | A cross-platform build-system generator for C++ projects. | cpp,ros2
+std::atomic | Software | C++ type with lock-free atomic operations and memory orderings. | cpp
+Lock-free queue | Software | A concurrent queue that avoids mutexes so a real-time thread never blocks. | cpp
+PREEMPT_RT | Software | A Linux kernel patch set making the kernel fully preemptible for real-time use. | cpp,devtools
+GIL | Software | Python's global interpreter lock: only one thread executes Python bytecode at a time. | py
+NumPy | Software | The Python array-computing library underlying most scientific code. | py
+SciPy | Software | Scientific algorithms for Python: optimisation, integration, spatial transforms. | py
+Matplotlib | Software | The standard Python plotting library. | py
+PyTorch | Software | A deep-learning framework with dynamic graphs and autograd. | py,dl
+JAX | Software | A numerical library with autodiff, JIT compilation and vectorisation (vmap) for accelerators. | py,sim
+Pinocchio | Software | A fast C++/Python rigid-body dynamics library. | dyn,py
+Drake | Software | An MIT/TRI toolbox for model-based design and verification of robots. | othersim,ctrl
+CasADi | Software | A symbolic framework for nonlinear optimisation and optimal control with automatic differentiation. | ctrl,py
+OSQP | Software | A solver for convex quadratic programs. | ctrl
+acados | Software | A fast embedded solver library for nonlinear MPC. | ctrl
+IPOPT | Software | An interior-point solver for large nonlinear programs. | ctrl,math
+Simulink | Software | MATLAB's block-diagram environment for modelling and code generation. | matlab
+Robotics System Toolbox | Software | MATLAB toolbox for rigid-body trees, IK, trajectories and ROS integration. | matlab
+tidyverse | Software | A collection of R packages for data manipulation and plotting (dplyr, ggplot2). | r
+ggplot2 | Software | R's grammar-of-graphics plotting package. | r
+Docker | Software | Container platform that packages software with its dependencies for reproducible deployment. | devtools
+Dockerfile | Software | A recipe for building a container image. | devtools
+GitHub Actions | Software | GitHub's automation for building, testing and deploying on each change. | devtools
+Continuous integration (CI) | Software | Automatically building and testing code on every change. | devtools
+Git | Software | A distributed version-control system. | devtools
+Jetson | Software | NVIDIA's family of embedded GPU modules (Orin, Thor) for robots. | devtools,pai
+NGC | Software | NVIDIA's catalogue of containers, models and tools. | devtools,isaacsim
+Kubernetes | Software | A system for orchestrating containers across machines. | devtools
+Hydra | Software | A configuration framework for composing experiment settings. | devtools,evaldeploy
+DVC | Software | Data version control: versioning datasets and models alongside code. | devtools,evaldeploy
+Isaac Sim | Sim | NVIDIA's robotics simulator built on Omniverse with PhysX, RTX sensors, USD scenes and a ROS 2 bridge. | isaacsim
+Isaac Lab | Sim | NVIDIA's open-source robot-learning framework on Isaac Sim, with thousands of parallel environments. | isaaclab
+Isaac Gym | Sim | NVIDIA's earlier standalone GPU RL simulator, now deprecated in favour of Isaac Lab. | isaacgym
+Isaac ROS | Sim | GPU-accelerated ROS 2 packages (VSLAM, nvblox, pose estimation) with NITROS zero-copy transport. | isaacsim,ros2
+Omniverse | Sim | NVIDIA's platform for building 3-D simulation and collaboration apps on OpenUSD. | isaacsim
+OpenUSD (USD) | Sim | Universal Scene Description: a layered, composable scene format from Pixar adopted for robotics simulation. | isaacsim
+PhysX | Sim | NVIDIA's physics engine used in Isaac Sim and Isaac Lab, with GPU simulation. | isaacsim,dyn
+Replicator | Sim | Isaac Sim's tool for domain randomisation and synthetic data generation. | isaacsim
+Cosmos | Sim | NVIDIA's world foundation models for generating and augmenting physical-world video. | isaacsim,vla
+Warp | Sim | NVIDIA's Python framework for writing GPU simulation kernels. | othersim
+Newton (physics engine) | Sim | An open-source GPU physics engine from NVIDIA, Google DeepMind and Disney built on Warp. | othersim
+ManagerBasedRLEnv | Sim | Isaac Lab's declarative environment class composed of observation, action, reward, termination and event managers. | isaaclab
+DirectRLEnv | Sim | Isaac Lab's environment class where you write observation and reward code directly. | isaaclab
+Actuator model | Sim | A simulated motor model (implicit PD, ideal PD, DC motor, learned network) that sets the torque from commands. | isaaclab,sim2real
+Actuator network | Sim | A neural network trained on real data to predict motor torque; closes part of the sim-to-real gap. | sim2real,dyn
+Decimation | Sim | The number of physics steps per policy step; policy rate equals one over (sim dt times decimation). | isaaclab
+Domain randomisation | Sim | Randomising simulator parameters during training so policies tolerate reality's differences. | sim2real
+Reality gap | Sim | The mismatch between simulation and the real world that hurts transfer. | sim2real
+Sim-to-real | Sim | Transferring a policy trained in simulation to a real robot. | sim2real
+Sim-to-sim | Sim | Validating a policy in a second simulator before hardware to catch overfitting to one engine. | sim2real
+System identification | Sim | Estimating physical parameters (mass, friction, delay) by fitting model predictions to real data. | sim2real,dyn
+Teacher–student training | Sim | Training a privileged teacher then distilling it into a student that uses only deployable sensors. | sim2real,leg
+Tiled rendering | Sim | Rendering many environments' cameras in one batched call; key for vision-based RL at scale. | isaaclab
+legged_gym | Sim | ETH Zürich's Isaac Gym-based framework for learning legged locomotion. | isaacgym,leg
+rsl_rl | Sim | A compact PPO implementation from ETH RSL used with legged_gym and Isaac Lab. | isaaclab,rl
+MuJoCo | Sim | A fast, accurate physics engine with soft convex contact; now open source (DeepMind). | othersim
+MJX | Sim | MuJoCo reimplemented in JAX for GPU/TPU parallel and differentiable simulation. | othersim
+MuJoCo Playground | Sim | A set of MJX-based RL environments with sim-to-real recipes. | othersim
+Gazebo | Sim | The ROS-native robot simulator (gz sim) with plugins for sensors and physics. | othersim
+PyBullet | Sim | Python bindings for the Bullet physics engine. | othersim
+Genesis | Sim | A GPU-accelerated, differentiable multi-physics simulator for robotics. | othersim
+ManiSkill | Sim | A GPU-parallel manipulation simulator and benchmark built on SAPIEN. | othersim
+Brax | Sim | A JAX physics engine for very fast RL training. | othersim
+LIBERO | Sim | A benchmark of language-conditioned manipulation tasks used to compare VLAs. | buildvla
+RoboCasa | Sim | A large-scale simulation of household kitchens for training generalist robots. | buildvla,othersim
+SimplerEnv | Sim | A simulated evaluation suite designed to correlate with real-world robot policy performance. | buildvla
+Digital twin | Sim | A virtual replica of a physical system kept in sync for testing and monitoring. | isaacsim
+Hardware-in-the-loop (HIL) | Sim | Testing real controllers against simulated plant or environment. | devtools,matlab
+Software-in-the-loop (SIL) | Sim | Running the real control code against a simulated plant. | matlab

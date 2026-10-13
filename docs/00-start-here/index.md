@@ -7,8 +7,19 @@ title: How to use this Bible
 # Robotics & AI Bible
 
 :::tip[The 30-second version]
-This is one place to read **before any robotics / AI interview**. It goes from the basics (math, machine learning) up to the cutting edge (VLA models, humanoids, Isaac Lab), and every page is written twice over: **first in plain English with pictures, then in technical depth** so you can sound both clear and expert.
+This is a **lifelong handbook and dictionary** for AI and robotics: machine learning, deep learning, reinforcement learning, LLM / VLM / VLA, quantum computing, Physical AI, robotics, ROS 2, simulation and more. Use it to **look things up, learn, build, and prepare for interviews**. Every chapter is written in plain English first, with pictures, then in technical depth.
 :::
+
+## Find anything fast
+
+| You want to… | Go to |
+|---|---|
+| Look up a word or abbreviation | [Dictionary A–Z](../glossary/index.md) (1,000+ terms), or press **Ctrl+K** to search everything |
+| Learn a topic properly | the chapters in the sidebar (start with the 30-second box) |
+| Answer interview questions | [Interview Q&A](../interview/question-bank.md) (hundreds of answered questions by domain) |
+| Build a model, VLM or VLA | [Build It Yourself](../build-your-own/00-start-building.md) |
+| Find a tool, dataset, paper or robot | [Reference directories](../reference/tools-libraries.md) |
+| Refresh formulas or commands | [Cheat sheets](../cheatsheets/formulas.md) |
 
 ## How every page is built
 

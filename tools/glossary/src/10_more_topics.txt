@@ -1,0 +1,88 @@
+# Term | Domain | Definition | refs
+Bayesian network | Math | A directed graph of random variables with conditional probability tables; encodes dependencies compactly. | moremath
+Markov random field | Math | An undirected graphical model where variables depend on their neighbours. | moremath
+Belief propagation | Math | Passing messages on a graphical model to compute marginal probabilities. | moremath
+Conjugate prior | Math | A prior that keeps the same form after a Bayesian update (Beta with Bernoulli, Dirichlet with categorical). | moremath
+MCMC | Math | Markov chain Monte Carlo: sampling from a distribution by running a chain whose stationary distribution is the target. | moremath,math
+Metropolis–Hastings | Math | An MCMC algorithm that proposes moves and accepts them with a probability based on the target density. | moremath
+Variational inference | Math | Approximating a hard posterior with a simpler distribution by maximising the ELBO. | moremath,arch
+ELBO | Math | Evidence lower bound: the quantity maximised in variational inference and VAEs. | moremath,arch
+Importance sampling | Math | Estimating an expectation under one distribution using samples from another, reweighted by their ratio. | moremath,est
+Kernel density estimation | Math | Estimating a probability density by placing a smooth bump on every sample. | moremath
+Dirichlet distribution | Math | A distribution over probability vectors; the conjugate prior for categorical data. | moremath
+Beta distribution | Math | A distribution over a probability between 0 and 1; conjugate to the Bernoulli. | moremath
+Interpolation | Math | Estimating values between known points (linear, spline). | moremath
+Spline | Math | A smooth piecewise-polynomial curve through control points; used for trajectories. | moremath,ctrl
+Runge–Kutta | Math | A family of higher-order methods for integrating ODEs (RK4 is the classic). | moremath,sim
+Newton's method | Math | An iterative root or optimum finder using first and second derivatives. | moremath,math
+Quasi-Newton (BFGS) | Math | Optimisation methods that approximate the Hessian from gradient history. | moremath
+Conjugate gradient | Math | An iterative solver for symmetric positive-definite linear systems. | moremath
+Sparse matrix | Math | A matrix with mostly zero entries stored efficiently; SLAM information matrices are sparse. | moremath,slam
+QR decomposition | Math | Factoring a matrix into an orthogonal and an upper-triangular matrix; used for least squares. | moremath
+LU decomposition | Math | Factoring a matrix into lower and upper triangular matrices for solving linear systems. | moremath
+Floating-point precision | Math | The finite accuracy of computer arithmetic (fp32, fp16, bf16); causes round-off error. | moremath,dl
+Lie group | Math | A smooth group such as SO(3) or SE(3); optimisation on poses uses its exponential and logarithm maps. | moremath,kin
+Lie algebra | Math | The tangent space of a Lie group at the identity (small rotations as vectors). | moremath,kin
+Shannon entropy | Math | See entropy. | math
+Cross-entropy | Math | The expected log-loss when using one distribution to code another; the standard classification loss. | math,dl
+Perplexity (information) | Math | The exponential of entropy; effective number of equally likely choices. | llm
+Bag of words | NLP | Representing text as word counts, ignoring order. | nlp
+TF-IDF | NLP | A weighting that rewards words frequent in a document but rare across documents. | nlp
+Word2Vec | NLP | An early method for learning word embeddings from context. | nlp
+BM25 | NLP | A classic keyword ranking function used in search; often combined with embeddings in hybrid retrieval. | nlp,llm
+Cosine similarity | NLP | The cosine of the angle between two vectors; the standard similarity for embeddings. | nlp,math
+Dense retrieval | NLP | Retrieving documents by embedding similarity rather than keyword match. | nlp,llm
+Re-ranking | NLP | A second, more accurate model that reorders the top retrieved results. | nlp,llm
+Chunking | NLP | Splitting documents into pieces for indexing in retrieval. | nlp,llm
+FAISS | NLP | Facebook's library for efficient similarity search over vectors. | nlp,tools
+Approximate nearest neighbour (ANN) | NLP | Fast nearest-neighbour search that trades a little accuracy for speed (HNSW, IVF). | nlp
+HNSW | NLP | Hierarchical navigable small world: a graph index for fast approximate nearest-neighbour search. | nlp
+Named-entity recognition | NLP | Finding and labelling names, places and organisations in text. | nlp
+BLEU / ROUGE | NLP | Overlap-based metrics for machine translation and summarisation. | nlp,llm
+Sentence embedding | NLP | A vector representing a whole sentence's meaning. | nlp
+Byte-level tokenisation | NLP | Tokenising raw bytes so any text can be represented without unknown tokens. | nlp,llm
+Edge detection | Perception | Finding sharp intensity changes in an image (Sobel, Canny). | cvclassic
+Canny edge detector | Perception | A multi-step edge detector using gradients, non-maximum suppression and hysteresis thresholds. | cvclassic
+Gaussian blur | Perception | Smoothing an image with a Gaussian kernel to reduce noise. | cvclassic
+Histogram equalisation | Perception | Spreading out intensity values to improve contrast. | cvclassic
+Harris corner detector | Perception | A classic detector of corner features based on local intensity gradients. | cvclassic,cv
+Hough transform | Perception | A voting method to detect lines and circles in edge images. | cvclassic
+Morphological operations | Perception | Erosion, dilation, opening and closing on binary images. | cvclassic
+Image pyramid | Perception | A stack of progressively down-sampled images used for multi-scale analysis. | cvclassic
+Template matching | Perception | Finding a small pattern in an image by sliding and comparing. | cvclassic
+Thresholding (Otsu) | Perception | Separating foreground from background by an intensity threshold, chosen automatically by Otsu's method. | cvclassic
+Colour space (HSV, Lab) | Perception | Alternative ways to represent colour that separate brightness from hue. | cvclassic
+Image stitching | Perception | Aligning and blending overlapping images into a panorama. | cvclassic
+Background subtraction | Perception | Detecting moving objects by comparing frames to a background model. | cvclassic
+Kernel (image) | Perception | A small matrix of weights slid over an image for filtering or convolution. | cvclassic
+ARIMA | ML | A classical time-series model combining autoregression, differencing and moving average. | moreml
+Autocorrelation | ML | The correlation of a signal with a delayed copy of itself. | moreml
+Seasonality | ML | Regular repeating patterns in a time series. | moreml
+Stationarity | ML | A time series whose statistical properties do not change over time. | moreml
+Survival analysis | ML | Modelling time until an event such as component failure (Kaplan–Meier, Cox model). | moreml,r
+Bayesian optimisation | ML | Optimising an expensive function using a probabilistic surrogate (Gaussian process) to choose where to evaluate next. | moreml,ml
+Learning to rank | ML | Training models to order items by relevance. | moreml
+Matrix factorisation | ML | Decomposing a matrix into low-rank factors; the basis of classic recommender systems. | moreml
+Collaborative filtering | ML | Recommending items based on the behaviour of similar users. | moreml
+Conformal prediction | ML | A method that wraps any model to give prediction sets with guaranteed coverage. | moreml,cv
+Uncertainty estimation | ML | Quantifying how unsure a model is (ensembles, MC dropout, Bayesian methods). | moreml,cv
+Out-of-distribution (OOD) detection | ML | Recognising inputs unlike the training data. | moreml,cv
+Active perception | Robotics | Choosing sensor motions to gain the most information. | hri,cv
+Information gain | ML | The reduction in entropy from learning a variable; used for tree splits and active sensing. | moreml,math
+Curriculum learning | RL | Training on tasks of gradually increasing difficulty. | rl,leg
+Automatic domain randomisation (ADR) | Sim | Widening randomisation ranges automatically as the policy improves (OpenAI Rubik's cube). | sim2real
+Residual reinforcement learning | RL | Learning a small corrective policy on top of a fixed base controller. | il,rl
+HIL-SERL | RL | Human-in-the-loop sample-efficient RL that learns real-robot manipulation with human corrections. | il,buildvla
+Real-time chunking | VLA | Techniques that keep action chunks consistent while the next chunk is still being computed. | buildvla
+Temporal ensembling | VLA | Averaging overlapping action predictions from successive chunks for smoother motion (ACT). | buildvla,il
+Proprioceptive history | VLA | Past joint states fed to a policy so it can infer velocity and context. | il
+Wrist camera | VLA | A camera mounted near the gripper, giving close-up views critical for grasping. | buildvla,manip
+Teleoperation dataset | VLA | A set of demonstrations recorded while a human operates the robot; the training data of imitation learning. | il,buildvla
+Embodiment | VLA | The physical form of a robot (arms, hands, sensors); policies are often tied to it, motivating cross-embodiment training. | vla
+Cross-embodiment learning | VLA | Training one model on data from many different robots. | vla
+Generalist robot policy | VLA | A single model that performs many tasks across scenes and often across robots. | vla
+Hierarchical RL | RL | RL with high-level goals and low-level skills (options, feudal networks). | rl
+Skill library | Planning | A set of reusable low-level behaviours that a planner or LLM can call. | pddl,vla
+Semantic SLAM | Perception | SLAM that builds maps labelled with object and category information. | slam
+Scene graph | Perception | A graph of objects and their relationships ("mug on table"). | slam,vla
+Open-vocabulary perception | Perception | Detecting or segmenting categories specified by arbitrary text. | cv,vla

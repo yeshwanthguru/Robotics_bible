@@ -1,0 +1,99 @@
+# Term | Domain | Definition | refs
+AMCL | Perception | Adaptive Monte-Carlo localisation: a particle filter that localises a robot on a known 2-D map. | slam,nav
+AprilTag | Perception | A square fiducial marker with a unique ID whose pose a camera can estimate; used for calibration and localisation. | cv,slam
+Bag of words (visual) | Perception | Describing an image by the histogram of visual words (quantised features) for place recognition. | slam
+Bayes filter | Perception | The general recursive estimator that predicts with a motion model and updates with measurements. | est
+Bundle adjustment | Perception | Jointly refining camera poses and 3-D points by minimising reprojection error. | slam
+Camera calibration | Perception | Estimating a camera's intrinsic parameters and distortion (and extrinsics relative to other sensors). | sens,cv
+Camera intrinsics | Perception | Focal lengths, principal point and distortion coefficients of a camera. | cv
+Camera extrinsics | Perception | The pose of a camera relative to another frame (robot base, another sensor). | cv,sens
+Cartographer | Perception | Google's real-time 2-D/3-D SLAM system with submaps and loop closure. | slam
+Correspondence | Perception | A matched pair of points or features between two images or point clouds. | slam,cv
+Costmap layer | Perception | One component (static map, obstacles, inflation) combined into a navigation costmap. | nav
+Dead reckoning | Perception | Estimating position by integrating motion from a known start; error grows with time. | slam
+Depth camera | Perception | A camera that measures distance per pixel (stereo, time-of-flight, structured light). | sens,cv
+Depth estimation (monocular) | Perception | Predicting depth from a single image with a neural network. | cv
+Disparity | Perception | The pixel shift of a point between the left and right stereo images; depth equals focal length times baseline over disparity. | cv
+Distortion (lens) | Perception | Deviation from the ideal pinhole projection (radial, tangential, fisheye). | cv
+Epipolar geometry | Perception | The geometric relation between two views: a point in one image lies on a line in the other. | slam,cv
+Essential matrix | Perception | A 3×3 matrix encoding the relative rotation and translation between two calibrated views. | slam
+Event camera | Perception | A sensor that reports per-pixel brightness changes asynchronously with microsecond latency. | sens
+Extended Kalman filter (EKF) | Perception | A Kalman filter that linearises non-linear models at the current estimate. | est
+Factor graph | Perception | A bipartite graph of variables and constraints (factors) used for SLAM and smoothing (GTSAM). | slam,est
+FAST-LIO2 | Perception | A fast LiDAR-inertial odometry method using an iterated Kalman filter and an incremental k-d tree. | slam
+Feature (visual) | Perception | A distinctive image point with a descriptor (SIFT, ORB, SuperPoint). | cv,slam
+Fiducial marker | Perception | A printed pattern placed in the scene to provide easily detected reference points (AprilTag, ArUco). | cv
+Foundation Pose | Perception | An NVIDIA model that estimates 6-D object poses for novel objects given a CAD model or reference images. | cv,isaacsim
+Fundamental matrix | Perception | A 3×3 matrix relating corresponding points in two uncalibrated views. | slam
+GICP | Perception | Generalised ICP: matches local surface patches using covariances. | slam
+GNSS | Perception | Global navigation satellite systems (GPS, Galileo, GLONASS, BeiDou). | sens,est
+GTSAM | Perception | A factor-graph optimisation library for SLAM and smoothing. | slam,cpp
+Homography | Perception | A 3×3 mapping between two views of a plane or between views from a pure rotation. | cv
+Hand–eye calibration | Perception | Finding the transform between a camera and the robot's hand or base (solving AX = XB). | kin,cv
+ICP | Perception | Iterative closest point: aligns point clouds by alternating nearest-neighbour matching and rigid fitting. | slam
+IMU | Perception | Inertial measurement unit: gyroscopes and accelerometers (and sometimes a magnetometer). | sens,est
+IMU preintegration | Perception | Summarising IMU readings between keyframes into one relative-motion measurement for optimisation. | slam,est
+Innovation | Perception | The difference between a measurement and its prediction in a filter. | est
+Invariant EKF (InEKF) | Perception | A Kalman filter on Lie groups with error dynamics independent of the state estimate; good for legged robots. | est,leg
+Iterated EKF | Perception | An EKF that repeats the update step to reduce linearisation error. | est
+Kalibr | Perception | A toolbox for calibrating cameras and IMUs. | cv,sens
+Kalman filter | Perception | The optimal recursive estimator for linear systems with Gaussian noise. | est
+Kalman gain | Perception | The weight that decides how much a measurement corrects a prediction. | est
+Kidnapped robot problem | Perception | A robot is moved without being told and must re-localise globally. | slam
+LiDAR | Perception | Light detection and ranging: measures distance with laser pulses to build 3-D point clouds. | sens,slam
+Localisation | Perception | Estimating the robot's pose in a known map. | slam
+Loop closure | Perception | Recognising a previously visited place and adding a constraint that corrects accumulated drift. | slam
+LIO-SAM | Perception | A tightly coupled LiDAR-inertial odometry method using a factor graph with GNSS and loop closures. | slam
+Map (occupancy grid) | Perception | A grid where each cell stores the probability of being occupied. | slam,nav
+Mapping | Perception | Building a representation of the environment. | slam
+MSCKF | Perception | Multi-state constraint Kalman filter: a visual-inertial odometry filter that avoids storing landmarks in the state. | slam,est
+Monte-Carlo localisation | Perception | Particle-filter localisation. | slam,est
+NDT | Perception | Normal distributions transform: represents a map as local Gaussians for scan matching. | slam
+NeRF | Perception | Neural radiance field: a neural network representing a 3-D scene for novel-view synthesis. | cv,slam
+Nvblox | Perception | NVIDIA's GPU library that builds signed-distance and costmap maps from depth in real time. | slam,isaacsim
+Object detection | Perception | Finding objects and their bounding boxes in images (YOLO, DETR). | cv
+Optical flow | Perception | The apparent per-pixel motion between two images (KLT, RAFT). | cv
+ORB-SLAM3 | Perception | A feature-based visual and visual-inertial SLAM system with loop closing and multi-map support. | slam
+Particle filter | Perception | A filter that represents belief with weighted samples; handles non-Gaussian, multimodal distributions. | est
+Perceptual aliasing | Perception | Different places looking so alike that place recognition confuses them. | slam
+Pinhole camera model | Perception | The ideal projection where 3-D points map to the image through a single centre of projection. | cv,slam
+Place recognition | Perception | Deciding whether the current view matches a place seen before (NetVLAD, Scan Context, DBoW). | slam
+Point cloud | Perception | A set of 3-D points from LiDAR or depth cameras. | cv,slam
+Point-to-plane ICP | Perception | ICP minimising distance from points to the tangent planes of the target surface; converges faster. | slam
+PnP | Perception | Perspective-n-point: estimating camera pose from known 3-D points and their image projections. | slam,cv
+Reprojection error | Perception | The pixel distance between an observed feature and the projection of its estimated 3-D point. | slam
+Resampling | Perception | The particle-filter step that replaces low-weight particles with copies of high-weight ones. | est
+Robot pose | Perception | Position and heading of the robot in a frame. | slam,kin
+RTK | Perception | Real-time kinematic GNSS: centimetre-level positioning using a base station correction. | sens,est
+SAM (Segment Anything) | Perception | See Segment Anything. | cv
+Scan matching | Perception | Aligning successive range scans to estimate motion (ICP, NDT, correlative). | slam
+Semantic segmentation | Perception | Labelling every pixel with a class. | cv
+Sensor fusion | Perception | Combining several sensors to get an estimate better than any one alone. | est
+SIFT | Perception | Scale-invariant feature transform: a classic robust local feature. | cv
+SLAM | Perception | Simultaneous localisation and mapping: building a map while tracking the robot's pose in it. | slam
+slam_toolbox | Perception | A ROS 2 2-D SLAM package based on pose graphs. | slam,ros2
+Stereo vision | Perception | Depth from two cameras by triangulating matched points. | cv,sens
+Structure from motion (SfM) | Perception | Recovering 3-D structure and camera poses from many images. | cv,slam
+TSDF | Perception | Truncated signed distance function: a volumetric map storing signed distance to surfaces near them. | slam
+Unscented Kalman filter (UKF) | Perception | A Kalman filter that propagates carefully chosen sigma points through the non-linear model. | est
+Visual odometry | Perception | Estimating motion from a camera image sequence. | slam
+Visual-inertial odometry (VIO) | Perception | Fusing camera and IMU to estimate motion with metric scale. | slam,est
+Voxel | Perception | A cell in a 3-D grid; the 3-D analogue of a pixel. | cv,slam
+6-D pose estimation | Perception | Estimating an object's 3-D position and 3-D orientation. | cv
+3D Gaussian splatting | Perception | A scene representation using many 3-D Gaussians rendered quickly; used for reconstruction and mapping. | cv,slam
+Depth Anything | Perception | A family of monocular depth foundation models. | cv
+Grounding DINO | Perception | An open-vocabulary detector that finds objects described by text prompts. | cv,vla
+YOLO | Perception | You Only Look Once: a family of fast one-stage object detectors. | cv
+DETR | Perception | A transformer-based detector that predicts a set of objects with bipartite matching. | cv,arch
+Mask R-CNN | Perception | A two-stage detector that also predicts per-object masks. | cv
+Non-maximum suppression (NMS) | Perception | Removing overlapping duplicate detections, keeping the highest score. | cv
+IoU | Perception | Intersection over union: overlap between two boxes or masks divided by their union. | cv,ml
+mAP | Perception | Mean average precision: the standard object-detection metric. | cv,ml
+Point-cloud library (PCL) | Perception | A C++ library for point-cloud processing. | cv,cpp
+Open3D | Perception | A Python/C++ library for 3-D data, registration and visualisation. | cv,py
+OpenCV | Perception | The standard computer-vision library (C++ and Python). | cv,py
+COLMAP | Perception | A structure-from-motion and multi-view stereo pipeline. | cv
+ATE (absolute trajectory error) | Perception | The error between an estimated and ground-truth trajectory after alignment. | slam
+RPE (relative pose error) | Perception | The error in relative motion over fixed intervals; measures drift. | slam
+Ground truth | Perception | Reference measurements assumed correct for evaluation (motion capture, survey). | slam
+Time synchronisation | Perception | Aligning sensor timestamps (PTP, hardware triggers) so fusion is consistent. | sens,est

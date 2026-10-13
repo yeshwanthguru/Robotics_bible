@@ -1,0 +1,107 @@
+# Term | Domain | Definition | refs
+Accuracy | ML | The fraction of predictions that are correct; misleading when classes are imbalanced. | ml
+AdaBoost | ML | A boosting method that trains weak learners in sequence, up-weighting examples earlier learners got wrong. | ml
+Anomaly detection | ML | Finding data points that differ markedly from the rest (faults, intrusions); often unsupervised. | ml
+AUC (area under the curve) | ML | The area under the ROC or precision–recall curve; summarises quality across all decision thresholds. | ml
+Bagging | ML | Training many models on random resamples of the data and averaging them to reduce variance (random forest). | ml
+Baseline | ML | The simplest reasonable model used as a reference point; a new model must beat it. | ml,evaldeploy
+Batch (mini-batch) | ML | A small group of examples processed together in one training step. | dl
+Bias–variance trade-off | ML | Simple models underfit (high bias); flexible models overfit (high variance); error is bias squared plus variance plus noise. | ml
+Binary classification | ML | Predicting one of two classes (yes/no). | ml
+Boosting | ML | Training models sequentially, each correcting the errors of the previous ones, to reduce bias (XGBoost, LightGBM). | ml
+Calibration | ML | Whether predicted probabilities match real frequencies; fixed with temperature scaling or isotonic regression. | ml
+Categorical feature | ML | A feature taking values from a fixed set of categories; encoded as one-hot, ordinal or target encodings. | ml
+Class imbalance | ML | One class is far rarer than others; handled with reweighting, resampling, focal loss and PR-AUC. | ml
+Classification | ML | Predicting a discrete label. | ml
+Clustering | ML | Grouping unlabelled data into similar clusters (k-means, DBSCAN, GMM). | ml
+Concept drift | ML | The relationship between inputs and outputs changes over time, degrading a deployed model. | ml,evaldeploy
+Confusion matrix | ML | A table of true/false positives and negatives for a classifier. | ml
+Cross-validation | ML | Splitting data into k folds and rotating which fold is held out, to estimate generalisation. | ml
+Curse of dimensionality | ML | In high dimensions data becomes sparse and distances lose meaning, so models need exponentially more data. | ml
+Data augmentation | ML | Creating extra training examples by transforming existing ones (crop, flip, noise, colour jitter). | ml,dl
+Data leakage | ML | Information from outside the training set (test data, future data, the label) sneaks into training, inflating scores. | ml,evaldeploy
+Decision tree | ML | A flowchart of yes/no questions on features; splits chosen by Gini impurity or entropy. | ml
+DBSCAN | ML | A density-based clustering method that finds arbitrarily shaped clusters and marks outliers as noise. | ml
+Dimensionality reduction | ML | Compressing data to fewer features while keeping the important structure (PCA, t-SNE, UMAP, autoencoders). | ml
+Early stopping | ML | Halting training when validation performance stops improving, to avoid overfitting. | ml,dl
+Elastic net | ML | Linear regression with both L1 and L2 penalties. | ml
+Ensemble | ML | Combining several models to get better, more stable predictions. | ml
+Expectation–maximisation (EM) | ML | An iterative algorithm for models with hidden variables: estimate the hidden variables (E-step), then re-fit parameters (M-step). | ml
+F1 score | ML | The harmonic mean of precision and recall. | ml
+False negative | ML | A real positive the model missed. | ml
+False positive | ML | A negative the model wrongly flagged as positive (a false alarm). | ml
+Feature | ML | An input variable used by a model. | ml
+Feature engineering | ML | Creating informative inputs from raw data by hand. | ml
+Feature importance | ML | A score for how much each input contributes to predictions (permutation importance, SHAP). | ml
+Feature scaling | ML | Standardising or normalising features so they are on comparable scales. | ml
+Gaussian mixture model (GMM) | ML | A probabilistic model of data as a blend of several Gaussian clusters, fitted with EM. | ml
+Gaussian process | ML | A distribution over functions defined by a kernel; gives predictions with calibrated uncertainty for small data. | ml
+Generalisation | ML | How well a model performs on data it has not seen. | ml
+Generative model | ML | A model of how data is produced, able to create new samples. | ml,arch
+Gini impurity | ML | A measure of how mixed the classes are in a tree node. | ml
+Gradient boosting | ML | Boosting where each new tree fits the gradient of the loss; the basis of XGBoost, LightGBM and CatBoost. | ml
+Grid search | ML | Trying every combination of hyper-parameter values from a predefined grid. | ml
+Hidden Markov model (HMM) | ML | A model of a hidden state evolving as a Markov chain and emitting observations; decoded with Viterbi. | ml,est
+Hyper-parameter | ML | A setting chosen before training (learning rate, depth, regularisation strength), not learned from data. | ml
+Hyper-parameter tuning | ML | Searching for the best hyper-parameters using validation data (grid, random, Bayesian, Hyperband). | ml
+Imbalanced data | ML | See class imbalance. | ml
+Isolation forest | ML | An anomaly detector that isolates points with random splits; anomalies need fewer splits. | ml
+Imputation | ML | Filling in missing values (mean, median, model-based). | ml
+k-fold cross-validation | ML | Cross-validation with k folds. | ml
+k-means | ML | A clustering algorithm that alternates assigning points to the nearest centre and moving centres to the mean of their points. | ml
+k-nearest neighbours (k-NN) | ML | Predicts from the labels of the k closest training examples; no training phase. | ml
+Kernel trick | ML | Computing similarities in a high-dimensional feature space without explicitly mapping to it (SVM, Gaussian processes). | ml
+L1 regularisation (Lasso) | ML | Penalises the sum of absolute weights; drives some weights to exactly zero (sparsity). | ml
+L2 regularisation (Ridge, weight decay) | ML | Penalises the sum of squared weights; shrinks weights smoothly. | ml,dl
+Label | ML | The correct answer attached to a training example. | ml
+Learning curve | ML | A plot of training and validation error against data size or training time; diagnoses bias and variance. | ml
+Linear regression | ML | Fitting a straight line (or plane) to predict a number by minimising squared error. | ml
+Logistic regression | ML | A linear classifier that outputs probabilities via the sigmoid function. | ml
+Loss function | ML | The number a model tries to minimise during training, measuring how wrong predictions are. | ml,dl
+Mean absolute error (MAE) | ML | The average absolute difference between predictions and targets. | ml
+Mean squared error (MSE) | ML | The average squared difference between predictions and targets. | ml
+Metric | ML | A number used to judge model quality (may differ from the training loss). | ml,evaldeploy
+Model selection | ML | Choosing among models or settings using validation performance. | ml
+Multi-class classification | ML | Predicting one of more than two classes. | ml
+Multi-label classification | ML | Predicting any subset of labels for each example. | ml
+Naive Bayes | ML | A probabilistic classifier assuming features are independent given the class. | ml
+Normalisation | ML | Rescaling data to a standard range (min–max) or distribution (zero mean, unit variance). | ml,dl
+One-hot encoding | ML | Representing a category as a vector with a single 1 and zeros elsewhere. | ml
+Outlier | ML | A data point far from the rest; may be an error or a rare real event. | ml
+Overfitting | ML | A model memorises training noise and performs worse on new data. | ml
+Pipeline | ML | A chained sequence of preprocessing and modelling steps applied consistently to all data. | ml,devtools
+Precision | ML | Of the items flagged positive, the fraction that truly are positive. | ml
+Precision–recall curve | ML | Precision versus recall across thresholds; preferred for rare positives. | ml
+Principal component analysis (PCA) | ML | Projects data onto the directions of greatest variance; computed with the SVD of the covariance. | ml,math
+Random forest | ML | An ensemble of decision trees trained on random data and feature subsets, averaged for robustness. | ml
+Random search | ML | Sampling hyper-parameter combinations at random; often more efficient than grid search. | ml
+Recall | ML | Of the real positives, the fraction the model found. | ml
+Recommender system | ML | A model that suggests items to users (collaborative filtering, matrix factorisation, two-tower networks). | ml
+Regression | ML | Predicting a continuous number. | ml
+Regularisation | ML | Any technique that discourages overly complex models (L1/L2, dropout, early stopping, augmentation). | ml,dl
+ROC curve | ML | True-positive rate versus false-positive rate across thresholds. | ml
+Semi-supervised learning | ML | Learning from a small labelled set plus a large unlabelled set. | ml
+Self-supervised learning | ML | Learning from labels derived from the data itself (predict masked parts, match augmented views). | ml,arch
+SMOTE | ML | A method that creates synthetic minority-class examples by interpolating between neighbours. | ml
+Stratified split | ML | A train/test split that preserves class proportions. | ml
+Supervised learning | ML | Learning a mapping from inputs to labelled outputs. | ml
+Support vector machine (SVM) | ML | A classifier that finds the widest-margin boundary between classes; kernels allow non-linear boundaries. | ml
+t-SNE | ML | A non-linear embedding for visualising high-dimensional clusters in 2-D; not for downstream distance use. | ml
+Test set | ML | Data held out until the very end to give an unbiased estimate of performance. | ml,evaldeploy
+Time-series forecasting | ML | Predicting future values from past ones (ARIMA, exponential smoothing, sequence models). | ml
+Training set | ML | The data a model learns from. | ml
+Transfer learning | ML | Reusing a model trained on one task as the starting point for another. | ml,dl
+True positive | ML | A real positive the model correctly flagged. | ml
+UMAP | ML | A fast non-linear dimensionality-reduction method for visualisation that preserves more global structure than t-SNE. | ml
+Underfitting | ML | A model is too simple to capture the pattern, so it does badly even on training data. | ml
+Unsupervised learning | ML | Finding structure in data without labels. | ml
+Validation set | ML | Data used to tune hyper-parameters and choose models, separate from the test set. | ml,evaldeploy
+Variance (model) | ML | How much a model's predictions change when trained on different data samples. | ml
+XGBoost | ML | A fast, regularised gradient-boosting library that dominates tabular-data competitions. | ml
+LightGBM | ML | A gradient-boosting library using histogram splits and leaf-wise growth for speed. | ml
+CatBoost | ML | A gradient-boosting library with built-in handling of categorical features. | ml
+Optuna | ML | A Python library for hyper-parameter optimisation using Bayesian-style and pruning methods. | ml,devtools
+SHAP | ML | A method that explains a prediction by attributing it to features using Shapley values from game theory. | ml
+Active learning | ML | Choosing which examples to label next (usually the most uncertain) to learn with fewer labels. | ml
+Weak supervision | ML | Creating training labels from noisy rules or models instead of manual annotation. | ml
+Federated learning | ML | Training a shared model across many devices without moving their raw data. | ml

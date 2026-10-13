@@ -1,47 +1,50 @@
 ---
-title: Rapid-Fire Question Bank
+title: Interview Q&A Hub
+sidebar_position: 0
 ---
 
-# Rapid-Fire Question Bank
+# Interview Q&A: the complete question bank
 
-:::tip[How to use this page]
-Cover the answers and say each one out loud in **under 30 seconds**: one plain sentence first, then one technical detail. Mark the ones you stumble on and go back to that chapter.
+:::tip[How this section works]
+Every question has a **Short answer** (say it in about 20 seconds) and a **Go deeper** line for follow-ups. Each question is its own heading, so you can **search any question or keyword with Ctrl+K**. Use it for interviews, but also as a quick-answer reference whenever you need to refresh a topic.
 :::
 
-Answer each in **≤ 30 seconds**. Cover the answer and test yourself.
+## Browse by domain
 
-## ML / DL
-1. Bias–variance trade-off? → error = bias² + variance + noise; capacity moves along the curve.
-2. L1 vs L2? → L1 sparse (Laplace prior), L2 shrinks (Gaussian prior).
-3. Why cross-entropy for classification? → MLE under categorical model; convex for logistic, strong gradients when wrong.
-4. Explain backprop. → reverse-mode autodiff of chain rule through computation graph.
-5. Why residual connections? → gradient highway, easier optimization.
-6. Attention complexity and fixes? → O(n²); FlashAttention (IO), sparse/linear/SSM.
-7. LayerNorm vs BatchNorm? → per-sample feature vs batch statistics.
-8. How does dropout regularize? → ensemble of subnetworks, prevents co-adaptation.
-9. Overfitting remedies? → data, augmentation, regularization, early stopping, simpler model.
-10. How do you handle class imbalance? → reweight, focal loss, resample, PR-AUC.
+| # | Page | Covers |
+|---|---|---|
+| 1 | [Math, CS & Machine Learning](./qa-1-math-cs-ml.md) | linear algebra, probability, optimisation, algorithms, concurrency, ML evaluation, classical models |
+| 2 | [Deep Learning](./qa-2-deep-learning.md) | training, normalisation, CNN/transformer/GNN, diffusion, flow matching, representation learning |
+| 3 | [Reinforcement Learning](./qa-3-reinforcement-learning.md) | MDPs, PPO/SAC, reward design, offline RL, imitation, RLHF |
+| 4 | [LLM, VLM & VLA](./qa-4-llm-vlm-vla.md) | pretraining, LoRA, RAG, serving, VLM design, VLA action heads, evaluation |
+| 5 | [Quantum Computing](./qa-5-quantum.md) | qubits, gates, Grover/Shor, VQE/QAOA, error correction, quantum robotics |
+| 6 | [Kinematics, Dynamics & Control](./qa-6-kinematics-dynamics-control.md) | rotations, Jacobians, dynamics, PID, LQR, MPC, impedance, WBC |
+| 7 | [Perception, SLAM & Estimation](./qa-7-perception-slam-estimation.md) | Kalman/particle filters, SLAM, ICP, camera geometry, sensors |
+| 8 | [Planning & Navigation](./qa-8-planning-navigation.md) | RRT/PRM/A*, trajectory optimisation, PDDL, behavior trees, Nav2 |
+| 9 | [Manipulation, Dexterity & Locomotion](./qa-9-manipulation-locomotion.md) | grasping, tactile, in-hand, legged, humanoid, space and soft robots |
+| 10 | [Software: ROS 2, C++, Python…](./qa-10-software-ros2-cpp-python.md) | ROS 2, C++, Python, MATLAB, R, Docker, CI |
+| 11 | [Simulation & Sim-to-Real](./qa-11-simulation-isaac-sim2real.md) | Isaac Sim/Lab/Gym, MuJoCo, domain randomisation, deployment |
+| — | [System design](./system-design.md) | design a robot or fleet end to end |
+| — | [Coding challenges](./coding-challenges.md) | code you should write from memory |
+| — | [Behavioral & story bank](./behavioral.md) | your own stories, research questions |
 
-## RL
-11. Bellman equation? 12. On vs off-policy? 13. PPO clip purpose? 14. SAC entropy term? 15. Why GAE? 16. Exploration–exploitation? 17. Sparse reward handling (shaping, HER, curriculum, demos)? 18. Why sim RL needs domain randomization? 19. Reward hacking example? 20. Offline RL's main problem (OOD actions/extrapolation error)?
+## Rapid-fire self-test (say each answer in under 30 seconds)
 
-## LLM / VLM / VLA
-21. How does KV cache work? 22. LoRA mechanics? 23. RLHF vs DPO? 24. RAG failure modes? 25. How do VLAs represent actions? 26. π0 vs OpenVLA? 27. Why action chunking? 28. How do you evaluate a VLA? 29. Hallucination mitigation? 30. Dual-system architecture rationale?
+**ML / DL:** Bias vs variance? L1 vs L2? Why cross-entropy? Explain backprop. Why residuals? Attention complexity? LayerNorm vs BatchNorm? Overfitting fixes? Class imbalance?
 
-## Quantum
-31. Qubit vs bit? 32. Why unitary gates? 33. Grover speed-up and optimality? 34. Shor's key idea (period finding)? 35. VQE steps and limits (barren plateaus)? 36. NISQ vs fault tolerant? 37. QUBO → Ising? 38. Where could quantum help robotics (optimization, sensing)? 39. Quantum kernel idea? 40. Entanglement measure?
+**RL:** Bellman equation? On vs off-policy? PPO clip? SAC entropy? GAE? Sparse rewards? Why domain randomisation? Offline RL's main problem?
 
-## Robotics core
-41. Rotation representations pros/cons? 42. DH vs PoE? 43. Jacobian singularity handling? 44. Computed torque control? 45. Impedance vs admittance? 46. ZMP vs capture point? 47. EKF vs UKF vs PF? 48. Graph SLAM and loop closure? 49. ICP steps and pitfalls? 50. A* vs RRT* vs trajectory optimization? 51. MPC vs LQR? 52. Differential drive kinematics? 53. Nav2 architecture? 54. MoveIt planning pipeline? 55. Force vs form closure? 56. Why tactile sensing? 57. In-hand manipulation via RL pitfalls? 58. Whole-body control QP structure? 59. How do quadrotors achieve trajectory tracking (flatness, cascaded)? 60. Sensor fusion for GPS-denied navigation?
+**LLM / VLM / VLA:** KV cache? LoRA? RLHF vs DPO? RAG failure modes? How are VLA actions represented? Why action chunking? Dual-system design? How do you evaluate a VLA?
 
-## Software
-61. ROS 2 QoS compatibility rules? 62. Callback groups & executors? 63. Lifecycle nodes? 64. TF extrapolation error causes? 65. ros2_control architecture? 66. C++ move semantics / RAII / smart pointers? 67. Real-time constraints in C++? 68. Python GIL? 69. MATLAB vs Python for control? 70. PDDL action modelling & BT vs FSM?
+**Quantum:** Qubit vs bit? Why unitary? Grover speed-up? Shor's idea? VQE limits? NISQ vs fault tolerant?
 
-## Simulation
-71. Isaac Sim vs Isaac Lab vs Isaac Gym? 72. Manager-based vs direct workflow? 73. What is USD? 74. Replicator use? 75. Decimation, dt, policy frequency? 76. DR parameters for locomotion? 77. Sim2sim validation? 78. Actuator net? 79. Tiled camera rendering? 80. Common PhysX failure causes?
+**Robotics core:** Rotation representations? DH vs PoE? Singularity handling? Computed torque? Impedance vs admittance? ZMP vs capture point? EKF vs UKF vs PF? Loop closure? ICP pitfalls? A* vs RRT*? LQR vs MPC?
 
-## Show-off follow-ups
-- “What would you do with a week of data collection budget for a new manipulation task?”
-- “Your policy works in sim but jitters on hardware. Debug.” → latency, PD gain mismatch, observation noise, action-rate penalty, filters, actuator model.
-- “Robot drifts after 10 min.” → odometry bias, loop closure absent, wheel slip, time sync, thermal IMU bias.
-- “Why not just use a bigger model?” → latency, power, data, safety.
+**Software and simulation:** QoS compatibility? Callback groups? Lifecycle nodes? TF extrapolation? Move semantics? Real-time C++ rules? GIL? Isaac Sim vs Lab vs Gym? Manager vs direct? What is USD? Decimation? Sim2sim?
+
+## Show-off follow-up scenarios
+
+- *"Your policy works in sim but jitters on hardware. Debug."* → latency, PD gain mismatch, observation noise, missing actuator model, action-rate penalty, filters.
+- *"The robot drifts after 10 minutes."* → odometry bias, no loop closure, wheel slip, time sync, thermal IMU bias.
+- *"You have a week and a budget to collect data for a new task."* → define success metric, ACT baseline with ~50 diverse demos, evaluate with confidence intervals, tag failures, collect targeted data.
+- *"Why not just use a bigger model?"* → latency, power, data, safety, and evaluation cost.

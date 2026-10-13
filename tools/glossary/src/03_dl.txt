@@ -1,0 +1,115 @@
+# Term | Domain | Definition | refs
+Activation function | DL | A non-linear function applied to a neuron's output (ReLU, GELU, SiLU, sigmoid, tanh); without it layers collapse into one linear map. | dl
+Adam | DL | An optimiser that keeps running averages of gradients and squared gradients to give each parameter its own step size. | dl
+AdamW | DL | Adam with decoupled weight decay; the default optimiser for transformers. | dl
+Attention | DL | A mechanism where each element weights and mixes information from all other elements based on query–key similarity. | arch
+Autoencoder | DL | A network that compresses input to a small code and reconstructs it. | arch
+Autograd | DL | Automatic differentiation that records operations and computes gradients by reverse-mode differentiation (PyTorch). | dl,py
+Backpropagation | DL | Computing gradients of the loss with respect to every weight by applying the chain rule backwards through the network. | dl
+Batch normalisation | DL | Normalising a layer's inputs across the batch to stabilise and speed up training; differs between training and test. | dl
+Batch size | DL | The number of examples per optimisation step. | dl
+BERT | DL | A bidirectional encoder-only transformer pretrained by masking words; used for understanding tasks. | arch
+BPE (byte-pair encoding) | LLM | A tokenisation method that repeatedly merges the most frequent adjacent pieces into new tokens. | llm
+Capsule network | DL | A network design using vectors (capsules) to represent object parts and their pose; mostly research. | arch
+Causal mask | DL | A mask that stops a token attending to later tokens, used in autoregressive language models. | arch,llm
+CNN (convolutional neural network) | DL | A network built from convolutions that share small filters across an image; good for vision. | arch
+Convolution (neural) | DL | Sliding a small filter over an input and computing weighted sums at each position. | arch
+Cosine learning-rate schedule | DL | A learning rate that decays along a half cosine curve, typically after a warm-up. | dl
+Cross-entropy loss | DL | The negative log-probability assigned to the correct class; standard for classification and language modelling. | dl
+Data parallelism | DL | Each GPU holds a full model copy and processes different data, averaging gradients. | dl,buildai
+Decoder-only transformer | DL | A causal transformer that predicts the next token (GPT, LLaMA). | arch,llm
+Depthwise-separable convolution | DL | Splits a convolution into per-channel spatial filtering plus a 1×1 channel mix, cutting compute (MobileNet). | arch
+Diffusion model | DL | A generative model that learns to reverse a gradual noising process; the basis of image generators and Diffusion Policy. | arch,il
+Distillation | DL | Training a small student model to imitate a larger teacher model's outputs. | dl,llm
+Dropout | DL | Randomly zeroing neurons during training to reduce co-adaptation and overfitting. | dl
+DDPM | DL | Denoising Diffusion Probabilistic Models: the standard diffusion formulation with many small denoising steps. | arch
+DDIM | DL | A deterministic diffusion sampler that skips steps for faster generation. | arch
+DINO / DINOv2 | DL | Self-supervised vision models trained by self-distillation; produce strong general-purpose image features. | arch,cv
+Embedding | DL | A learned vector representing a discrete item (word, token, image) so that similar items are near each other. | dl,llm
+Encoder–decoder | DL | A model with an encoder that reads the input and a decoder that generates output (T5, Whisper). | arch
+Epoch | DL | One full pass through the training data. | dl
+Exploding gradients | DL | Gradients grow exponentially through layers, causing unstable training; fixed with clipping and normalisation. | dl
+Feed-forward network (MLP) | DL | Layers of linear transformations with non-linearities; in transformers, the per-token processing block. | dl,arch
+Fine-tuning | DL | Continuing training of a pretrained model on a new, smaller dataset. | dl,llm
+FlashAttention | DL | An exact attention algorithm that avoids writing the large attention matrix to GPU memory, making it faster and lighter. | arch,llm
+Flow matching | DL | A generative method that regresses a velocity field transporting noise to data along simple paths; used in π0. | arch,vla
+FSDP / ZeRO | DL | Sharding parameters, gradients and optimiser state across GPUs to train models too big for one device. | dl
+GAN | DL | A generative adversarial network: a generator and a discriminator trained against each other. | arch
+GELU | DL | A smooth activation, x times the Gaussian CDF of x; common in transformers. | dl
+Gradient accumulation | DL | Summing gradients over several small batches before one optimiser step to mimic a larger batch. | dl
+Gradient checkpointing | DL | Recomputing activations during the backward pass instead of storing them, trading compute for memory. | dl,buildai
+Gradient clipping | DL | Rescaling gradients that exceed a threshold to prevent explosive updates. | dl
+Gradient descent | DL | Updating parameters in the direction opposite to the gradient to reduce the loss. | dl,math
+GRU | DL | A gated recurrent unit: a simpler cousin of LSTM with update and reset gates. | arch
+Graph neural network (GNN) | DL | A network that passes messages between connected nodes of a graph. | arch
+He initialisation | DL | Weight initialisation with variance 2/fan-in, suited to ReLU. | dl
+Hugging Face | DL | A platform and library ecosystem (Transformers, Datasets, Hub) for sharing and using models. | buildai,py
+Inductive bias | DL | Built-in assumptions of an architecture (e.g. convolutions assume locality). | arch
+Initialisation | DL | The starting values of weights; chosen so signals neither vanish nor explode. | dl
+JEPA | DL | Joint-embedding predictive architecture: predicts the representation of missing parts instead of their pixels. | arch
+Knowledge distillation | DL | See distillation. | dl
+Label smoothing | DL | Replacing hard one-hot targets with softened ones to reduce over-confidence. | dl
+Layer normalisation | DL | Normalising across features within each example; standard in transformers. | dl,arch
+Learning rate | DL | The step size of an optimiser; the most important hyper-parameter. | dl
+Learning-rate warm-up | DL | Starting with a tiny learning rate and ramping it up, to avoid early instability. | dl
+LoRA | DL | Low-rank adaptation: fine-tune a model by training small low-rank matrices added to frozen weights. | llm,buildai
+Loss landscape | DL | The shape of the loss as a function of parameters; training is walking downhill on it. | dl
+LSTM | DL | Long short-term memory: an RNN with gates and a cell state that carries information over long spans. | arch
+Mamba | DL | A selective state-space model that processes sequences in linear time as an alternative to attention. | arch
+Masked autoencoder (MAE) | DL | A vision model trained to reconstruct randomly hidden image patches. | arch
+Mixed precision | DL | Using 16-bit (bf16/fp16) arithmetic for speed while keeping 32-bit master weights. | dl
+Mixture of experts (MoE) | DL | A model with many expert sub-networks where a router activates only a few per token. | arch,llm
+Momentum | DL | An optimiser term that accumulates past gradients so updates keep rolling in consistent directions. | dl
+Multi-head attention | DL | Running several attention operations in parallel with different learned projections and concatenating them. | arch
+Neural network | DL | A function built from layers of weighted sums and non-linearities whose weights are learned from data. | dl
+Normalising flow | DL | A generative model built from invertible transformations that gives exact likelihoods. | arch
+Optimizer | DL | The algorithm that updates weights from gradients (SGD, Adam, AdamW, Lion). | dl
+Overparameterisation | DL | Having more parameters than training examples; modern networks still generalise (double descent). | dl
+Padding | DL | Adding filler values to make inputs equal length (sequences) or preserve size (convolutions). | dl
+Perceptron | DL | The simplest neuron: a weighted sum followed by a threshold. | dl
+Positional encoding | DL | Information added to tokens so a transformer knows their order (sinusoidal, learned, RoPE). | arch
+Pooling | DL | Down-sampling feature maps by taking the max or average over regions. | arch
+Pre-training | DL | Training on a large general dataset before specialising. | dl,llm
+Query, key, value | DL | The three projections in attention: queries ask, keys advertise, values carry the content that gets mixed. | arch
+ReLU | DL | Rectified linear unit: max(0, x); fast and the default activation. | dl
+Residual connection | DL | A skip path that adds a block's input to its output, easing training of deep networks. | dl,arch
+ResNet | DL | A deep CNN built from residual blocks. | arch
+Representation learning | DL | Learning useful features automatically from data. | dl,arch
+RMSNorm | DL | A simpler layer normalisation that rescales by the root mean square only; used in LLaMA-style models. | arch,llm
+RNN | DL | A recurrent network that processes a sequence step by step while carrying a hidden state. | arch
+RoPE | DL | Rotary position embedding: encodes position by rotating query and key vectors; extrapolates well to long context. | arch,llm
+SGD | DL | Stochastic gradient descent: gradient steps computed on mini-batches. | dl
+Sigmoid | DL | The S-shaped function 1 over (1 plus e to the minus x), squashing values to between 0 and 1. | dl
+SiLU / Swish | DL | The activation x times sigmoid(x); smooth and widely used. | dl
+Softmax | DL | Turns a list of scores into probabilities that sum to one. | dl
+Softmax temperature | DL | A divisor applied to logits before softmax; low values make output sharper, high values more random. | dl,llm
+State-space model (SSM) | DL | A sequence model based on a linear dynamical system (S4, Mamba). | arch
+Stochastic depth | DL | Randomly skipping layers during training as regularisation. | dl
+SwiGLU | DL | A gated feed-forward variant using SiLU gating; standard in modern LLMs. | arch,llm
+Tanh | DL | The hyperbolic tangent activation, squashing to between −1 and 1. | dl
+Tensor | DL | A multi-dimensional array; the basic data type of deep learning frameworks. | dl,py
+Tensor parallelism | DL | Splitting individual matrix multiplications across GPUs. | dl
+Teacher forcing | DL | Training a sequence model by feeding it the true previous tokens rather than its own predictions. | dl,llm
+Transformer | DL | A network built from attention and feed-forward blocks with residual connections; the basis of LLMs, VLMs and VLAs. | arch
+U-Net | DL | An encoder–decoder CNN with skip connections between matching resolutions; used for segmentation and diffusion. | arch
+Vanishing gradients | DL | Gradients shrink toward zero in deep networks so early layers stop learning. | dl
+VAE (variational autoencoder) | DL | An autoencoder whose latent code is a distribution, trained with a reconstruction term plus a KL term. | arch
+Vision Transformer (ViT) | DL | A transformer applied to a sequence of image patches. | arch
+Weight decay | DL | A penalty (or shrinkage step) on weight size that regularises the model. | dl
+Weight tying | DL | Sharing the input and output embedding matrices to save parameters. | dl,llm
+Xavier / Glorot initialisation | DL | Weight initialisation scaled to keep variance constant across layers; suited to tanh. | dl
+Zero-shot learning | DL | Performing a task without any task-specific training examples. | dl,llm
+Few-shot learning | DL | Learning a task from a handful of examples, often given in the prompt. | dl,llm
+Contrastive learning | DL | Training embeddings so that matching pairs are close and non-matching pairs are far apart. | arch
+CLIP | DL | A model trained to match images with captions; gives a shared image–text embedding space. | arch,vla
+SigLIP | DL | A CLIP variant using a sigmoid loss per pair instead of a batch-wide softmax. | vla
+InfoNCE | DL | A contrastive loss that picks the true match out of a set of negatives. | arch
+Triplet loss | DL | A loss that pulls an anchor toward a positive example and pushes it from a negative by a margin. | arch
+Focal loss | DL | A cross-entropy variant that down-weights easy examples to focus on hard ones; used for imbalanced detection. | ml,cv
+Huber loss | DL | A loss that is quadratic for small errors and linear for large ones, robust to outliers. | ml
+Dice loss | DL | A segmentation loss based on overlap between prediction and target. | cv
+ONNX | DL | An open format for exchanging trained models between frameworks and runtimes. | devtools,py
+TensorRT | DL | NVIDIA's inference optimiser and runtime for fast deployment on GPUs and Jetson. | devtools,cv
+torch.compile | DL | A PyTorch feature that compiles models into faster fused kernels. | py
+Weights & Biases | DL | A service for tracking experiments, metrics and artefacts. | devtools,evaldeploy
+TensorBoard | DL | A tool for visualising training metrics and graphs. | devtools

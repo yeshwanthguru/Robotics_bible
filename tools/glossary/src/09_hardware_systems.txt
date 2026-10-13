@@ -1,0 +1,110 @@
+# Term | Domain | Definition | refs
+ABS plastic / PLA | Hardware | Common 3-D printing plastics: PLA is easy and stiff but brittle; ABS is tougher and heat resistant. | mech
+Aluminium extrusion | Hardware | Standard aluminium profiles with T-slots used to build robot frames and cells. | mech
+Battery management system (BMS) | Hardware | Electronics that monitor and protect battery cells (voltage, current, temperature, balancing). | mech,sens
+Bearing | Hardware | A component that supports rotation or motion with low friction (ball, roller, crossed-roller). | mech
+Brownout | Hardware | A drop in supply voltage that can reset or corrupt electronics. | mech,embedded
+Brushed DC motor | Hardware | A DC motor using mechanical brushes for commutation; simple, wears out. | mech,sens
+CAN bus | Hardware | Controller Area Network: a robust two-wire serial bus used in vehicles and robot joints. | embedded,sens
+CAN-FD | Hardware | CAN with flexible data rate, giving larger frames and higher speed. | embedded
+Cycloidal drive | Hardware | A compact high-ratio gearbox with high shock tolerance. | mech,dyn
+DC–DC converter | Hardware | A circuit that changes a DC voltage level efficiently (buck lowers, boost raises). | mech
+EtherCAT | Hardware | A real-time industrial Ethernet fieldbus with deterministic cycle times and distributed clocks. | embedded,sens
+FPGA | Hardware | A field-programmable gate array: reconfigurable hardware for low-latency, parallel processing. | embedded
+Harmonic drive | Hardware | A strain-wave gear with zero backlash and high ratio in a compact size. | mech,dyn
+H-bridge | Hardware | A circuit that drives a motor in both directions. | mech
+I²C | Hardware | A two-wire serial bus connecting low-speed sensors and chips. | embedded
+IP rating | Hardware | A code (e.g. IP67) stating a device's dust and water protection. | mech
+Li-ion / LiFePO₄ battery | Hardware | Rechargeable lithium battery chemistries; LiFePO₄ is safer and longer-lived, Li-ion has higher energy density. | mech
+Microcontroller (MCU) | Hardware | A small chip with a processor, memory and peripherals for real-time control (STM32, ESP32). | embedded
+Motor driver | Hardware | Electronics that convert a command into motor current. | mech,ctrl
+Motor constant (Kt) | Hardware | Torque produced per amp of motor current. | dyn,mech
+Planetary gearbox | Hardware | A compact gearbox with sun, planet and ring gears; common in robot joints. | mech
+PWM | Hardware | Pulse-width modulation: controlling average power by switching on and off quickly. | embedded,mech
+Quasi-direct drive (QDD) | Hardware | An actuator with a low gear ratio (about 6 to 10) giving backdrivability and fast torque response. | dyn,leg
+RS-485 | Hardware | A differential serial standard for long, noisy cable runs. | embedded
+Servo motor | Hardware | A motor with position feedback and a controller, often a hobby or industrial packaged unit. | mech,sens
+SPI | Hardware | A fast four-wire serial bus for sensors and memory. | embedded
+Stepper motor | Hardware | A motor that moves in fixed steps; open-loop positioning for printers and small robots. | mech
+Strain gauge | Hardware | A sensor whose resistance changes with strain; the basis of force/torque sensors. | sens
+Time-sensitive networking (TSN) | Hardware | Ethernet extensions providing deterministic latency. | embedded
+UART | Hardware | A simple asynchronous serial interface. | embedded
+Universal Robots (UR) | Platform | A popular line of collaborative robot arms (UR3e, UR5e, UR10e, UR20). | platforms
+Franka Emika / Franka Research 3 | Platform | A 7-DoF torque-controlled research arm widely used in manipulation learning. | platforms
+KUKA | Platform | A major industrial and research robot-arm maker (LBR iiwa is a torque-sensing cobot). | platforms
+ABB | Platform | A major industrial robot manufacturer. | platforms
+Boston Dynamics Spot | Platform | A commercial quadruped robot used for inspection, with an optional arm. | platforms
+Atlas | Platform | Boston Dynamics' humanoid; the electric version targets manipulation. | platforms
+ANYmal | Platform | ANYbotics' quadruped for industrial inspection, born from ETH Zürich. | platforms
+Unitree | Platform | A manufacturer of affordable quadrupeds (Go2, B2) and humanoids (G1, H1). | platforms
+Tesla Optimus | Platform | Tesla's humanoid robot programme. | platforms
+Figure 02 / 03 | Platform | Figure AI's humanoid robots, driven by the Helix VLA. | platforms,vla
+Agility Digit | Platform | A bipedal humanoid built for logistics. | platforms
+ALOHA | Platform | A low-cost bimanual teleoperation system from Stanford/Google used to collect demonstrations for ACT. | platforms,il
+Mobile ALOHA | Platform | ALOHA on a mobile base for household tasks. | platforms,il
+SO-100 / SO-101 | Platform | Low-cost open-source robot arms from the LeRobot community with leader–follower teleoperation. | platforms,buildvla
+Shadow Dexterous Hand | Platform | A 20-DoF tendon-driven anthropomorphic research hand. | platforms,manip
+Allegro Hand | Platform | A 16-DoF four-finger robot hand for dexterity research. | platforms,manip
+LEAP Hand | Platform | A low-cost 16-DoF dexterous hand designed for research. | platforms,manip
+TurtleBot | Platform | A low-cost ROS reference mobile robot used for teaching. | platforms,nav
+Clearpath Husky / Jackal | Platform | Rugged research mobile robots. | platforms,nav
+Hello Robot Stretch | Platform | A lightweight mobile manipulator for homes. | platforms,nav
+PX4 | Platform | An open-source autopilot for drones. | avuav,platforms
+ArduPilot | Platform | An open-source autopilot for drones, rovers and boats. | avuav,platforms
+Canadarm2 | Platform | The Space Station's robotic arm. | space,platforms
+Astrobee | Platform | A free-flying robot on the International Space Station. | space,platforms
+Perseverance rover | Platform | NASA's Mars rover (2021) with an autonomous navigation system. | space,platforms
+da Vinci surgical system | Platform | A teleoperated robotic surgery platform. | space,platforms
+Autonomous mobile robot (AMR) | Mobility | A robot that navigates freely using onboard perception rather than fixed guides. | nav,avuav
+AGV | Mobility | Automated guided vehicle that follows fixed paths (lines, magnets, tape). | nav
+Dubins path | Mobility | The shortest path for a car-like vehicle that can only move forward with bounded turning radius. | plan,nav
+Reeds–Shepp path | Mobility | The shortest path for a car-like vehicle that can also reverse. | plan,nav
+Pure pursuit | Mobility | A path-tracking method that steers toward a look-ahead point on the path. | nav
+Stanley controller | Mobility | A path-tracking law combining heading and cross-track error, used by the Stanford DARPA entry. | nav
+Quadrotor | Mobility | A drone with four rotors; underactuated, differentially flat. | avuav
+VTOL | Mobility | Vertical take-off and landing aircraft. | avuav
+Minimum-snap trajectory | Mobility | A smooth drone trajectory minimising the fourth derivative of position. | avuav,plan
+Optical flow sensor | Mobility | A downward camera giving drones horizontal velocity. | avuav,sens
+Autonomous driving levels (SAE L0–L5) | Mobility | A six-level scale from no automation to full self-driving. | avuav
+Bird's-eye-view (BEV) | Mobility | A top-down representation fused from multiple cameras used for driving perception (BEVFormer, BEVFusion). | avuav,cv
+End-to-end driving | Mobility | A single network mapping sensor input directly to driving commands. | avuav
+HD map | Mobility | A high-definition map with lane geometry and traffic rules for automated driving. | avuav
+Operational design domain (ODD) | Mobility | The conditions (road, weather, speed) under which an automated system is designed to operate. | avuav,safety
+ISO 10218 | Standard | Safety requirements for industrial robots and robot systems. | safety
+ISO/TS 15066 | Standard | Technical specification for collaborative robot operation, including force and pressure limits for human contact. | safety
+ISO 13482 | Standard | Safety requirements for personal-care robots. | safety
+ISO 26262 | Standard | Functional safety standard for road vehicles' electrical and electronic systems. | safety
+IEC 61508 | Standard | The general functional-safety standard for electrical/electronic systems (SIL levels). | safety
+ISO 13849 | Standard | Safety of machinery: safety-related parts of control systems (performance levels). | safety
+Safe torque off (STO) | Standard | A safety function that removes motor torque on demand. | safety
+Emergency stop (E-stop) | Standard | A manual control that brings a machine to a safe stop. | safety
+Power and force limiting | Standard | A collaborative-robot safety mode limiting contact force and pressure. | safety
+Speed and separation monitoring | Standard | A collaborative-robot safety mode that slows or stops the robot as a person approaches. | safety
+Functional safety | Standard | Safety that depends on systems working correctly, achieved by redundancy and diagnostics. | safety
+SOTIF (ISO 21448) | Standard | Safety of the intended functionality: hazards from performance limits of correctly working systems. | safety,avuav
+Alignment (AI) | Ethics | Making AI systems pursue the goals and values their designers and users intend. | safety,llm
+Bias (fairness) | Ethics | Systematic unfair differences in model behaviour across groups. | safety
+Explainability | Ethics | Making a model's decisions understandable to humans. | safety,ml
+Red teaming | Ethics | Deliberately probing a system for failures and misuse. | safety,llm
+Model card | Ethics | A document describing a model's purpose, data, performance and limits. | safety,evaldeploy
+Data card | Ethics | A document describing a dataset's source, composition, licence and known issues. | safety,evaldeploy
+Differential privacy | Ethics | A mathematical guarantee limiting what a model reveals about any one training example. | safety,ml
+Shared autonomy | HRI | A human and an autonomous system jointly controlling a robot. | hri
+Teleoperation | HRI | Controlling a robot remotely by a human operator. | hri,il
+Hand-over | HRI | A robot passing an object to a person or receiving one. | hri,manip
+Social navigation | HRI | Moving among people in a socially acceptable way. | hri,nav
+Swarm robotics | HRI | Coordination of many simple robots through local rules. | hri
+Consensus (multi-robot) | HRI | Agents agreeing on a shared value through local communication. | hri
+Auction-based task allocation | HRI | Assigning tasks to robots by bidding (CBBA). | hri,plan
+ONNX Runtime | MLOps | A cross-platform engine for running ONNX models efficiently. | mlops,devtools
+Model registry | MLOps | A catalogue of trained model versions with metadata and stage (staging, production). | mlops
+Feature store | MLOps | A system that manages and serves features consistently for training and inference. | mlops
+Data lineage | MLOps | A record of where data came from and how it was transformed. | mlops
+Shadow mode | MLOps | Running a new model alongside the live system without acting on its outputs. | mlops,evaldeploy
+Canary release | MLOps | Rolling out a change to a small fraction of users or robots first. | mlops
+Model drift | MLOps | Degradation of model performance as the data distribution changes. | mlops,ml
+MLflow | MLOps | An open-source platform for tracking experiments and managing models. | mlops,devtools
+Parquet | MLOps | A columnar file format for efficient storage of tabular data; used by LeRobot datasets. | mlops,buildvla
+HDF5 | MLOps | A hierarchical file format for large numerical arrays; used for robot demonstration datasets. | mlops,isaaclab
+Zarr | MLOps | A chunked, compressed array storage format for large datasets. | mlops
+Slurm | MLOps | A job scheduler for GPU clusters. | mlops

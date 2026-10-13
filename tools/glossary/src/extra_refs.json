@@ -1,0 +1,16 @@
+{
+  "cvclassic": ["09-perception-localization/classical-vision-image-processing", "Classical vision & image processing"],
+  "nlp": ["05-foundation-models/nlp-embeddings-retrieval", "NLP, embeddings & retrieval"],
+  "mlops": ["12-software/mlops-data-engineering", "MLOps & data engineering"],
+  "embedded": ["12-software/embedded-realtime-microros", "Embedded & real-time systems"],
+  "avuav": ["11-mobility-dexterity/autonomous-driving-uav", "Autonomous driving & drones"],
+  "mech": ["08-robotics/mechanics-electronics", "Mechanics & electronics"],
+  "safety": ["08-robotics/safety-ethics-standards", "Safety, ethics & standards"],
+  "hri": ["07-physical-ai/hri-multi-agent", "HRI & multi-agent systems"],
+  "moremath": ["01-foundations/more-math-numerics-graphical-models", "More math: numerics & graphical models"],
+  "moreml": ["02-machine-learning/ml-more-topics", "More ML topics"],
+  "tools": ["reference/tools-libraries", "Tools & libraries directory"],
+  "datasets": ["reference/datasets-benchmarks", "Datasets & benchmarks"],
+  "papers": ["reference/landmark-papers-models", "Landmark papers & models"],
+  "platforms": ["reference/robots-platforms", "Robots & platforms"]
+}

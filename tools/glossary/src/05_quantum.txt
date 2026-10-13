@@ -1,0 +1,77 @@
+# Term | Domain | Definition | refs
+Amplitude | Quantum | A complex number attached to each basis state; its squared magnitude is the probability of measuring that state. | qbasics
+Amplitude amplification | Quantum | A generalisation of Grover's search that boosts the amplitude of desired states by repeated reflections. | qalgo
+Annealing (quantum) | Quantum | An optimisation approach that slowly changes a Hamiltonian so the system settles into a low-energy (good) solution; used by D-Wave. | qalgo
+Ansatz | Quantum | The parameterised circuit form chosen for a variational algorithm (hardware-efficient, UCCSD). | qalgo
+Barren plateau | Quantum | A region of a variational cost landscape where gradients vanish exponentially, making training impossible. | qalgo
+Bell state | Quantum | A maximally entangled two-qubit state such as (00 plus 11) over root two. | qbasics
+Bloch sphere | Quantum | A geometric picture of a single qubit's state as a point on a sphere. | qbasics
+Bra–ket notation | Quantum | Dirac notation: |ψ⟩ is a state vector (ket) and ⟨ψ| its conjugate transpose (bra). | qbasics
+CHSH inequality | Quantum | A Bell inequality whose violation (up to 2√2) rules out local hidden-variable explanations. | qbasics
+Circuit depth | Quantum | The number of sequential gate layers in a quantum circuit; limits feasibility on noisy hardware. | qbasics,qalgo
+Clifford gates | Quantum | The gate set (H, S, CNOT) that maps Pauli operators to Pauli operators; classically simulable. | qbasics
+CNOT gate | Quantum | A two-qubit gate that flips the target qubit if the control qubit is 1. | qbasics
+Coherence time | Quantum | How long a qubit keeps its quantum state (T1 energy relaxation, T2 dephasing). | qbasics
+Controlled gate | Quantum | A gate applied to a target qubit only when a control qubit is in state 1. | qbasics
+CUDA-Q | Quantum | NVIDIA's platform for GPU-accelerated quantum simulation and hybrid quantum–classical programming. | qsoft
+Decoherence | Quantum | Loss of quantum behaviour through interaction with the environment. | qbasics
+Density matrix | Quantum | A description of a quantum state that also covers mixed (noisy) states. | qbasics
+Dequantisation | Quantum | Showing that a claimed quantum speed-up can be matched by a classical algorithm (e.g. Tang's recommender result). | qalgo
+Entanglement | Quantum | A correlation between qubits that cannot be described by separate states for each. | qbasics
+Error correction (quantum) | Quantum | Encoding logical qubits across many physical qubits to detect and fix errors (surface code). | qbasics
+Error mitigation | Quantum | Post-processing techniques that reduce noise effects on near-term devices without full error correction. | qbasics
+Fault tolerance | Quantum | Computing reliably with noisy components by using error correction below a threshold error rate. | qbasics
+Fidelity | Quantum | A measure (0 to 1) of how close two quantum states or operations are. | qbasics
+Gate (quantum) | Quantum | A reversible (unitary) operation on one or more qubits. | qbasics
+Gottesman–Knill theorem | Quantum | Circuits made only of Clifford gates can be simulated efficiently on a classical computer. | qbasics
+Grover's algorithm | Quantum | Searches an unstructured list of N items in about √N steps. | qalgo
+Hadamard gate | Quantum | Turns |0⟩ into an equal superposition of 0 and 1 and vice versa. | qbasics
+Hamiltonian | Quantum | The operator describing a system's total energy; its lowest eigenvalue is the ground-state energy. | qalgo
+HHL algorithm | Quantum | A quantum algorithm for linear systems with potential exponential speed-up under strong assumptions. | qalgo
+Hybrid quantum–classical algorithm | Quantum | An algorithm where a quantum device evaluates a cost and a classical optimiser updates parameters (VQE, QAOA). | qalgo
+IBM Quantum | Quantum | IBM's cloud service and hardware for superconducting quantum computers, programmed with Qiskit. | qsoft
+Interference | Quantum | Amplitudes add or cancel like waves; the resource quantum algorithms exploit. | qbasics
+Jordan–Wigner transformation | Quantum | A mapping from fermionic operators (chemistry) to qubit operators. | qalgo
+Logical qubit | Quantum | An error-protected qubit encoded in many physical qubits. | qbasics
+Measurement (quantum) | Quantum | Reading out a qubit; yields a classical 0 or 1 with probability set by the state and collapses it. | qbasics
+NISQ | Quantum | Noisy intermediate-scale quantum: today's devices with tens to thousands of noisy qubits. | qbasics
+No-cloning theorem | Quantum | An unknown quantum state cannot be copied exactly. | qbasics
+Oracle | Quantum | A black-box operation that marks the solution in query-based algorithms such as Grover. | qalgo
+Parameter-shift rule | Quantum | An exact way to compute gradients of circuit outputs by evaluating the circuit at shifted parameters. | qalgo,qsoft
+Pauli matrices | Quantum | The operators X, Y and Z (plus identity) that form a basis for single-qubit operations. | qbasics
+PennyLane | Quantum | A Python library for differentiable quantum programming and quantum machine learning. | qsoft
+Phase (quantum) | Quantum | The angle of a complex amplitude; relative phase determines interference. | qbasics
+Phase kickback | Quantum | A controlled operation changing the control qubit's phase depending on the target's eigenstate; used in phase estimation. | qalgo
+Quantum advantage | Quantum | Solving a task faster or better than any known classical method. | qalgo
+Quantum annealer | Quantum | A device (D-Wave) that performs quantum annealing for optimisation problems. | qalgo
+QAOA | Quantum | Quantum approximate optimisation algorithm: alternates problem and mixer layers with tuned angles to solve combinatorial problems. | qalgo
+Quantum circuit | Quantum | A sequence of gates and measurements acting on qubits. | qbasics,qsoft
+Quantum Fourier transform (QFT) | Quantum | The quantum version of the discrete Fourier transform; a core subroutine of Shor's algorithm and phase estimation. | qalgo
+Quantum kernel | Quantum | A similarity function computed as the overlap of quantum feature states; used with classical SVMs. | qalgo
+Quantum key distribution (QKD) | Quantum | Sharing cryptographic keys with security guaranteed by quantum mechanics (BB84). | qbasics
+Quantum machine learning (QML) | Quantum | Machine learning that uses quantum circuits as models or kernels. | qalgo
+Quantum phase estimation (QPE) | Quantum | Estimates the eigenvalue (phase) of a unitary operator; underlies Shor and chemistry algorithms. | qalgo
+Quantum supremacy | Quantum | Demonstrating a quantum device performing a task infeasible for classical computers, regardless of usefulness. | qalgo
+Qiskit | Quantum | IBM's open-source Python framework for quantum circuits, transpilation and execution. | qsoft
+Qubit | Quantum | The basic unit of quantum information: a two-level system in a superposition of 0 and 1. | qbasics
+Readout error | Quantum | Mistakes in measuring a qubit's final state. | qbasics
+Shor's algorithm | Quantum | Factors integers in polynomial time on a quantum computer, threatening RSA encryption. | qalgo
+Shot | Quantum | One execution of a quantum circuit with a measurement; many shots estimate probabilities. | qsoft
+Stabiliser code | Quantum | A family of quantum error-correcting codes defined by commuting Pauli operators (surface code). | qbasics
+Superposition | Quantum | A state that is a weighted combination of basis states. | qbasics
+Surface code | Quantum | A 2-D error-correcting code with a high error threshold (about one percent) and only neighbour interactions. | qbasics
+T gate | Quantum | A single-qubit phase gate of π/4 that, with Clifford gates, makes the gate set universal. | qbasics
+Teleportation (quantum) | Quantum | Transferring a qubit's state using entanglement and two classical bits. | qbasics
+Transmon | Quantum | The most common superconducting qubit design. | qbasics
+Transpilation | Quantum | Rewriting a circuit into a device's native gates and layout. | qsoft
+Trapped-ion qubit | Quantum | A qubit stored in an electronic state of an ion held by electromagnetic fields; high-fidelity, all-to-all connectivity. | qbasics
+Unitary matrix | Quantum | A matrix preserving vector length; describes reversible quantum evolution. | qbasics
+Variational principle | Quantum | Any trial state's energy is at least the true ground-state energy. | qalgo
+VQE | Quantum | Variational quantum eigensolver: finds a molecule's lowest energy by tuning circuit parameters with a classical optimiser. | qalgo
+Zero-noise extrapolation | Quantum | An error-mitigation method that runs circuits at amplified noise levels and extrapolates back to zero noise. | qbasics
+Quantum walk | Quantum | The quantum analogue of a random walk, used in search and graph algorithms. | qalgo
+BQP | Quantum | The class of problems solvable by a quantum computer in polynomial time with bounded error. | qalgo,cs
+QUBO | Quantum | Quadratic unconstrained binary optimisation: minimise x-transpose Q x over bits; the native format of annealers. | qalgo
+Ising model | Quantum | A model of interacting spins; many optimisation problems map onto its energy function. | qalgo
+Cold-atom interferometer | Quantum | A quantum sensor using matter-wave interference of cooled atoms for ultra-precise acceleration and rotation measurement. | sens,space
+Quantum sensing | Quantum | Using quantum effects (NV centres, atom interferometry, SQUIDs) to measure fields, time and motion with high precision. | sens,space

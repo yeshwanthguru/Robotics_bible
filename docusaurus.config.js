@@ -7,7 +7,7 @@ import rehypeKatex from 'rehype-katex';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Robotics & AI Bible',
-  tagline: 'ML · DL · RL · LLM/VLM/VLA · Quantum · Physical AI · Robotics · Simulation — one interview reference',
+  tagline: 'A lifelong handbook, dictionary and Q&A for ML · DL · RL · LLM/VLM/VLA · Quantum · Physical AI · Robotics · Simulation',
   favicon: 'img/favicon.svg',
   url: 'https://yeshwanthguru.github.io',
   baseUrl: '/Robotics_bible/',
@@ -17,7 +17,7 @@ const config = {
   markdown: {mermaid: true, format: 'detect', hooks: {onBrokenMarkdownLinks: 'warn'}},
   themes: [
     '@docusaurus/theme-mermaid',
-    [require.resolve('@easyops-cn/docusaurus-search-local'), {hashed: true, docsRouteBasePath: '/docs', indexBlog: false}],
+    [require.resolve('@easyops-cn/docusaurus-search-local'), {hashed: true, docsRouteBasePath: '/docs', indexBlog: false, indexPages: true, language: ['en'], highlightSearchTermsOnTargetPage: true, searchResultLimits: 12, searchResultContextMaxLength: 90, explicitSearchResultPath: true}],
   ],
   presets: [
     ['classic', {
@@ -37,12 +37,16 @@ const config = {
     navbar: {
       title: 'Robotics & AI Bible',
       items: [
-        {type: 'docSidebar', sidebarId: 'bible', position: 'left', label: 'Docs'},
-        {to: '/docs/interview/question-bank', label: 'Interview', position: 'left'},
+        {type: 'docSidebar', sidebarId: 'bible', position: 'left', label: 'Handbook'},
+        {to: '/docs/glossary', label: 'Dictionary', position: 'left'},
+        {to: '/docs/interview/question-bank', label: 'Interview Q&A', position: 'left'},
+        {to: '/docs/reference/tools-libraries', label: 'Reference', position: 'left'},
+        {to: '/docs/build-your-own/start-building', label: 'Build', position: 'left'},
         {to: '/docs/cheatsheets/formulas', label: 'Cheat Sheets', position: 'left'},
+        {href: 'https://github.com/yeshwanthguru/Robotics_bible', label: 'GitHub', position: 'right'},
       ],
     },
-    footer: {style: 'dark', copyright: 'Personal interview reference. Built with Docusaurus.'},
+    footer: {style: 'dark', copyright: 'Robotics & AI Bible: a personal handbook, dictionary and Q&A. Built with Docusaurus.'},
     docs: {sidebar: {hideable: true, autoCollapseCategories: true}},
     prism: {
       theme: prismThemes.github,

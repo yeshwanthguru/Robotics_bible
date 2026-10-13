@@ -1,0 +1,106 @@
+# Term | Domain | Definition | refs
+Affine transformation | Math | A linear transformation followed by a shift (translation): x ↦ Ax + b. Rotations plus translations (rigid motions) are affine. | math,kin
+Argmax / argmin | Math | The input value at which a function reaches its maximum (argmax) or minimum (argmin), as opposed to the maximum value itself. | math
+Basis (linear algebra) | Math | A set of linearly independent vectors that can build every vector in a space by weighted sums; the number of vectors is the dimension. | math
+Bayes' rule | Math | p(a given b) = p(b given a) × p(a) / p(b): how to update a belief when new evidence arrives. The root of every filter in robotics. | math,est
+Bayesian inference | Math | Updating a probability distribution over unknown quantities using Bayes' rule as data arrives. | math
+Bias (statistical) | Math | The systematic difference between an estimator's average value and the true value. Different from the bias term in a neural network. | math,ml
+Binomial distribution | Math | The number of successes in n independent yes/no trials, each with success probability p. Used for success-rate statistics. | math
+Central limit theorem | Math | The average of many independent random samples is approximately Gaussian, whatever the original distribution. | math
+Chain rule | Math | The derivative of a composed function is the product of the derivatives of its parts; the mathematical basis of backpropagation. | math,dl
+Cholesky decomposition | Math | Factoring a symmetric positive-definite matrix A as L times L-transpose with L lower-triangular; used for fast solves and sampling Gaussians. | math
+Condition number | Math | The ratio of largest to smallest singular value of a matrix; large values mean the problem is nearly singular and noise gets amplified. | math,kin
+Conditional probability | Math | The probability of an event given that another event has occurred, written p(a given b). | math
+Confidence interval | Math | A range computed from data that would contain the true value a stated fraction (e.g. 95 percent) of the time over repeated experiments. | math,evaldeploy
+Convex function | Math | A function whose line between any two points lies above its graph; every local minimum is a global minimum. | math
+Convex optimization | Math | Minimising a convex function over a convex set; reliably solvable. Includes LP, QP, SOCP and SDP. | math
+Correlation | Math | A normalised measure (between −1 and 1) of how linearly two variables move together. | math
+Covariance | Math | How two variables vary together; the covariance matrix describes the shape of an uncertainty cloud. | math,est
+Cross product | Math | A 3-D vector perpendicular to two input vectors with length equal to the area they span; appears in torque and angular velocity. | math,kin
+Determinant | Math | A single number from a square matrix: the factor by which it scales volume; zero means the matrix is singular. | math
+Dot product | Math | The sum of products of matching entries of two vectors; measures alignment and projects one vector onto another. | math
+Eigenvalue and eigenvector | Math | A vector that a matrix only stretches (not turns) and the stretch factor. Eigenvalues determine stability and principal directions. | math
+Entropy | Math | The average surprise of a random variable, H = −sum p log p; measures uncertainty. | math
+Euclidean distance | Math | The straight-line distance between two points, the square root of the sum of squared coordinate differences. | math
+Expectation | Math | The probability-weighted average value of a random variable. | math
+Fourier transform | Math | Rewrites a signal as a sum of sine waves of different frequencies; used for filtering, vibration analysis and the quantum Fourier transform's classical cousin. | math
+Gaussian distribution | Math | The bell curve defined by a mean and a variance (or covariance matrix); closed under linear maps, which makes Kalman filters exact. | math,est
+Gradient | Math | The vector of partial derivatives of a function; points in the direction of steepest increase. | math,dl
+Hessian | Math | The matrix of second derivatives of a function; describes curvature. | math
+Identity matrix | Math | The square matrix with ones on the diagonal; multiplying by it changes nothing. | math
+Jacobian (math) | Math | The matrix of first partial derivatives of a vector-valued function; the local linear approximation. See also the robot Jacobian. | math,kin
+Jensen's inequality | Math | For a convex function f, f(average of x) is at most the average of f(x); the basis of the ELBO in variational inference. | math
+KL divergence | Math | A non-symmetric measure of how one probability distribution differs from another; zero only when they are equal. | math,dl
+Lagrange multiplier | Math | A variable that turns a constrained optimisation problem into an unconstrained one by pricing the constraint. | math
+Law of large numbers | Math | Sample averages converge to the true expectation as the number of samples grows. | math
+Least squares | Math | Choosing parameters that minimise the sum of squared errors; solved by the normal equations or QR/SVD. | math,slam
+Likelihood | Math | How probable the observed data is under a given model parameter; a function of the parameter, not a distribution over it. | math
+Log-likelihood | Math | The logarithm of the likelihood; turns products into sums and is what training losses usually minimise (negated). | math,dl
+Mahalanobis distance | Math | Distance measured in units of standard deviation that accounts for correlations; used to gate outliers in filters. | math,est
+Markov chain | Math | A random process where the next state depends only on the current state. | math,rl
+Markov property | Math | The future is independent of the past given the present state. | math,rl
+Matrix inverse | Math | The matrix that undoes another matrix; exists only for square, non-singular matrices. | math
+Maximum a posteriori (MAP) | Math | The parameter value with the highest posterior probability; equals maximum likelihood plus a prior, which acts as regularisation. | math,ml
+Maximum likelihood estimation (MLE) | Math | Choosing the parameters that make the observed data most probable. | math,ml
+Monte Carlo method | Math | Estimating quantities by random sampling; error shrinks as one over the square root of the sample count. | math,est
+Mutual information | Math | How much knowing one variable reduces uncertainty about another. | math
+Norm | Math | A measure of vector size: L1 (sum of absolute values), L2 (Euclidean length), infinity-norm (largest entry). | math
+Null space | Math | The set of inputs a matrix maps to zero; in redundant robot arms it is the motion that does not move the hand. | math,kin
+Orthogonal matrix | Math | A square matrix whose columns are perpendicular unit vectors; its inverse is its transpose. Rotation matrices are orthogonal. | math,kin
+P-value | Math | The probability of seeing data at least this extreme if the null hypothesis were true; not the probability the hypothesis is true. | math,r
+Poisson distribution | Math | The number of events in a fixed time when events occur independently at a constant average rate. | math
+Positive definite matrix | Math | A symmetric matrix with all positive eigenvalues; defines a bowl-shaped energy. Covariances and inertia matrices are positive (semi-)definite. | math,dyn
+Posterior | Math | The updated belief about a quantity after seeing the data. | math
+Prior | Math | The belief about a quantity before seeing the data. | math
+Probability density function (PDF) | Math | A function whose area over an interval gives the probability that a continuous variable falls in it. | math
+Pseudo-inverse | Math | A generalisation of the inverse for non-square or singular matrices, computed with the SVD; gives the least-squares solution. | math,kin
+Rank | Math | The number of linearly independent rows or columns of a matrix; the number of directions it can really act in. | math,kin
+Singular value decomposition (SVD) | Math | Writes any matrix as rotation × stretch × rotation. Used for pseudo-inverses, PCA, point-cloud alignment and Jacobian analysis. | math,kin
+Standard deviation | Math | The square root of variance; the typical spread around the mean in the same units as the data. | math
+Taylor series | Math | Approximating a function near a point by a polynomial built from its derivatives; the basis of linearisation in the EKF. | math,est
+Trace | Math | The sum of a square matrix's diagonal entries; equals the sum of its eigenvalues. | math
+Transpose | Math | Flipping a matrix across its diagonal, turning rows into columns. | math
+Variance | Math | The average squared distance from the mean; measures spread. | math
+Wilson interval | Math | A confidence interval for a proportion (such as a success rate) that behaves well for small samples and extreme values. | math,evaldeploy
+Z-transform | Math | The discrete-time counterpart of the Laplace transform; used to analyse sampled control systems. | math,ctrl
+Laplace transform | Math | Converts differential equations in time into algebra in the variable s; the basis of transfer functions in classical control. | math,ctrl
+Ordinary differential equation (ODE) | Math | An equation relating a function to its derivatives with respect to one variable (time); robot dynamics are ODEs. | math,dyn
+Numerical integration | Math | Approximating the solution of an ODE step by step (Euler, Runge–Kutta); the engine inside simulators. | math,sim
+Big-O notation | CS | Describes how an algorithm's running time or memory grows with input size, ignoring constant factors. | cs
+Array | CS | A contiguous block of items indexed by position; fast random access and cache-friendly. | cs
+Hash table | CS | A key-to-value map with average constant-time lookup using a hash function. | cs
+Heap (priority queue) | CS | A tree-based structure that returns the smallest (or largest) item quickly; the open list in A* search. | cs,plan
+KD-tree | CS | A binary tree that splits space along coordinate axes for fast nearest-neighbour queries; used in ICP and point-cloud processing. | cs,slam
+Octree | CS | A tree that recursively divides 3-D space into eight cells; stores sparse 3-D maps such as OctoMap. | cs,slam
+Union-find (disjoint set) | CS | A structure that tracks which items belong to the same group and merges groups in near-constant time. | cs
+Graph | CS | Nodes connected by edges; used for road maps, SLAM pose graphs and scene graphs. | cs,slam
+Breadth-first search (BFS) | CS | Explores a graph level by level; finds the shortest path when all steps cost the same. | cs
+Depth-first search (DFS) | CS | Explores a graph by going as deep as possible before backtracking. | cs
+Dijkstra's algorithm | CS | Finds shortest paths in a graph with non-negative edge costs by always expanding the cheapest frontier node. | cs,plan
+A* search | CS | Dijkstra plus a heuristic estimate of remaining cost; optimal when the heuristic never overestimates. | cs,plan
+Bellman–Ford algorithm | CS | Shortest paths that also handle negative edge costs, by repeatedly relaxing all edges. | cs
+Topological sort | CS | An ordering of a directed acyclic graph's nodes so every edge points forward; used for dependency resolution. | cs
+Minimum spanning tree | CS | The cheapest set of edges connecting all nodes of a graph without cycles (Kruskal, Prim). | cs
+Dynamic programming | CS | Solving a problem by combining solutions of overlapping sub-problems and caching them; value iteration and Viterbi are examples. | cs,rl
+Greedy algorithm | CS | Making the locally best choice at each step; optimal only for problems with the right structure. | cs
+Binary search | CS | Finding an item in a sorted list by repeatedly halving the search range; logarithmic time. | cs
+RANSAC | CS | Random sample consensus: repeatedly fit a model to a random minimal subset and keep the fit that most data agree with; robust to outliers. | cs,cv
+Recursion | CS | A function that calls itself on a smaller version of the problem. | cs
+P versus NP | CS | P: problems solvable in polynomial time. NP: solutions checkable in polynomial time. Whether they are equal is open. | cs,qalgo
+NP-hard | CS | At least as hard as every problem in NP; no known polynomial-time algorithm. | cs
+Mutex | CS | A lock that lets only one thread at a time enter a critical section. | cs,cpp
+Semaphore | CS | A counter that limits how many threads may use a resource at once. | cs
+Deadlock | CS | Threads waiting on each other forever; requires mutual exclusion, hold-and-wait, no preemption and circular wait. | cs
+Race condition | CS | A bug where the result depends on the unpredictable timing of threads. | cs,cpp
+Priority inversion | CS | A low-priority task holding a lock that blocks a high-priority task; solved by priority inheritance. | cs,cpp
+Thread | CS | A unit of execution that shares memory with other threads of the same process. | cs
+Process | CS | A running program with its own memory space. | cs
+Cache (CPU) | CS | Small fast memory close to the processor; contiguous data layouts exploit it. | cs
+Virtual memory | CS | An abstraction that gives each process its own address space mapped to physical memory by the OS. | cs
+Latency | CS | The delay between a cause and its effect (e.g. camera frame to motor command). | cs,ctrl
+Throughput | CS | The amount of work done per unit time (e.g. frames per second). | cs
+Jitter | CS | Variation in latency from one cycle to the next; the enemy of real-time control. | cs,cpp
+Real-time system | CS | A system that must meet deadlines every time; hard real-time treats a missed deadline as failure. | cs,cpp
+TCP | CS | A reliable, ordered network protocol with retransmission. | cs
+UDP | CS | A fast, connectionless network protocol with no delivery guarantee; basis of many sensor streams. | cs,ros2
+Zero-copy | CS | Passing data by reference between components instead of copying it; used for images and point clouds. | cs,ros2
