@@ -1,0 +1,15 @@
+//TITLE: Inverted pendulum on a cart (balance control)
+//NOTE: The pole wants to fall. A feedback controller moves the cart to keep it up. Turn the controller off to watch it fall, push the pole with Kick, and weaken the gains to see it lose balance. This is the classic LQR / RL benchmark.
+const cv=setup($('c'),0.5),ctl=$('k');let x=0,xd=0,th=0.12,thd=0,on=true,kp=40,kd=8,kx=2,kv=3,hist=[];const g=9.81,M=1,m=0.2,l=0.6;
+slider(ctl,'angle gain',0,80,1,kp,a=>kp=a);slider(ctl,'angle-rate gain',0,20,0.5,kd,a=>kd=a);slider(ctl,'position gain',0,6,0.1,kx,a=>kx=a);
+const b1=btn(ctl,'Controller: ON',()=>{on=!on;b1.textContent='Controller: '+(on?'ON':'OFF')});btn(ctl,'Kick',()=>thd+=(Math.random()<.5?-1:1)*1.5,1);btn(ctl,'Reset',reset,1);
+function reset(){x=0;xd=0;th=0.12;thd=0;hist=[]}
+function step(h){let u=on?(kp*th+kd*thd+kx*x+kv*xd):0;u=Math.max(-60,Math.min(60,u));
+const s=Math.sin(th),c=Math.cos(th),den=M+m*s*s;const xdd=(u+m*s*(l*thd*thd-g*c)) /den*1,thdd=(-u*c-m*l*thd*thd*c*s+(M+m)*g*s)/(l*den);
+xd+=xdd*h;x+=xd*h;thd+=thdd*h;th+=thd*h;if(Math.abs(x)>3){x=Math.sign(x)*3;xd=0}}
+loop(dt=>{for(let i=0;i<10;i++)step(dt/10);hist.push(th);if(hist.length>300)hist.shift();const c=cv.ctx,W=cv.W,H=cv.H;c.clearRect(0,0,W,H);const s=W/8,gy=H*.72;
+c.strokeStyle=css('--line');c.beginPath();c.moveTo(0,gy);c.lineTo(W,gy);c.stroke();const cx=W/2+x*s;
+c.fillStyle=css('--acc');c.fillRect(cx-35,gy-24,70,24);const px=cx+Math.sin(th)*l*s*1.6,py=gy-24-Math.cos(th)*l*s*1.6;
+c.strokeStyle=css('--fg');c.lineWidth=5;c.lineCap='round';c.beginPath();c.moveTo(cx,gy-24);c.lineTo(px,py);c.stroke();c.fillStyle=css('--acc2');c.beginPath();c.arc(px,py,10,0,7);c.fill();c.lineWidth=1;
+c.strokeStyle=css('--mut');c.beginPath();hist.forEach((v,i)=>{const X=10+i/300*(W*.3),Y=H*.15-v*30;i?c.lineTo(X,Y):c.moveTo(X,Y)});c.stroke();c.fillStyle=css('--mut');c.fillText('pole angle history',10,H*.15+26);
+const fallen=Math.abs(th)>1.4;$('r').innerHTML='pole angle <b>'+(th*57.3).toFixed(1)+'°</b> &nbsp; cart x <b>'+x.toFixed(2)+'</b> &nbsp; '+(fallen?'<b style="color:var(--warn)">fallen: press Reset</b>':on?'balancing':'controller off')});

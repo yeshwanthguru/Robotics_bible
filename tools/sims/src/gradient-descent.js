@@ -1,0 +1,17 @@
+//TITLE: Gradient descent on a loss surface
+//NOTE: Colour and lines show a loss landscape with a long narrow valley. Click anywhere to restart from there. Try a large learning rate (zig-zag, divergence) and momentum (rolls along the valley).
+const cv=setup($('c'),0.62);let lr=0.05,mom=0,p0=[-2,1.3],p=p0.slice(),vel=[0,0],path=[],steps=0,ctl=$('k'),bg=null;
+const f=(x,y)=>0.125*x*x+1.5*y*y+0.13*Math.sin(1.5*x), gx=(x,y)=>0.25*x+0.2*Math.cos(1.5*x), gy=(x,y)=>3*y;
+slider(ctl,'learning rate',0.005,0.7,0.005,lr,a=>lr=a,v=>(+v).toFixed(3));slider(ctl,'momentum',0,0.98,0.01,mom,a=>mom=a);
+function reset(q){p0=q.slice();p=q.slice();vel=[0,0];path=[];steps=0}btn(ctl,'Restart',()=>reset(p0));
+const sx=x=>(x+2.5)/5*cv.W, sy=y=>(1.6-y)/3.2*cv.H;
+cv.addEventListener('pointerdown',e=>{const q=pos(cv,e);reset([q[0]/cv.W*5-2.5,1.6-q[1]/cv.H*3.2])});
+function mkbg(){bg=document.createElement('canvas');bg.width=cv.W;bg.height=cv.H;const b=bg.getContext('2d'),im=b.createImageData(cv.W,cv.H);
+for(let j=0;j<cv.H;j++)for(let i=0;i<cv.W;i++){const x=i/cv.W*5-2.5,y=1.6-j/cv.H*3.2,q=Math.log(1+f(x,y)*3),band=Math.abs(((q*5)%1)-0.5)<0.05,g=Math.min(255,70+q*90),k=(j*cv.W+i)*4;
+im.data[k]=band?20:g*0.5+60;im.data[k+1]=band?20:g*0.7+50;im.data[k+2]=band?20:g+20;im.data[k+3]=255}b.putImageData(im,0,0)}
+cv.onfit=()=>{bg=null};
+loop(()=>{if(!bg)mkbg();const c=cv.ctx;c.drawImage(bg,0,0,cv.W,cv.H);
+for(let i=0;i<2;i++){vel[0]=mom*vel[0]-lr*gx(p[0],p[1]);vel[1]=mom*vel[1]-lr*gy(p[0],p[1]);p[0]+=vel[0];p[1]+=vel[1];steps++;if(!(Math.abs(p[0])<1e3&&Math.abs(p[1])<1e3)){reset(p0);break}path.push(p.slice());if(path.length>500)path.shift()}
+c.strokeStyle='#fff';c.lineWidth=2;c.beginPath();path.forEach((q,i)=>i?c.lineTo(sx(q[0]),sy(q[1])):c.moveTo(sx(q[0]),sy(q[1])));c.stroke();
+c.fillStyle=css('--acc2');c.beginPath();c.arc(sx(p[0]),sy(p[1]),7,0,7);c.fill();
+$('r').innerHTML='step <b>'+steps+'</b> &nbsp; loss <b>'+f(p[0],p[1]).toFixed(4)+'</b> &nbsp; (If the ball flies off the plot it diverged and restarts.)'});

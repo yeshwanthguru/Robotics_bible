@@ -8,6 +8,11 @@ title: More ML Topics (Time Series, Anomalies, Uncertainty, Recommenders)
 Beyond classification and regression, real projects need: **forecasting** (what happens next in a time series), **anomaly detection** (what looks wrong), **uncertainty** (how sure is the model), **recommenders** (what to suggest), **explainability** (why did it decide that), and **optimising expensive experiments**. These are the supporting skills that make a model trustworthy in the field.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: k-means</span><a href="/Robotics_bible/sim/kmeans.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/kmeans.html" height="540" loading="lazy" title="k-means"></iframe></div>
+
+
 ## 1. Time series
 
 A **time series** is data ordered in time (joint torques, battery voltage, IMU). Key ideas:

@@ -8,6 +8,11 @@ title: Perception for Robots (Vision, 3D, Semantics)
 Perception turns raw sensor data (pixels, laser points) into something the robot can *use*: "there's a mug **here**, its handle faces **left**, and the table is **0.4 m** below it." Modern perception = a **foundation model** (SAM, DINOv2, CLIP, Depth Anything) plus a bit of **geometry** to get exact 3-D positions.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Pinhole camera</span><a href="/Robotics_bible/sim/camera.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/camera.html" height="520" loading="lazy" title="Pinhole camera"></iframe></div>
+
+
 ## The perception menu
 
 | Task | What it answers | Go-to tools |

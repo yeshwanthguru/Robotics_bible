@@ -10,6 +10,11 @@ A quantum algorithm is a clever choreography that makes the *wrong* answers canc
 It does **not** try every answer at once and pick the best. That's the most common myth.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Bloch sphere</span><a href="/Robotics_bible/sim/bloch.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/bloch.html" height="560" loading="lazy" title="Bloch sphere"></iframe></div>
+
+
 ## The qubit
 
 ![bloch sphere](/img/fig/bloch-sphere.svg)

@@ -11,6 +11,13 @@ title: Control Theory (PID → MPC → Impedance)
 - **Impedance control** makes a robot act like a soft spring so it can safely touch things.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: PID controller</span><a href="/Robotics_bible/sim/pid.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/pid.html" height="560" loading="lazy" title="PID controller"></iframe></div>
+
+<div class="simbox"><div class="simhead"><span>Interactive: Balancing a pole (feedback control)</span><a href="/Robotics_bible/sim/cartpole.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/cartpole.html" height="560" loading="lazy" title="Balancing a pole (feedback control)"></iframe></div>
+
+
 ## Feedback in one picture
 
 Error = goal − measurement. The controller turns error into a command; the plant (robot) responds; the sensor feeds back. **Feedforward** (a prediction like "holding this arm up needs gravity-compensation torque") does the heavy lifting; **feedback** cleans up the rest.

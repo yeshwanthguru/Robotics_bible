@@ -8,6 +8,11 @@ title: Motion & Path Planning
 **Planning** = finding a safe route from *here* to *there*. For a car-like robot that's a path on a floor plan. For a 7-joint arm it's a path through a 7-dimensional "space of poses". The key trick for arms: instead of checking the whole arm against obstacles, treat the **arm's entire pose as a single point** in **configuration space** and search that.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: A* and RRT planning</span><a href="/Robotics_bible/sim/path-planning.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/path-planning.html" height="560" loading="lazy" title="A* and RRT planning"></iframe></div>
+
+
 ## Configuration space (C-space)
 
 Each joint angle is one axis. A pose of the whole arm = one point. Obstacles in the real world become "forbidden regions" in C-space. Planning = find a path for the point avoiding those regions. In 2-D this is easy to draw; in 7-D you can't draw it but the idea is the same, which is why **random sampling** works well there.

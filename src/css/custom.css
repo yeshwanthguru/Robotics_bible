@@ -12,3 +12,8 @@
 .markdown blockquote { border-left:4px solid var(--ifm-color-primary); background:var(--ifm-color-emphasis-100); border-radius:0 8px 8px 0; padding:.6rem 1rem; }
 .markdown .katex-display { overflow-x:auto; overflow-y:hidden; padding:.3rem 0; }
 .markdown table { font-size:.9rem; }
+
+/* interactive simulators embedded with <iframe> */
+.simbox{margin:1.2rem 0;border:1px solid var(--ifm-color-emphasis-300);border-radius:10px;overflow:hidden;background:var(--ifm-background-surface-color)}
+.simbox .simhead{padding:6px 12px;font-size:.85rem;font-weight:600;background:var(--ifm-color-emphasis-100);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.simbox iframe{display:block;width:100%;border:0;background:transparent}

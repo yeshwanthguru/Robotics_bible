@@ -9,6 +9,11 @@ title: SLAM & Localization
 The main enemy is **drift**: tiny errors in each step add up. The cure is **loop closure**: recognising "I've been here before" and snapping the path back into shape.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Particle-filter localization</span><a href="/Robotics_bible/sim/particle-filter.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/particle-filter.html" height="560" loading="lazy" title="Particle-filter localization"></iframe></div>
+
+
 ## The big picture
 
 ![slam loop closure](/img/fig/slam-loop-closure.svg)

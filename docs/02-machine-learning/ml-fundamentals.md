@@ -10,6 +10,11 @@ The three big flavours: **supervised** (examples with answers), **unsupervised**
 The central worry in all of ML: **does it work on data it has never seen?**
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Over/underfitting</span><a href="/Robotics_bible/sim/bias-variance.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/bias-variance.html" height="560" loading="lazy" title="Over/underfitting"></iframe></div>
+
+
 ## The three flavours
 
 ```mermaid

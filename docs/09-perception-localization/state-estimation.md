@@ -8,6 +8,11 @@ title: State Estimation & Filters
 Your robot never *knows* where it is. It has a **guess** from motion (wheel odometry, IMU) and **measurements** from sensors (GPS, camera). Each is noisy. A **filter** combines them: predict with the motion model, then correct with the sensor, trusting whichever is more certain. The Kalman filter is the textbook version of this, and it's inside almost every robot.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Kalman filter</span><a href="/Robotics_bible/sim/kalman.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/kalman.html" height="560" loading="lazy" title="Kalman filter"></iframe></div>
+
+
 ## The predict–correct cycle
 
 Every filter does the same two steps, forever:

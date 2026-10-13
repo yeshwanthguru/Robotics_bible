@@ -12,6 +12,11 @@ An **architecture** is the *shape of the wiring* inside a network, chosen to mat
 **GNN** = for graphs. **Diffusion / VAE / GAN** = for *generating* new data.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Softmax and attention</span><a href="/Robotics_bible/sim/attention.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/attention.html" height="560" loading="lazy" title="Softmax and attention"></iframe></div>
+
+
 ## CNN: how machines see
 
 A convolution slides a tiny filter across the image and asks at each spot "is my pattern here?" Early filters find edges, later ones find textures, then parts, then whole objects.

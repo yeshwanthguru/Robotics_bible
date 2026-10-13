@@ -9,6 +9,13 @@ A neural network is a **stack of simple "blend-and-squash" steps**. Each layer m
 **Training** = show examples, measure the error, and nudge every weight a tiny bit to reduce it. The "nudge direction" is computed by **backpropagation**.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Gradient descent</span><a href="/Robotics_bible/sim/gradient-descent.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/gradient-descent.html" height="560" loading="lazy" title="Gradient descent"></iframe></div>
+
+<div class="simbox"><div class="simhead"><span>Interactive: Train a neural network</span><a href="/Robotics_bible/sim/mlp-playground.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/mlp-playground.html" height="560" loading="lazy" title="Train a neural network"></iframe></div>
+
+
 ## One neuron, one layer
 
 A neuron takes inputs $x$, multiplies each by a weight, adds them up, and applies a bend:

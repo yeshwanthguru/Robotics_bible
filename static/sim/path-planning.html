@@ -1,0 +1,34 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="common.css"><title>Path planning: A* and RRT</title></head><body>
+<h1>Path planning: A* and RRT</h1><p class="note">Click or drag on the grid to draw or erase walls. Press Run to watch the search (blue = explored, yellow = final path). Move start (green) and goal (red) by dragging them. A* is optimal on the grid; RRT samples random points and is fast in big spaces but not optimal.</p>
+<canvas id="c"></canvas><div class="ctl" id="k"></div><div class="read" id="r"></div>
+<script src="common.js"></script><script>
+//TITLE: Path planning: A* and RRT
+//NOTE: Click or drag on the grid to draw or erase walls. Press Run to watch the search (blue = explored, yellow = final path). Move start (green) and goal (red) by dragging them. A* is optimal on the grid; RRT samples random points and is fast in big spaces but not optimal.
+const cv=setup($('c'),0.55),ctl=$('k');const NX=32,NY=17;let wall=new Set(),S=[3,8],G=[28,8],mode='astar',expl=[],path=[],tree=[],anim=null,heur=1,drg=null,paint=null;
+const sel=document.createElement('select');['astar','dijkstra','rrt'].forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m==='astar'?'A*':m==='rrt'?'RRT':'Dijkstra';sel.append(o)});sel.onchange=()=>{mode=sel.value;clear()};ctl.append(sel);
+btn(ctl,'Run',run);btn(ctl,'Clear search',clear,1);btn(ctl,'Clear walls',()=>{wall.clear();clear()},1);
+const key=(x,y)=>x+','+y,cw=()=>cv.W/NX,ch=()=>cv.H/NY;
+function clear(){expl=[];path=[];tree=[];anim=null;$('r').innerHTML='Draw walls, then Run.'}
+function cell(px,py){return[Math.floor(px/cw()),Math.floor(py/ch())]}
+drag(cv,(px,py)=>{const c=cell(px,py);if(c[0]==S[0]&&c[1]==S[1])drg='S';else if(c[0]==G[0]&&c[1]==G[1])drg='G';else{drg=null;paint=!wall.has(key(...c));tog(c)}},(px,py)=>{const c=cell(px,py);if(c[0]<0||c[1]<0||c[0]>=NX||c[1]>=NY)return;if(drg==='S'&&!wall.has(key(...c)))S=c;else if(drg==='G'&&!wall.has(key(...c)))G=c;else if(!drg)tog(c)});
+function tog(c){if(c[0]<0||c[1]<0||c[0]>=NX||c[1]>=NY)return;const k=key(...c);if((c[0]==S[0]&&c[1]==S[1])||(c[0]==G[0]&&c[1]==G[1]))return;paint?wall.add(k):wall.delete(k)}
+function run(){clear();if(mode==='rrt')return rrt();
+const open=[[0,...S]],g={[key(...S)]:0},par={},closed=new Set(),order=[];const h=(x,y)=>mode==='astar'?Math.hypot(x-G[0],y-G[1]):0;
+let found=false;while(open.length){open.sort((a,b)=>a[0]-b[0]);const[f,x,y]=open.shift();const k=key(x,y);if(closed.has(k))continue;closed.add(k);order.push([x,y]);if(x==G[0]&&y==G[1]){found=true;break}
+for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=NX||ny>=NY||wall.has(key(nx,ny)))continue;if(dx&&dy&&(wall.has(key(x+dx,y))||wall.has(key(x,y+dy))))continue;const ng=g[k]+Math.hypot(dx,dy),nk=key(nx,ny);if(g[nk]===undefined||ng<g[nk]){g[nk]=ng;par[nk]=k;open.push([ng+h(nx,ny),nx,ny])}}}
+let p=[];if(found){let k=key(...G);while(k){p.push(k.split(',').map(Number));k=par[k]}p.reverse()}
+let i=0;anim=()=>{i+=6;expl=order.slice(0,i);if(i>=order.length){path=p;anim=null;$('r').innerHTML=found?'path length <b>'+g[key(...G)].toFixed(1)+'</b> cells &nbsp; cells explored <b>'+order.length+'</b>':'<b style="color:var(--warn)">no path</b> (explored '+order.length+')'}}}
+function rrt(){const nodes=[{x:S[0]+.5,y:S[1]+.5,p:-1}];const free=(x,y)=>!wall.has(key(Math.floor(x),Math.floor(y)));
+const seg=(a,b)=>{const n=Math.ceil(Math.hypot(b.x-a.x,b.y-a.y)*4);for(let i=0;i<=n;i++){if(!free(a.x+(b.x-a.x)*i/n,a.y+(b.y-a.y)*i/n))return false}return true};
+let goal=-1;for(let it=0;it<4000&&goal<0;it++){const r=Math.random()<0.08?{x:G[0]+.5,y:G[1]+.5}:{x:Math.random()*NX,y:Math.random()*NY};let bi=0,bd=1e9;nodes.forEach((n,i)=>{const d=Math.hypot(n.x-r.x,n.y-r.y);if(d<bd){bd=d;bi=i}});const n=nodes[bi],d=Math.min(1.5,bd),nn={x:n.x+(r.x-n.x)/bd*d,y:n.y+(r.y-n.y)/bd*d,p:bi};if(seg(n,nn)){nodes.push(nn);if(Math.hypot(nn.x-G[0]-.5,nn.y-G[1]-.5)<1.2){goal=nodes.length-1}}}
+let p=[],len=0;if(goal>=0){let i=goal;while(i>=0){p.push([nodes[i].x-.5,nodes[i].y-.5]);if(nodes[i].p>=0)len+=Math.hypot(nodes[i].x-nodes[nodes[i].p].x,nodes[i].y-nodes[nodes[i].p].y);i=nodes[i].p}p.reverse()}
+let i=0;anim=()=>{i+=12;tree=nodes.slice(0,i);if(i>=nodes.length){path=p;anim=null;$('r').innerHTML=goal>=0?'RRT found a path of length <b>'+len.toFixed(1)+'</b> using <b>'+nodes.length+'</b> samples (run again: it differs each time and is not optimal)':'<b style="color:var(--warn)">no path found</b>'}}}
+clear();loop(()=>{if(anim)anim();const c=cv.ctx,W=cv.W,H=cv.H,w=cw(),h=ch();c.clearRect(0,0,W,H);
+c.fillStyle='rgba(96,165,250,.35)';expl.forEach(e=>c.fillRect(e[0]*w,e[1]*h,w,h));
+c.strokeStyle=css('--line');c.lineWidth=.5;for(let i=0;i<=NX;i++){c.beginPath();c.moveTo(i*w,0);c.lineTo(i*w,H);c.stroke()}for(let j=0;j<=NY;j++){c.beginPath();c.moveTo(0,j*h);c.lineTo(W,j*h);c.stroke()}
+c.fillStyle=css('--fg');wall.forEach(k=>{const[x,y]=k.split(',').map(Number);c.fillRect(x*w,y*h,w,h)});
+if(tree.length){c.strokeStyle=css('--acc');c.lineWidth=1;tree.forEach(n=>{if(n.p>=0){const q=tree[n.p]||{x:n.x,y:n.y};c.beginPath();c.moveTo(q.x*w,q.y*h);c.lineTo(n.x*w,n.y*h);c.stroke()}})}
+if(path.length){c.strokeStyle='#eab308';c.lineWidth=4;c.beginPath();path.forEach((q,i)=>{const px=(q[0]+.5)*w,py=(q[1]+.5)*h;const X=mode==='rrt'?(q[0]+.5)*w:px,Y=mode==='rrt'?(q[1]+.5)*h:py;i?c.lineTo(X,Y):c.moveTo(X,Y)});c.stroke()}
+c.fillStyle=css('--ok');c.fillRect(S[0]*w+2,S[1]*h+2,w-4,h-4);c.fillStyle=css('--acc2');c.fillRect(G[0]*w+2,G[1]*h+2,w-4,h-4)});
+
+</script></body></html>

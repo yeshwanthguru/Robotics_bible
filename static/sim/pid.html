@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="common.css"><title>PID controller playground</title></head><body>
+<h1>PID controller playground</h1><p class="note">A mass slides with friction. The controller pushes it toward the dashed target. Change the gains and watch the response. Click or drag on the plot to move the target; press Kick to hit the mass.</p>
+<canvas id="c"></canvas><div class="ctl" id="k"></div><div class="read" id="r"></div>
+<script src="common.js"></script><script>
+//TITLE: PID controller playground
+//NOTE: A mass slides with friction. The controller pushes it toward the dashed target. Change the gains and watch the response. Click or drag on the plot to move the target; press Kick to hit the mass.
+const cv=setup($('c'),0.5);let Kp=8,Ki=1,Kd=3,tgt=1,x=0,v=0,I=0,t=0,m=1,b=0.4,H=[],ctl=$('k');
+slider(ctl,'Kp (P)',0,40,0.5,Kp,a=>Kp=a);slider(ctl,'Ki (I)',0,20,0.25,Ki,a=>Ki=a);slider(ctl,'Kd (D)',0,15,0.25,Kd,a=>Kd=a);
+btn(ctl,'Kick',()=>v+=3);btn(ctl,'Reset',()=>{x=v=I=0;t=0;H=[]},1);
+function set(py){tgt=Math.max(-0.5,Math.min(2,2-(py/cv.H)*2.5))}
+drag(cv,(px,py)=>set(py),(px,py)=>set(py));
+function step(dt){const e=tgt-x;I=Math.max(-5,Math.min(5,I+e*dt));const u=Math.max(-60,Math.min(60,Kp*e+Ki*I-Kd*v));v+=(u-b*v)/m*dt;x+=v*dt;t+=dt;H.push([t,x,tgt]);if(H.length>1500)H.shift()}
+function Y(val){return cv.H*(1-(val+0.5)/2.5)}
+loop(dt=>{for(let i=0;i<4;i++)step(dt/4);draw()});
+function draw(){const c=cv.ctx,W=cv.W,Hh=cv.H;c.clearRect(0,0,W,Hh);c.strokeStyle=css('--line');c.beginPath();c.moveTo(0,Y(0));c.lineTo(W,Y(0));c.stroke();
+c.setLineDash([6,5]);c.strokeStyle=css('--acc2');c.beginPath();c.moveTo(0,Y(tgt));c.lineTo(W,Y(tgt));c.stroke();c.setLineDash([]);
+c.strokeStyle=css('--acc');c.lineWidth=2.2;c.beginPath();const t0=H[0]?H[0][0]:0,T=Math.max(6,t-t0);H.forEach((p,i)=>{const px=(p[0]-t0)/T*W;i?c.lineTo(px,Y(p[1])):c.moveTo(px,Y(p[1]))});c.stroke();c.lineWidth=1;
+c.fillStyle=css('--mut');c.fillText('target (red dashed) vs position (blue)',8,14);
+$('r').innerHTML='error <b>'+(tgt-x).toFixed(3)+'</b> &nbsp; velocity <b>'+v.toFixed(2)+'</b> &nbsp; Tip: Kp alone oscillates; Kd damps; Ki removes a steady offset but can overshoot.'}
+
+</script></body></html>

@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="common.css"><title>Train a tiny neural network in your browser</title></head><body>
+<h1>Train a tiny neural network in your browser</h1><p class="note">Pick a dataset and watch a small neural network (2 inputs, two hidden layers) learn a decision boundary with gradient descent. The background colour is the network's prediction. Try 0 hidden units (a straight line cannot solve the spiral), more units, or a high learning rate.</p>
+<canvas id="c"></canvas><div class="ctl" id="k"></div><div class="read" id="r"></div>
+<script src="common.js"></script><script>
+//TITLE: Train a tiny neural network in your browser
+//NOTE: Pick a dataset and watch a small neural network (2 inputs, two hidden layers) learn a decision boundary with gradient descent. The background colour is the network's prediction. Try 0 hidden units (a straight line cannot solve the spiral), more units, or a high learning rate.
+const cv=setup($('c'),0.6),ctl=$('k');let H=8,lr=0.1,data='spiral',pts=[],W1,b1,W2,b2,W3,b3,ep=0,loss=0,bg=null,tick=0;
+const sel=document.createElement('select');['spiral','circle','xor','two blobs'].forEach(d=>{const o=document.createElement('option');o.textContent=d;sel.append(o)});sel.onchange=()=>{data=sel.value;gen();init()};ctl.append(sel);
+slider(ctl,'hidden units',2,16,1,H,a=>{H=a;init()});slider(ctl,'learning rate',0.005,0.5,0.005,lr,a=>lr=a,v=>(+v).toFixed(3));btn(ctl,'Reinitialise',init,1);
+function gen(){pts=[];const n=100;for(let i=0;i<n;i++){let x,y,l;
+if(data==='spiral'){l=i%2;const r=i/n*.9+.05,t=(i/n)*3.5*Math.PI+l*Math.PI;x=r*Math.cos(t)+gauss()*.02;y=r*Math.sin(t)+gauss()*.02}
+else if(data==='circle'){l=i%2;const r=l?.35:.8,t=Math.random()*6.28;x=r*Math.cos(t)+gauss()*.05;y=r*Math.sin(t)+gauss()*.05}
+else if(data==='xor'){x=Math.random()*2-1;y=Math.random()*2-1;l=(x>0)!==(y>0)?1:0}
+else{l=i%2;x=(l?.5:-.5)+gauss()*.18;y=(l?.4:-.4)+gauss()*.18}pts.push([x,y,l])}}
+const rnd=(r,c,s)=>Array.from({length:r},()=>Array.from({length:c},()=>gauss()*s));
+function init(){W1=rnd(H,2,.8);b1=Array(H).fill(0);W2=rnd(H,H,Math.sqrt(1/H));b2=Array(H).fill(0);W3=rnd(1,H,Math.sqrt(1/H));b3=[0];ep=0;bg=null}
+function fwd(x,y){const h1=W1.map((w,i)=>Math.tanh(w[0]*x+w[1]*y+b1[i])),h2=W2.map((w,i)=>Math.tanh(w.reduce((a,v,j)=>a+v*h1[j],0)+b2[i])),z=W3[0].reduce((a,v,j)=>a+v*h2[j],0)+b3[0];return{h1,h2,p:1/(1+Math.exp(-z))}}
+function train(){let L=0;const gW1=W1.map(r=>[0,0]),gb1=b1.map(()=>0),gW2=W2.map(r=>r.map(()=>0)),gb2=b2.map(()=>0),gW3=W3[0].map(()=>0);let gb3=0;
+pts.forEach(([x,y,l])=>{const f=fwd(x,y),d3=f.p-l;L+=-(l?Math.log(f.p+1e-9):Math.log(1-f.p+1e-9));gb3+=d3;f.h2.forEach((v,j)=>gW3[j]+=d3*v);
+const d2=f.h2.map((v,j)=>d3*W3[0][j]*(1-v*v));d2.forEach((d,j)=>{gb2[j]+=d;f.h1.forEach((v,k)=>gW2[j][k]+=d*v)});
+const d1=f.h1.map((v,k)=>d2.reduce((a,d,j)=>a+d*W2[j][k],0)*(1-v*v));d1.forEach((d,k)=>{gb1[k]+=d;gW1[k][0]+=d*x;gW1[k][1]+=d*y})});
+const s=lr/pts.length;W1.forEach((r,i)=>{r[0]-=s*gW1[i][0];r[1]-=s*gW1[i][1];b1[i]-=s*gb1[i]});W2.forEach((r,i)=>{r.forEach((_,j)=>r[j]-=s*gW2[i][j]);b2[i]-=s*gb2[i]});W3[0].forEach((_,j)=>W3[0][j]-=s*gW3[j]);b3[0]-=s*gb3;loss=L/pts.length;ep++}
+gen();init();cv.onfit=()=>bg=null;
+loop(()=>{for(let i=0;i<8;i++)train();const c=cv.ctx,w=cv.W,h=cv.H;
+if(!bg||tick++%4===0){const R=28,cw=Math.ceil(w/R),ch=Math.ceil(h/R);bg=document.createElement('canvas');bg.width=R;bg.height=Math.round(R*h/w);const b=bg.getContext('2d'),im=b.createImageData(bg.width,bg.height);
+for(let j=0;j<bg.height;j++)for(let i=0;i<bg.width;i++){const x=(i+.5)/bg.width*2.4-1.2,y=(j+.5)/bg.height*2.4*h/w*w/h-1.2,p=fwd(x,y).p,k=(j*bg.width+i)*4;im.data[k]=Math.round(225*p+37*(1-p));im.data[k+1]=Math.round(29*p+99*(1-p));im.data[k+2]=Math.round(72*p+235*(1-p));im.data[k+3]=110}b.putImageData(im,0,0)}
+c.imageSmoothingEnabled=true;c.clearRect(0,0,w,h);c.drawImage(bg,0,0,w,h);
+const S=Math.min(w,h)/2.4;pts.forEach(([x,y,l])=>{c.fillStyle=l?'#e11d48':'#2563eb';c.strokeStyle='#fff';c.beginPath();c.arc(w/2+x*S,h/2+y*S,5,0,7);c.fill();c.stroke()});
+let acc=0;pts.forEach(([x,y,l])=>acc+=(fwd(x,y).p>.5)===(l===1)?1:0);$('r').innerHTML='epochs <b>'+ep+'</b> &nbsp; loss <b>'+loss.toFixed(3)+'</b> &nbsp; accuracy <b>'+(acc/pts.length*100).toFixed(0)+'%</b>'});
+
+</script></body></html>

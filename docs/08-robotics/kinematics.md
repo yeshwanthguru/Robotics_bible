@@ -11,6 +11,11 @@ title: Spatial Math & Kinematics
 Everything rests on one tool: describing *where something is and how it's rotated* relative to something else.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Forward and inverse kinematics</span><a href="/Robotics_bible/sim/ik-2link.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/ik-2link.html" height="560" loading="lazy" title="Forward and inverse kinematics"></iframe></div>
+
+
 ## Frames: every part has its own coordinate system
 
 ![frames chain](/img/fig/frames-chain.svg)

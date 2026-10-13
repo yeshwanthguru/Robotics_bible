@@ -9,6 +9,11 @@ Reinforcement learning (RL) is **learning by trial and error with a score.** An 
 It's how robots learn to walk in simulation, how AlphaGo learned Go, and how chat models are tuned with human feedback.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Q-learning</span><a href="/Robotics_bible/sim/qlearning.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/qlearning.html" height="640" loading="lazy" title="Q-learning"></iframe></div>
+
+
 ## The loop
 
 ![RL loop](/img/fig/rl-loop.svg)

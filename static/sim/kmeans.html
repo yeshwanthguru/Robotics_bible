@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="common.css"><title>k-means clustering</title></head><body>
+<h1>k-means clustering</h1><p class="note">Click to add points (or Random blobs). Press Step: points join the nearest centre, then centres move to the mean of their points. Repeat until nothing changes. Try a wrong k and a bad start.</p>
+<canvas id="c"></canvas><div class="ctl" id="k"></div><div class="read" id="r"></div>
+<script src="common.js"></script><script>
+//TITLE: k-means clustering
+//NOTE: Click to add points (or Random blobs). Press Step: points join the nearest centre, then centres move to the mean of their points. Repeat until nothing changes. Try a wrong k and a bad start.
+const cv=setup($('c'),0.6),ctl=$('k');let pts=[],cen=[],asg=[],k=3,it=0;const col=['#2563eb','#e11d48','#16a34a','#d97706','#9333ea','#0891b2'];
+slider(ctl,'k',1,6,1,k,a=>{k=a;seed()});btn(ctl,'Step',step);btn(ctl,'Run to end',()=>{for(let i=0;i<50&&step(););},1);btn(ctl,'Random blobs',blobs,1);btn(ctl,'Clear',()=>{pts=[];cen=[];asg=[];it=0},1);
+function blobs(){pts=[];[[.25,.3],[.7,.3],[.5,.75]].forEach(m=>{for(let i=0;i<40;i++)pts.push([m[0]+gauss()*.07,m[1]+gauss()*.09])});seed()}
+function seed(){it=0;asg=pts.map(()=>-1);cen=[];for(let i=0;i<k&&pts.length;i++)cen.push(pts[Math.floor(Math.random()*pts.length)].slice())}
+cv.addEventListener('pointerdown',e=>{const p=pos(cv,e);pts.push([p[0]/cv.W,p[1]/cv.H]);seed()});
+function step(){if(!pts.length)return false;let ch=false;pts.forEach((p,i)=>{let b=0,bd=1e9;cen.forEach((c,j)=>{const d=(c[0]-p[0])**2+(c[1]-p[1])**2;if(d<bd){bd=d;b=j}});if(asg[i]!==b){ch=true;asg[i]=b}});
+cen.forEach((c,j)=>{const m=pts.filter((p,i)=>asg[i]===j);if(m.length){c[0]=m.reduce((a,p)=>a+p[0],0)/m.length;c[1]=m.reduce((a,p)=>a+p[1],0)/m.length}});it++;return ch}
+blobs();loop(()=>{const c=cv.ctx,W=cv.W,H=cv.H;c.clearRect(0,0,W,H);pts.forEach((p,i)=>{c.fillStyle=asg[i]>=0?col[asg[i]]:css('--mut');c.beginPath();c.arc(p[0]*W,p[1]*H,4,0,7);c.fill()});
+cen.forEach((p,j)=>{c.fillStyle=col[j];c.strokeStyle=css('--fg');c.lineWidth=2;c.beginPath();c.rect(p[0]*W-8,p[1]*H-8,16,16);c.fill();c.stroke()});
+let inertia=0;pts.forEach((p,i)=>{if(asg[i]>=0){const c2=cen[asg[i]];inertia+=(p[0]-c2[0])**2+(p[1]-c2[1])**2}});$('r').innerHTML='iteration <b>'+it+'</b> &nbsp; total squared distance to centres <b>'+inertia.toFixed(3)+'</b> (k-means only ever lowers this)'});
+
+</script></body></html>

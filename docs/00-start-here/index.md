@@ -19,6 +19,7 @@ This is a **lifelong handbook and dictionary** for AI and robotics: machine lear
 | Answer interview questions | [Interview Q&A](../interview/question-bank.md) (hundreds of answered questions by domain) |
 | Build a model, VLM or VLA | [Build It Yourself](../build-your-own/00-start-building.md) |
 | Find a tool, dataset, paper or robot | [Reference directories](../reference/tools-libraries.md) |
+| Play with a concept (PID, Kalman, IK, attention, Q-learning, qubits...) | [Interactive simulators](../reference/interactive-simulators.md), also embedded in each chapter |
 | Refresh formulas or commands | [Cheat sheets](../cheatsheets/formulas.md) |
 
 ## How every page is built

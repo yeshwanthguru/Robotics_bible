@@ -8,6 +8,13 @@ title: Mobility — Wheeled, Aerial, Mobile Navigation
 **Mobility** = how the robot's body gets around: wheels, legs, rotors, tracks, fins. Whatever the body, a navigating robot needs the same loop: **know where you are → decide where to go → avoid things → move the motors**. The details change with the body.
 :::
 
+## 🎮 Try it yourself
+
+<div class="simbox"><div class="simhead"><span>Interactive: Odometry drift</span><a href="/Robotics_bible/sim/diff-drive.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/diff-drive.html" height="560" loading="lazy" title="Odometry drift"></iframe></div>
+
+<div class="simbox"><div class="simhead"><span>Interactive: Pure pursuit tracking</span><a href="/Robotics_bible/sim/pure-pursuit.html" target="_blank">open full screen ↗</a></div><iframe src="/Robotics_bible/sim/pure-pursuit.html" height="540" loading="lazy" title="Pure pursuit tracking"></iframe></div>
+
+
 ## Ways to move
 
 | Modality | Examples | Key challenge |
