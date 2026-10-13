@@ -232,15 +232,16 @@ if __name__ == "__main__":
 Install: `pip install lerobot` (or install from source for the newest features), then follow the robot-specific assembly and calibration guide in the LeRobot docs. **Test teleoperation first**: the follower should mirror the leader smoothly before you record anything.
 
 ```bash
-# Command names and flags change between LeRobot versions: use `<command> --help` and the docs as the source of truth.
-lerobot-teleoperate --robot.type=so101_follower --robot.port=/dev/ttyACM0 \
+# LeRobot's entry points differ by version. Older/current docs show module form (python -m lerobot.teleoperate, python -m lerobot.record,
+# python -m lerobot.replay); newer releases also install console commands (lerobot-record, lerobot-train). Check `--help` and the docs.
+python -m lerobot.teleoperate --robot.type=so101_follower --robot.port=/dev/ttyACM0 \
                     --teleop.type=so101_leader  --teleop.port=/dev/ttyACM1
 ```
 
 ### Step 2. Collect demonstrations (the most important step)
 
 ```bash
-lerobot-record \
+python -m lerobot.record \
   --robot.type=so101_follower --robot.port=/dev/ttyACM0 \
   --robot.cameras="{ front: {type: opencv, index_or_path: 0, width: 640, height: 480, fps: 30},
                      wrist: {type: opencv, index_or_path: 2, width: 640, height: 480, fps: 30} }" \
@@ -265,7 +266,7 @@ Each episode stores, at every time step: camera frames, **`observation.state`** 
 3. **Smooth, confident motion**; no long pauses; end with the arm in a standard pose.
 4. **Include some recoveries** (a regrasp after a slip) once the basic task works, but don't mix in sloppy demos.
 5. **Language:** one clear sentence per task; use several phrasings if you want language robustness.
-6. **Quality control:** replay episodes (`lerobot-replay` or the dataset visualiser), delete bad ones, check camera sync and dropped frames.
+6. **Quality control:** replay episodes (`python -m lerobot.replay` or the dataset visualiser), delete bad ones, check camera sync and dropped frames.
 7. **Hold out** scenes/object positions for evaluation (don't train on every position you will test).
 8. **Write it down:** date, lighting, objects, calibration version.
 
@@ -296,7 +297,7 @@ lerobot-train --policy.path=lerobot/smolvla_base \
               --batch_size=64 --steps=20000 --output_dir=outputs/train/smolvla_pick \
               --policy.device=cuda --wandb.enable=true
 ```
-*(Typical defaults at the time of writing: ACT chunk size ≈ 100 steps, lr ≈ 1e-5; Diffusion Policy horizon ≈ 16, lr ≈ 1e-4; SmolVLA fine-tuning ≈ 20k steps at batch 64 on one GPU. Always check the current defaults with `--help`.)*
+*(Typical defaults at the time of writing: ACT chunk size ≈ 100 steps, lr ≈ 1e-5; Diffusion Policy horizon ≈ 16, lr ≈ 1e-4; SmolVLA fine-tuning ≈ 20k steps at batch 64 on one GPU (its docs quote roughly 4 hours on a single A100). Several of these values come from early configs and example commands, so always check the current defaults with `--help`.)*
 
 **What to watch while training**
 | Signal | Healthy | Problem |
@@ -364,7 +365,7 @@ while running:
 
 **Step C3. Action representation.**
 - **Normalise** states and actions with dataset statistics (mean/std, or the 1st–99th percentiles mapped to [−1, 1]). Save the stats; use the same at deployment.
-- Predict **action chunks** of H steps (≈ 1 second of motion: H = 50 at 50 Hz, or 100 at 30 Hz for ACT).
+- Predict **action chunks** of H steps (about one second of motion: π0 predicts chunks of 50 steps and its paper's robots run at roughly 20–50 Hz; ACT's default chunk is 100 steps at 30 fps).
 - Prefer **joint position targets** for hobby arms; **end-effector delta poses + gripper** for transfer across arms; relative-to-current-state targets often train better than absolute.
 
 **Step C4. Action head.** Options:

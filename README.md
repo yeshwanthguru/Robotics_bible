@@ -68,4 +68,6 @@ Pushes to `main` build and deploy via GitHub Actions. One-time setup: **Settings
 
 Add a `## My experience` section at the bottom of any page with your own projects and numbers. Fill in the behavioral story bank. Interviewers remember stories, not definitions.
 
+> See `docs/reference/sources-and-verification.md` for the audit log (what was checked, sources, what is unverified).
+
 > Content is written for interview preparation. Verify version-specific details (Isaac Sim/Lab APIs, ROS 2 distros, model releases) against official docs before relying on them.

@@ -35,7 +35,7 @@ A robot is many small programs: one reads the camera, one detects objects, one p
 | Nodelets for zero-copy | Composable nodes, intra-process comms, loaned messages |
 | Launch XML | Python/XML/YAML launch |
 
-Distros: Humble (22.04, LTS to 2027), Iron, **Jazzy** (24.04, LTS to 2029), Kilted, Rolling. RMW choices: Fast DDS (default Humble), **Cyclone DDS** (default Jazzy+ many), Connext, Zenoh (`rmw_zenoh`, becoming Tier-1 for Kilted/Jazzy+).
+Distros: Humble (22.04, LTS to 2027), Iron, **Jazzy** (24.04, LTS to 2029), Kilted, Rolling. RMW choices: **Fast DDS** (the default in Humble, Jazzy and Kilted), Cyclone DDS (fully supported alternative), Connext, and Zenoh (`rmw_zenoh`, Tier 1 as of Kilted but not the default; select it with `RMW_IMPLEMENTATION=rmw_zenoh_cpp`).
 
 ## Graph concepts
 ```mermaid

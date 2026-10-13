@@ -33,8 +33,8 @@ A robot that works in a demo can still be unsafe in the real world. **Safety eng
 
 | Standard | Scope |
 |---|---|
-| **ISO 10218-1/-2** | industrial robots and robot systems |
-| **ISO/TS 15066** | collaborative robots: body-region force/pressure limits |
+| **ISO 10218-1/-2** | industrial robots and robot systems (2025 editions replaced the 2011 versions and integrated collaborative-operation requirements formerly in ISO/TS 15066) |
+| **ISO/TS 15066** | collaborative robots: body-region force/pressure limits (the 2025 revision of ISO 10218 has absorbed this content, so check whether your project follows the older TS or the new edition) |
 | **ISO 13482** | personal care robots (mobile servants, physical assistants) |
 | **ISO 13849** | safety-related parts of machine control systems (performance levels) |
 | **IEC 61508** | functional safety of electrical/electronic systems (SIL) |
@@ -91,7 +91,7 @@ A robot that works in a demo can still be unsafe in the real world. **Safety eng
 *Simply:* safety of the intended function: hazards that come from limitations of correctly working systems, like perception errors. *Deeper:* ISO 21448 complements ISO 26262.
 
 **How do collaborative robots stay safe near people?**
-*Simply:* they limit speed, force and pressure and can stop when a person approaches. *Deeper:* ISO/TS 15066 gives body-region limits; risk assessment of the whole application is required.
+*Simply:* they limit speed, force and pressure and can stop when a person approaches. *Deeper:* ISO/TS 15066 (now folded into the 2025 edition of ISO 10218-2) gives body-region limits; risk assessment of the whole application is required.
 
 **How would you deploy a learned policy safely?**
 *Simply:* shadow mode, a safety filter, limits outside the model, staged rollout. *Deeper:* monitor OOD inputs, log everything, keep a fallback behaviour.

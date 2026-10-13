@@ -11,7 +11,7 @@ title: NVIDIA Isaac Sim (Deep Dive)
 ![isaac family](/img/fig/isaac-family.svg)
 *How the NVIDIA robotics pieces fit together. Sim is the world, Lab is the gym where robots learn, ROS is the real-robot software, GR00T/Cosmos are the foundation models.*
 
-**Isaac Sim** is NVIDIA's robotics simulation application built on **Omniverse (Kit)**. It provides physically based simulation (PhysX 5), RTX-rendered sensors, OpenUSD scene description, ROS/ROS 2 integration, synthetic data generation (Replicator) and a Python API. Source is open on GitHub since the 5.0 generation; check the docs for the exact current version and requirements.
+**Isaac Sim** is NVIDIA's robotics simulation application built on **Omniverse (Kit)**. It provides physically based simulation (PhysX 5), RTX-rendered sensors, OpenUSD scene description, ROS/ROS 2 integration, synthetic data generation (Replicator) and a Python API. Since version 5.0, Isaac Sim's own extensions are open source on GitHub (parts of the underlying Omniverse Kit remain closed source); check the docs for the exact current version and requirements.
 
 ## Architecture
 ```mermaid
@@ -34,7 +34,7 @@ flowchart TB
 - **Workflows**: GUI app, headless, **standalone Python** (`SimulationApp`), Jupyter, extension workflow, container on cloud GPU (NGC; requires RTX-class GPU — no A100/H100 for rendering since they lack RT cores).
 
 ## Installation options
-Workstation (Omniverse launcher deprecated → download packaged build / `pip install isaacsim[all,extscache]` for Python env), Docker/NGC container (`nvcr.io/nvidia/isaac-sim`), cloud (AWS/GCP/Azure, Brev, Isaac Automator). Needs recent NVIDIA driver, RTX GPU with ≥ 16 GB VRAM recommended, Ubuntu 22.04/24.04 or Windows.
+Workstation (Omniverse launcher deprecated → download packaged build / `pip install "isaacsim[all,extscache]==5.0.0" --extra-index-url https://pypi.nvidia.com` for a Python env (match the version you want)), Docker/NGC container (`nvcr.io/nvidia/isaac-sim`), cloud (AWS/GCP/Azure, Brev, Isaac Automator). Needs recent NVIDIA driver, RTX GPU with ≥ 16 GB VRAM recommended, Ubuntu 22.04/24.04 or Windows.
 
 ## Basic standalone script (pattern)
 ```python

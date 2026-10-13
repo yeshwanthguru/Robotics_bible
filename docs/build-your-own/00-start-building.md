@@ -48,7 +48,7 @@ Every chapter has (a) a step-by-step plan, (b) code that actually runs, (c) reco
 | Build a LLaVA-style 7 B VLM from parts (both stages, full-size data) | 8 × 80 GB GPUs | roughly a day |
 | Train **ACT** or **Diffusion Policy** on your robot data | one 8–16 GB GPU | hours |
 | Fine-tune **SmolVLA** (≈ 450 M) | one 16–24 GB GPU | hours |
-| LoRA fine-tune **π0** (≈ 3 B) | one ≈ 24 GB+ GPU (full fine-tune needs 70 GB+) | hours to a day |
+| LoRA fine-tune **π0** (≈ 3 B) | a 24 GB-class GPU at the very least for LoRA; full fine-tuning needs far more (tens of GB). Check the `openpi` README for current figures | hours to a day |
 | Real robot (low-cost arm, e.g. SO-100 / SO-101 with leader + follower) | a few hundred dollars of parts + 2 USB cameras | days to assemble and calibrate |
 
 *These figures are approximate and move with software versions; check each project's README for current requirements. Cloud GPUs (A100/H100) are rented by the hour and are usually the cheapest way to try large jobs.*

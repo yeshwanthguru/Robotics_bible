@@ -23,7 +23,7 @@ with mujoco.viewer.launch_passive(m, d) as v:
 ```
 
 ## Gazebo (Ignition/gz sim)
-Entity-component architecture, plugins (physics: DART default, Bullet, TPE; rendering OGRE2; sensors), SDF worlds, `ros_gz_bridge`/`ros_gz_sim`, `gz_ros2_control`; classic Gazebo (Gazebo 11) is EOL. Strengths: ROS 2 integration, community models (Gazebo Fuel), headless CI; weaknesses: no massive parallelism, contact fidelity moderate. Typical use: Nav2 / MoveIt integration testing, TurtleBot3, PX4 SITL.
+Entity-component architecture, plugins (physics: DART default, Bullet, TPE; rendering OGRE2; sensors), SDF worlds, `ros_gz_bridge`/`ros_gz_sim`, `gz_ros2_control`; classic Gazebo (Gazebo 11) reached end of life in January 2025 and is not supported on ROS 2 Jazzy (use modern Gazebo, e.g. Harmonic). Strengths: ROS 2 integration, community models (Gazebo Fuel), headless CI; weaknesses: no massive parallelism, contact fidelity moderate. Typical use: Nav2 / MoveIt integration testing, TurtleBot3, PX4 SITL.
 
 ## PyBullet
 Bullet physics via Python; URDF/SDF/MJCF; `p.loadURDF`, `p.stepSimulation`, inverse kinematics built-in; easy but limited fidelity and no GPU scale. Used in older RL papers (`pybullet_envs`, `panda-gym`, `gym-pybullet-drones`).

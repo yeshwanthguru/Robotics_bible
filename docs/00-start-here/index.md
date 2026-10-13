@@ -92,4 +92,4 @@ Add a `## My experience` section at the bottom of any page with your own project
 
 ## Honest note on accuracy
 
-This book was written for interview preparation. Fast-moving details (Isaac Sim/Lab module names, ROS 2 distros, new model releases) change every few months, so check them against official docs before quoting version-specific facts.
+This book was written for interview preparation. Fast-moving details (Isaac Sim/Lab module names, ROS 2 distros, new model releases) change every few months, so check them against official docs before quoting version-specific facts. What was verified, against which source, and what is still unverified is logged in [Sources & Verification](../reference/sources-and-verification.md).

@@ -62,7 +62,7 @@ git clone https://github.com/isaac-sim/IsaacLab && cd IsaacLab
 # play back trained policy
 ./isaaclab.sh -p scripts/reinforcement_learning/rsl_rl/play.py --task Isaac-Velocity-Rough-Anymal-D-Play-v0
 # list tasks
-./isaaclab.sh -p scripts/environments/list_envs.py
+./isaaclab.sh -p scripts/environments/list_envs.py   # (newer v3 early-access docs introduce a unified `isaaclab` CLI; follow the docs for your version)
 ```
 Task IDs follow `Isaac-<Task>-<Robot>-v0`: e.g. `Isaac-Reach-Franka-v0`, `Isaac-Lift-Cube-Franka-v0`, `Isaac-Open-Drawer-Franka-v0`, `Isaac-Repose-Cube-Allegro-v0`, `Isaac-Velocity-Flat-Unitree-Go2-v0`, `Isaac-Velocity-Rough-H1-v0`, `Isaac-Humanoid-v0`, `Isaac-Cartpole-v0`. (Names/folders shift across releases — run `list_envs.py`.)
 

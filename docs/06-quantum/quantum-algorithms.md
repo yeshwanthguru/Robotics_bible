@@ -32,7 +32,7 @@ Today's noisy chips mostly run **hybrid** algorithms (VQE, QAOA) where a small q
 **In words:** each round is a tiny rotation toward the right answer. Rotate too many times and you overshoot, so the number of rounds matters.
 
 ## Shor: factoring by finding a rhythm
-Pick a number *a*; the sequence $a^x \bmod N$ repeats with some period *r*. A quantum Fourier transform finds that period fast; then a bit of arithmetic ($\gcd(a^{r/2}\pm1,N)$) gives the factors. *(Gidney, 2025: an estimate of under a million noisy qubits and about a week of run time for RSA-2048.)*
+Pick a number *a*; the sequence $a^x \bmod N$ repeats with some period *r*. A quantum Fourier transform finds that period fast; then a bit of arithmetic ($\gcd(a^{r/2}\pm1,N)$) gives the factors. *(Gidney, 2025, a resource estimate not a demonstration: under a million noisy qubits and under a week of run time for RSA-2048.)*
 
 ## Variational algorithms: the hybrid loop
 

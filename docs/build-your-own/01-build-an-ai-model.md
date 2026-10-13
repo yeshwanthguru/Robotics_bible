@@ -277,7 +277,7 @@ peft_cfg = LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, target_modules="al
 cfg = SFTConfig(
     output_dir="out-sft",
     per_device_train_batch_size=4, gradient_accumulation_steps=8,     # effective batch 32
-    learning_rate=1e-4, lr_scheduler_type="cosine", warmup_ratio=0.03,
+    learning_rate=1e-4, lr_scheduler_type="cosine", warmup_steps=100,
     num_train_epochs=2, bf16=True, logging_steps=10,
     eval_strategy="steps", eval_steps=100, save_steps=100,
     gradient_checkpointing=True,                                       # trade compute for memory
@@ -287,7 +287,7 @@ trainer = SFTTrainer(model="Qwen/Qwen2.5-1.5B-Instruct", args=cfg,
 trainer.train()
 trainer.save_model("out-sft/final")
 ```
-*(Library arguments are renamed between versions: for example `eval_strategy` vs `evaluation_strategy`, `max_length` vs `max_seq_length`. If something errors, read the current TRL docs; the structure stays the same.)*
+*(Library arguments are renamed between versions: for example `eval_strategy` vs `evaluation_strategy`, `max_length` vs `max_seq_length`, and `warmup_ratio` was removed from recent TRL/transformers in favour of `warmup_steps`. I checked this snippet's config arguments against TRL 1.15 / transformers 5.19. If something errors, read the current TRL docs; the structure stays the same.)*
 
 **Memory options when the GPU is small:** 4-bit **QLoRA** (`load_in_4bit` via bitsandbytes), smaller batch + more accumulation, gradient checkpointing, shorter max length.
 

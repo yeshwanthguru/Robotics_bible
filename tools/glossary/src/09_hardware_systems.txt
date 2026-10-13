@@ -70,8 +70,8 @@ Bird's-eye-view (BEV) | Mobility | A top-down representation fused from multiple
 End-to-end driving | Mobility | A single network mapping sensor input directly to driving commands. | avuav
 HD map | Mobility | A high-definition map with lane geometry and traffic rules for automated driving. | avuav
 Operational design domain (ODD) | Mobility | The conditions (road, weather, speed) under which an automated system is designed to operate. | avuav,safety
-ISO 10218 | Standard | Safety requirements for industrial robots and robot systems. | safety
-ISO/TS 15066 | Standard | Technical specification for collaborative robot operation, including force and pressure limits for human contact. | safety
+ISO 10218 | Standard | Safety requirements for industrial robots and robot systems; the 2025 editions of Parts 1 and 2 replaced the 2011 versions. | safety
+ISO/TS 15066 | Standard | Technical specification for collaborative robot operation with force and pressure limits for human contact; its content was folded into the 2025 revision of ISO 10218-2. | safety
 ISO 13482 | Standard | Safety requirements for personal-care robots. | safety
 ISO 26262 | Standard | Functional safety standard for road vehicles' electrical and electronic systems. | safety
 IEC 61508 | Standard | The general functional-safety standard for electrical/electronic systems (SIL levels). | safety

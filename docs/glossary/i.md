@@ -254,7 +254,7 @@ Use the search box (Ctrl+K). Every term below is its own searchable heading.
 
 ### ISO 10218
 
-**Standard** · Safety requirements for industrial robots and robot systems.
+**Standard** · Safety requirements for industrial robots and robot systems; the 2025 editions of Parts 1 and 2 replaced the 2011 versions.
 
 *Read more:* [Safety, ethics & standards](../08-robotics/safety-ethics-standards.md)
 
@@ -284,7 +284,7 @@ Use the search box (Ctrl+K). Every term below is its own searchable heading.
 
 ### ISO/TS 15066
 
-**Standard** · Technical specification for collaborative robot operation, including force and pressure limits for human contact.
+**Standard** · Technical specification for collaborative robot operation with force and pressure limits for human contact; its content was folded into the 2025 revision of ISO 10218-2.
 
 *Read more:* [Safety, ethics & standards](../08-robotics/safety-ethics-standards.md)
 
